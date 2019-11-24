@@ -5,22 +5,6 @@
   text-align: center;
 }
 
-.user-table {
-  tr>td{
-    text-align: middle;
-    //font-weight: bold;
-  }
-  tr>td.work-time {
-    vertical-align: bottom;
-  }
-  tr>td.basic-time {
-    vertical-align: bottom;
-  }
-  tr>td.first-day {
-    vertical-align: bottom;
-  }
-}
-
 /* ユーザー情報下ボタン */
 
 .btn-users-show {
@@ -30,25 +14,15 @@
 
 /* ユーザー勤怠情報テーブル */
 
-#table-attendances{
+#table-attendances {
   th {
-    font-weight: normal;
+    vertical-align: middle;
+    text-align: center;
   }
   td {
-    text-align: middle;
+    vertical-align: middle;
+    text-align: center;
   }
-  tr>th.bottom{
-    vertical-align: bottom;
-  }
-}
-
-.edit-button {
-  //margin-top: 10px;
-  //margin-bottom: 10px;
-}
-
-.btn-attendance {
-  width: 100%;
 }
 
 .sun {
@@ -104,4 +78,53 @@
 
 .btn-basic-info--edit {
   margin-top: 10px;
+}
+
+/* 勤怠表示ページ */
+
+.user-table {
+  tr>td{
+    text-align: middle;
+    //font-weight: bold;
+  }
+  tr>td.work-time {
+    vertical-align: bottom;
+  }
+  tr>td.basic-time {
+    vertical-align: bottom;
+  }
+  tr>td.first-day {
+    vertical-align: bottom;
+  }
+}
+
+.edit-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#table-attendances{
+  th {
+    text-align: middle;
+    font-weight: normal;
+  }
+  td {
+    text-align: middle;
+  }
+  tr>th.date{
+    vertical-align: bottom;
+  }
+  tr>th.week{
+    vertical-align: bottom;
+  }
+  tr>th.working-times{
+    vertical-align: bottom;
+  }
+  tr>th.note{
+    vertical-align: bottom;
+  }
+}
+
+.btn-attendance {
+  width: 100%;
 }
