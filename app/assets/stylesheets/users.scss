@@ -33,9 +33,11 @@
 #table-attendances{
   th {
     font-weight: normal;
+    text-align: center;
   }
   td {
-    text-align: middle;
+    text-align: center;
+    vertical-align: middle;
   }
   tr>th.bottom{
     vertical-align: bottom;
@@ -43,11 +45,6 @@
   tr>td.total_working_times {
   vertical-align: top;
   }
-}
-
-.edit-button {
-  //margin-top: 10px;
-  //margin-bottom: 10px;
 }
 
 .btn-attendance {

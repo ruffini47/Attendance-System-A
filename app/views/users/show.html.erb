@@ -25,11 +25,11 @@
 
 <div class="btn-users-show">
   <div>
-    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary edit-button" %>
+    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
     <%= link_to "CSV出力", '#', class: "btn btn-primary edit-button" %>
   </div>
   <div>
-    <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary edit-button" %>
+    <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary" %>
   </div>
 </div>
 
@@ -95,19 +95,19 @@
           <% else %>
             <td><%= $days_of_the_week[day.worked_on.wday] %></td>
           <% end %>
-          <td><%= hour_00(day.started_at.hour) if day.started_at.present? %></td>
-          <td><%= min_15(day.started_at) if day.started_at.present? %></td>
+          <td><%= day.started_at.hour if day.started_at.present? %></td>
+          <td><%= day.started_at.min.to_s.rjust(2,'0') if day.started_at.present? %></td>
           <td>
             <% if btn_text = attendance_state(day) %>
-              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
+              <%= link_to "#{btn_text}", user_attendance_path(@user, day, month: true), method: :patch, class: "btn btn-default btn-attendance" %>
             <% end %>
           </td>
-          <td><%= hour_00(day.finished_at.hour) if day.finished_at.present? %></td>
-          <td><%= min_15(day.finished_at) if day.finished_at.present? %></td>
+          <td><%= day.finished_at.hour if day.finished_at.present? %></td>
+          <td><%= day.finished_at.min.to_s.rjust(2,'0') if day.finished_at.present? %></td>
           <td></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
-              <%= str_times = working_times_15(day.started_at, day.finished_at) %>
+              <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
@@ -131,7 +131,7 @@
           <%= form_for @user do |f| %>
             <%= f.label "所属長承認 未", class:"control-label" %>
             <% f.text_field :name , class:"control-label" %>
-            <%= f.collection_select :admin, User.where(admin:true), :id, :name, {:include_blank => true},  {class:"form-control"} %>
+            <%= f.collection_select :superior, User.where(superior:true), :id, :name, {:include_blank => true},  {class:"form-control"} %>
             <%= f.submit '申請', class: "btn btn-primary btn-block request"%>
           <% end %>
         </td>
