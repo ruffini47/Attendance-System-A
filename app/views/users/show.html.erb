@@ -50,22 +50,22 @@
   <table class="table table-bordered table-condensed table-hover" style="table-layout:fixed" id="table-attendances">
     <thead>
       <colgroup>
-        <col style='width:30px;background-color:#9370db'>
-        <col style='width:20px;background-color:#5487f6'>
-        <col style='width:20px;background-color:#90ee90'>
-        <col style='width:10px;background-color:#eee8aa'>
-        <col style='width:10px;background-color:#6070d9'>
-        <col style='width:20px;background-color:#0a68b8'>
-        <col style='width:10px;background-color:#92d4df'>
-        <col style='width:10px;background-color:#2e48f9'>
-        <col style='width:5px; background-color:#347b2f'>
-        <col style='width:25px;background-color:#a329d3'>
-        <col style='width:15px;background-color:#f443fe'>
-        <col style='width:20px;background-color:#439ea0'>
-        <col style='width:20px;background-color:#934a29'>
-        <col style='width:40px;background-color:#92c54b'>
-        <col style='width:45px;background-color:#a2fb23'>
-        <col style='width:50px;background-color:#0f783c'>
+        <col style='width:30px;'>
+        <col style='width:20px;'>
+        <col style='width:20px;'>
+        <col style='width:10px;'>
+        <col style='width:10px;'>
+        <col style='width:20px;'>
+        <col style='width:10px;'>
+        <col style='width:10px;'>
+        <col style='width:5px;'>
+        <col style='width:25px;'>
+        <col style='width:15px;'>
+        <col style='width:20px;'>
+        <col style='width:20px;'>
+        <col style='width:40px;'>
+        <col style='width:45px;'>
+        <col style='width:50px;'>
       </colgroup>
       <tr>
         <th rowspan="3" class="bottom">残業申請</th>
@@ -139,10 +139,18 @@
     <tfoot>
       <!--rowspan:縦結合、colspan:横結合-->
       <tr>
-        <td colspan="2"><%= format_basic_info(@user.basic_time).to_f * @worked_sum %></td>
+        <td></td>
+        <td colspan="2"></td>
+        <td colspan="6" class="total_working_times"><%= format("%.2f", @total_working_times.to_f) %></td>
         <td colspan="6"></td>
-        <td colspan="1"><%= format("%.2f", @total_working_times.to_f) %></td>
-        <td>所属長承認</td>
+        <td>
+          <%= form_for @user do |f| %>
+            <%= f.label "所属長承認 未", class:"control-label" %>
+            <% f.text_field :name , class:"control-label" %>
+            <%= f.collection_select :admin, User.where(admin:true), :id, :name, {:include_blank => true},  {class:"form-control"} %>
+            <%= f.submit '申請', class: "btn btn-primary btn-block request"%>
+          <% end %>
+        </td>
       </tr>
     </tfoot>
   </table>

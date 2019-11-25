@@ -40,6 +40,9 @@
   tr>th.bottom{
     vertical-align: bottom;
   }
+  tr>td.total_working_times {
+  vertical-align: top;
+  }
 }
 
 .edit-button {
@@ -57,6 +60,10 @@
 
 .sat {
   color: blue;
+}
+
+.request {
+  margin-top: 10px;
 }
 
 /* 入力フォーム */
