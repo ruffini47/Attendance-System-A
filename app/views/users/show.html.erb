@@ -3,17 +3,9 @@
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td>
-        <% if @month == true %>
-          <%= link_to "←", user_path(@user, date: @first_day.prev_month.beginning_of_month, month: true), class: "btn btn-default btn-primary" %>
-        <% elsif @month == false %>
-          <%= link_to "←", user_path(@user, date: @first_day.prev_week.beginning_of_week, month: false), class: "btn btn-default btn-primary" %>
-        <% end %>
+        <%= link_to "←", user_path(@user, date: @first_day.prev_month.beginning_of_month), class: "btn btn-default btn-primary" %>
       　<%= l(@first_day, format: :middle) %>時間管理表
-      　<% if @month == true %>
-      　   <%= link_to "→", user_path(@user, date: @first_day.next_month.beginning_of_month, month: true), class: "btn btn-default btn-primary" %>
-        <% elsif @month == false %>
-          <%= link_to "→", user_path(@user, date: @first_day.next_week.beginning_of_week, month: false), class: "btn btn-default btn-primary" %>
-        <% end %>
+      　<%= link_to "→", user_path(@user, date: @first_day.next_month.beginning_of_month), class: "btn btn-default btn-primary" %>
       </td>
       <td class="work-time">指定勤務開始時間　<%= format_basic_info(@user.work_start_time) %><br>
                             指定勤務終了時間　<%= format_basic_info(@user.work_finish_time) %></td>
@@ -32,17 +24,13 @@
 </div>
 
 <div class="btn-users-show">
-  <% if @month == true %>
-    <div>
-      <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day, month: true), class: "btn btn-primary edit-button" %>
-      <%= link_to "CSV出力", '#', class: "btn btn-primary edit-button" %>
-    </div>
-    <div>
-      <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary edit-button" %>
-    </div>
-  <% elsif @month == false %>
-    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day, month: false), class: "btn btn-primary edit-button" %>
-  <% end %>
+  <div>
+    <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary edit-button" %>
+    <%= link_to "CSV出力", '#', class: "btn btn-primary edit-button" %>
+  </div>
+  <div>
+    <%= link_to "勤怠修正ログ（承認済）", '#', class: "btn btn-primary edit-button" %>
+  </div>
 </div>
 
 <div>
@@ -111,11 +99,7 @@
           <td><%= min_15(day.started_at) if day.started_at.present? %></td>
           <td>
             <% if btn_text = attendance_state(day) %>
-              <% if @month == true %>
-                <%= link_to "#{btn_text}", user_attendance_path(@user, day, month: true), method: :patch, class: "btn btn-default btn-attendance" %>
-              <% elsif @month == false %>
-                <%= link_to "#{btn_text}", user_attendance_path(@user, day, month: false), method: :patch, class: "btn btn-default btn-attendance" %>
-              <% end %>
+              <%= link_to "#{btn_text}", user_attendance_path(@user, day), method: :patch, class: "btn btn-default btn-attendance" %>
             <% end %>
           </td>
           <td><%= hour_00(day.finished_at.hour) if day.finished_at.present? %></td>

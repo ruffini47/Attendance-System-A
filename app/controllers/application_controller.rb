@@ -39,46 +39,22 @@ class ApplicationController < ActionController::Base
   # beforeフィルター
     
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
-  def set_one_month
-    if params[:date].nil? || params[:month].nil?
-      @first_day = Date.current.beginning_of_month
-      @last_day = @first_day.end_of_month
-      @month = true
-    elsif params[:month] == "true"
-      @first_day = params[:date].to_date.beginning_of_month
-      @last_day = @first_day.end_of_month
-      @month = true
-    elsif params[:month] == "false"
-      @first_day = params[:date].to_date.beginning_of_week
-      @last_day = @first_day.end_of_week
-      @month = false
-    end
-    
-    one_month = [*@first_day..@last_day] # 対象の月の日数を代入します。  
+  def set_one_month 
+    @first_day = params[:date].nil? ?
+    Date.current.beginning_of_month : params[:date].to_date
+    @last_day = @first_day.end_of_month
+    one_month = [*@first_day..@last_day] # 対象の月の日数を代入します。
     # ユーザーに紐付く一ヶ月分のレコードを検索し取得します。
-
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
-    
-    if one_month.count > @attendances.count # それぞれの件数（日数）が一致するか評価します。
+
+    unless one_month.count == @attendances.count # それぞれの件数（日数）が一致するか評価します。
       ActiveRecord::Base.transaction do # トランザクションを開始します。
         # 繰り返し処理により、1ヶ月分の勤怠データを生成します。
-        one_month.each { |day|  
-          if day >= @first_day && day <= @last_day
-          # if @first_day <= day <= @last_day
-            hit = false
-            @user.attendances.each do |d|
-              if day == d.worked_on
-                hit = true
-              end
-            end
-            if hit == false
-              @user.attendances.create!(worked_on: day)
-            end
-          end
-        }
+        one_month.each { |day| @user.attendances.create!(worked_on: day) }
       end
-      @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     end
+
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url

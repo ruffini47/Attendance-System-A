@@ -1,23 +1,8 @@
 <% provide(:title, @user.name) %>
-      <!--  <% @user.attendances.each do |day| %>
-          <%= day.worked_on %>
-          <% if day.errors.any? %>
-            <div id="error_explanation">
-              <div class="alert alert-danger">
-                入力エラーが<%= day.errors.count %>件ありました。
-              </div>
-              <ul>
-                <% day.errors.full_messages.each do |msg| %>
-                  <li><%= msg %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
-        <% end %>-->
-<%= form_with(model: @user, url: attendances_update_one_month_user_path(date: @first_day, month: @month), local: true, method: :patch) do |f| %>
+<%= form_with(model: @user, url: attendances_update_one_month_user_path(date: @first_day), local: true, method: :patch) do |f| %>
   <div>
     <h1>勤怠編集画面</h1>
-    <table class="table table-bordered table-striped table-condensed table-hover" id="table-attendances">
+    <table class="table table-bordered table-condensed table-hover" id="table-attendances">
       <thead>
         <tr>
           <th>日付</th>
@@ -61,7 +46,7 @@
   </div>
 
   <div class="center">
-    <%= link_to "キャンセル", user_path(date: @first_day, month: true), class: "btn btn-default btn-cancel" %>
-    <%= f.submit "編集を保存する" ,class: "btn btn-default btn-save" %>
+    <%= f.submit "まとめて更新", class: "btn btn-lg btn-primary" %>
+    <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-default" %>
   </div>
 <% end %>

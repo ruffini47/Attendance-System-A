@@ -7,7 +7,6 @@ class AttendancesController < ApplicationController
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
   def update
-    @month = params[:month]
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     # 出勤時間が未登録であることを判定します。
@@ -26,18 +25,16 @@ class AttendancesController < ApplicationController
       end
     end
     @first_day = @attendance.worked_on
-    if @month == "true"
-      redirect_to user_url(@user, date: @first_day.beginning_of_month, month: true)
-    elsif @month == "false"
-      redirect_to user_url(@user, date: @first_day.beginning_of_week(:monday), month: false)
-    end
+    
+    redirect_to user_url(@user, date: @first_day.beginning_of_month)
+    
   end
   
   def edit_one_month
   end
   
   def update_one_month
-    @month = params[:month]
+
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
@@ -45,18 +42,11 @@ class AttendancesController < ApplicationController
       end
     end
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
-    if @month == "true"
-      redirect_to user_url(date: params[:date], month: true)
-    elsif @month == "false"
-      redirect_to user_url(date: params[:date], month: true)
-    end
+    
+    redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
       flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-      if @month == "true"
-        redirect_to attendances_edit_one_month_user_url(date: params[:date], month: true)
-      elsif @month == "false"
-        redirect_to attendances_edit_one_month_user_url(date: params[:date], month: true)
-      end
+      redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
   
   private
