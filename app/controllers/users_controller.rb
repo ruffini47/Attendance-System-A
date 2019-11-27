@@ -7,11 +7,13 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: :show
 
   def index
-    if params[:user_key]
-      @users = User.where('name LIKE ?', "%#{params[:user_key]}%").paginate(page: params[:page])
-    else
-      @users = User.paginate(page: params[:page])
-    end
+    @users = User.paginate(page: params[:page])
+  end
+  
+  def import
+    #fileはtmpに自動で一時保存される
+    User.import(params[:file])
+    redirect_to users_url
   end
   
   def show
@@ -47,7 +49,7 @@ class UsersController < ApplicationController
 
   def destroy
     @user.destroy
-    flash[:success] = "#{@user.name}のデータを削除しました。"
+    flash[:success] = "「#{@user.name}」のデータを削除しました。"
     redirect_to users_url
   end
 

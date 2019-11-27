@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
   
   resources :users do
+      
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'
@@ -24,5 +25,8 @@ Rails.application.routes.draw do
       patch 'attendances/update_one_month'
     end
     resources :attendances, only: :update
+    
+    collection { post :import }
+    
   end
 end

@@ -1,41 +1,27 @@
-<% if params[:user_key].nil? || params[:user_key].blank? %>
-  <% provide(:title, 'All Users') %>
-  <h1>全てのユーザ</h1>
-<% else %>
-  <% provide(:title, 'Search Results') %>
-  <h1>検索結果</h1>
+<% provide(:title, 'All Users') %>
+<h1>ユーザー一覧</h1>
+
+<%= form_with url: import_users_path, multipart: true, local: true do |f| %>
+  <%= f.file_field :file, class: "file_field" %>
+  <%= f.submit "CSVをインポート" ,class: "btn btn-primary csv-button", formtarget: "_blank" %>
 <% end %>
-<div id="header">
-  <p class="right">ユーザー名検索</p> 
-  <div id="nav-search">
-    <%= form_with url:users_path, method: :get, local: true do |f| %>
-      <div class="input-group">
-        <%= text_field_tag :user_key, params[:user_key], placeholder: "キーワードを入力...", class: "form-control" %>
-        <span class="input-group-btn">
-          <%= button_tag "検索", name: nil, class: "btn btn-primary" %>
-        </span>
-      </div>
-    <% end %>
-  </div>
-</div>
+
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>
-  <table class="table table-condensed table-hover" id="table-users">
-    <% @users.each do |user| %>
-      <tr>
-        <td><%= link_to user.name, user %>　
-        |　<%= link_to "基本情報編集", edit_basic_info_user_path(user) %>　
-        <% if current_user.admin? && !current_user?(user) %>
-        |　<%= link_to "削除", user, method: :delete,
-                  data: { confirm: "「#{user.name}」を削除してよろしいですか？" } %>
-            <% end %>
-        </td>
-      </tr>
-    <% end %>
-  </table>
+      <p>Example</p>
+      <% @users.each do |user| %>
+        <div class= "user-name">  
+          <%= user.name %>
+        </div>
+        <div>
+          <% if current_user.admin? && !current_user?(user) %>
+            | <%= link_to "削除", user, method: :delete,
+                  data: { confirm: "「#{user.name}」を削除してよろしいですか？" }, class: "btn btn-primary" %>
+          <% end %>
+        </div>
+        <div class= "div-button-edit"> 
+          <%= link_to "編集", '#' , class: "btn btn-primary btn-lg button-edit" %>
+        </div>
+      <% end %>
   <%= will_paginate %>  
 </div>
-
-
-
-
