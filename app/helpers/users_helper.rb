@@ -25,5 +25,5 @@ module UsersHelper
     format("%.2f", fhour_15 - shour_15)
     
   end
-    
+  
 end
