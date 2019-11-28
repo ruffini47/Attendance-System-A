@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :edit_basic_info, :update_basic_info, :destroy]
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :edit_basic_info, :update_basic_info, :destroy]
-  before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:index, :edit_basic_info, :update_basic_info, :destroy]
+  #before_action :correct_user, only: [:edit, :update]
+  before_action :admin_user, only: [:index, :edit, :update, :edit_basic_info, :update_basic_info, :destroy]
   before_action :admin_or_correct_user, only: :show
   before_action :set_one_month, only: :show
 
@@ -69,7 +69,9 @@ class UsersController < ApplicationController
   private
 
     def user_params
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :affiliation, :employee_number, :uid,
+                                    :basic_work_time, :designated_work_start_time, :designated_work_end_time,
+                                    :password, :password_confirmation)
     end
 
     def basic_info_params

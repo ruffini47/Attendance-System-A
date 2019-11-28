@@ -8,9 +8,14 @@ ja:
           id: ID
           name: 名前
           email: メールアドレス
-          department: 所属
-          basic_time: 基本勤務時間
-          work_time: 指定勤務時間
+          affiliation: 所属
+          employee_number: 社員番号
+          uid: カードID
+          basic_work_time: 基本勤務時間
+          designated_work_start_time: 指定勤務開始時間
+          designated_work_end_time: 指定勤務終了時間
+          superior: 上長
+          admin: 管理者
           password: パスワード
           password_confirmation: パスワード確認
           created_at: 作成日
