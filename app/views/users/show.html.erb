@@ -16,7 +16,7 @@
       <td>所属　<%= @user.affiliation.present? ? @user.affiliation : "未所属" %></td>
       <td>氏名　<%= @user.name %></td>
       <td>コード</td>
-      <td>5555</td>
+      <td><%= @user.uid %></td>
       <td>出勤日数　<%= @worked_sum %>日</td>
       <td>締め　<%= l(@last_day, format: :short) %></td>
     </tr>

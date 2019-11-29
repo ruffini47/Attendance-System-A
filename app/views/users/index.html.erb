@@ -18,62 +18,53 @@
               data: { confirm: "「#{user.name}」を削除してよろしいですか？" }, class: "btn btn-primary button-delete" %>
       <% end %>
     </div>
-    <%= form_with model: User.find(user.id), url: user_path(user.id), method: :patch, local: true do |f| %>
-      <%= f.label :name, class: "label-user--edit" %>
-      <%= f.text_field :name, class: "form-control" %>
+    <div class= "div-button-edit"> 
+      <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <!--<h4 class="panel-title">-->
+              <a class="btn btn-primary btn-lg button-edit" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse<%= user.id %>">編集</a>
+            <!--</h4>-->
+          </div>
+          <div id="collapse<%= user.id %>" class="panel-collapse collapse">
+		        <div class = "panel-content">
+              <%= form_with model: User.find(user.id), url: user_path(user.id), method: :patch, local: true do |f| %>
+                <%= f.label :name, class: "label-user--edit" %>
+                <%= f.text_field :name, class: "form-control" %>
     
-      <%= f.label :email, class: "label-user--edit" %>
-      <%= f.email_field :email, class: "form-control" %>
+                <%= f.label :email, class: "label-user--edit" %>
+                <%= f.email_field :email, class: "form-control" %>
     
-      <%= f.label :affiliation, class: "label-user--edit" %>
-      <%= f.text_field :affiliation, class: "form-control" %>
+                <%= f.label :affiliation, class: "label-user--edit" %>
+                <%= f.text_field :affiliation, class: "form-control" %>
     
-      <%= f.label :employee_number, class: "label-user--edit" %>
-      <%= f.number_field :employee_number, class: "form-control" %>
+                <%= f.label :employee_number, class: "label-user--edit" %>
+                <%= f.number_field :employee_number, class: "form-control" %>
     
-      <%= f.label :uid, class: "label-user--edit" %>
-      <%= f.text_field :uid, class: "form-control" %>
+                <%= f.label :uid, class: "label-user--edit" %>
+                <%= f.text_field :uid, class: "form-control" %>
     
-      <%= f.label :password, class: "label-user--edit" %>
-      <%= f.password_field :password, class: "form-control" %>
+                <%= f.label :password, class: "label-user--edit" %>
+                <%= f.password_field :password, class: "form-control" %>
     
-      <%= f.label :basic_work_time, class: "label-user--edit" %>
-      <%= f.time_field :basic_work_time, class: "form-control" %>
+                <%= f.label :basic_work_time, class: "label-user--edit" %>
+                <%= f.time_field :basic_work_time, class: "form-control" %>
     
-      <%= f.label :designated_work_start_time, class: "label-user--edit" %>
-      <%= f.time_field :designated_work_start_time, class: "form-control" %>
+                <%= f.label :designated_work_start_time, class: "label-user--edit" %>
+                <%= f.time_field :designated_work_start_time, class: "form-control" %>
     
-      <%= f.label :designated_work_end_time, class: "label-user--edit" %>
-      <%= f.time_field :designated_work_end_time, class: "form-control" %>
+                <%= f.label :designated_work_end_time, class: "label-user--edit" %>
+                <%= f.time_field :designated_work_end_time, class: "form-control" %>
     
-      <%= f.submit '編集する', class: "btn btn-primary btn-block btn-user--edit" %>
-    <% end %>
+                <%= f.submit '編集する', class: "btn btn-primary btn-block btn-user--edit" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   <% end %>
-<%= will_paginate %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<%= will_paginate %>  
 <!--<div class="panel-group" id="accordion">-->
 <!--<div class="panel panel-default">
           <div class="panel-body">
