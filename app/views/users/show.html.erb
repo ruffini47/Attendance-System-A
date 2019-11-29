@@ -25,9 +25,15 @@
 
 <div>
   <%if @user.superior? %>
-    <p class="infomation">【所属長承認申請のお知らせ】</p>
-    <p class="information">【勤怠変更申請のお知らせ】</p>
-    <p class="information">【残業申請のお知らせ】</p>
+    <div>
+      <%= link_to "【所属長承認申請のお知らせ】", '#', :style=>"color: #000000;"%>
+    </div>
+    <div>
+      <%= link_to "【勤怠変更申請のお知らせ】", '#',  :style=>"color: #000000;" %>
+    </div> 
+    <div>
+      <%= link_to "【残業申請のお知らせ】", '#', :style=>"color: #000000;" %>
+    </div>
   <% end %>
 </div>
 
