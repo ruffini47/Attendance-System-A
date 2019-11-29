@@ -16,6 +16,9 @@ Rails.application.routes.draw do
   # ログアウト
   delete '/logout', to: 'sessions#destroy'
   
+  # 出勤中社員一覧
+  get '/at_work', to: 'attendances#at_work'
+  
   resources :users do
       
     member do

@@ -49,6 +49,15 @@ class AttendancesController < ApplicationController
       redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
   
+  def at_work
+    @users = User.all
+    @attendances =  Attendance.all
+    @attendances =  @attendances.where(worked_on: Date.today)
+    @attendances = @attendances.where.not(started_at: nil)
+    @attendances = @attendances.where(finished_at: nil)
+  end
+  
+  
   private
   
     # 1ヶ月分の勤怠情報を扱います。
