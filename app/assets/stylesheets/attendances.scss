@@ -1,3 +1,6 @@
+ 
+/* 勤怠編集画面 */
+/*
 .btn-cancel {
   width: 180px;
 }
@@ -5,7 +8,7 @@
 .btn-save {
   width: 180px;
 }
-
+*/
 .sun {
   color: red;
 }
@@ -13,3 +16,24 @@
 .sat {
   color: blue;
 }
+
+/* 出勤中社員一覧 */
+
+.at-work-table {
+  tr>td{
+    text-align: center;
+    //font-weight: bold;
+  }
+}
+/*
+  tr>td.work-time {
+    vertical-align: bottom;
+  }
+  tr>td.basic-time {
+    vertical-align: bottom;
+  }
+  tr>td.first-day {
+    vertical-align: bottom;
+  }
+}
+*/

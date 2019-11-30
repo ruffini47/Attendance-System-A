@@ -1,6 +1,22 @@
-<%  @attendances.each do |attendance| %>
-  <% id = attendance.user_id %>
-  <% @user = @users.find(id) %>
-  <%= @user.name %>
-  <%= @user.employee_number %>
-<% end %>
+<% provide(:title, "at_work") %>
+<h1>出勤中社員一覧</h1>
+<div>
+  <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
+    <thead>
+      <tr>
+        <td>社員番号</td>
+        <td>名前</td>
+      </tr>
+    </thead>
+      <tbody>
+      <% @attendances.each do |attendance| %>
+      <tr>
+        <% id = attendance.user_id %>
+        <% @user = @users.find(id) %>
+        <td><%= @user.employee_number %></td>
+        <td><%= @user.name %></td>
+      </tr>  
+      <% end %>
+    </tbody>
+  </table>
+</div>
