@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   
+  #get 'bases/new'
+
   root 'static_pages#home'
 
   # ユーザー作成
@@ -18,6 +20,10 @@ Rails.application.routes.draw do
   
   # 出勤中社員一覧
   get '/at_work', to: 'attendances#at_work'
+  
+# 拠点情報
+  get '/bases', to: 'bases#index'
+  post '/bases', to: 'bases#create'
   
   resources :users do
       
