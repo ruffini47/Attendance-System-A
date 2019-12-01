@@ -24,7 +24,17 @@ Rails.application.routes.draw do
 # 拠点情報
   get '/bases', to: 'bases#index'
   post '/bases', to: 'bases#create'
+  delete '/base/:id', to: 'bases#destroy', as: 'base'
+  patch '/base/:id', to: 'bases#update'
+  put '/base/:id', to: 'bases#update'
   
+  get '/bases/new', to: 'bases#new'
+  get '/bases/:id/edit', to: 'bases#edit', as: 'edit_base'
+  
+#  resources :bases do
+  
+#  end
+
   resources :users do
       
     member do

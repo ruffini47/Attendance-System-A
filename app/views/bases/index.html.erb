@@ -14,8 +14,8 @@
       <tbody>
       <% @bases.each do |base| %>
       <tr>
-        <td><%= link_to "修正", '#', method: :patch, class: "btn btn-primary button-base-edit" %></td>
-        <td><%= link_to "削除", '#', method: :delete,
+        <td><%= link_to "修正", edit_base_path(base.id), method: :get, class: "btn btn-primary button-base-edit" %></td>
+        <td><%= link_to "削除", base_path(base.id), method: :delete,
               data: { confirm: "「#{base.name}」を削除してよろしいですか？" }, class: "btn btn-primary button-base-delete" %></td>
         <td><%= base.number %></td>
         <td><%= base.name %></td>
@@ -29,7 +29,7 @@
   <table class="table table-bordered table-condensed table-striped table-hover bases-add-table">
     <tr>
       <td>
-        <%= link_to "拠点情報追加", '#', method: :patch, class: "btn btn-primary button-base-add" %>
+        <%= link_to "拠点情報追加", bases_new_path, method: :get, class: "btn btn-primary button-base-add" %>
       </td>
     </tr>
   </table>
