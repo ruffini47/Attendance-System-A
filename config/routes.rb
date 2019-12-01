@@ -22,18 +22,18 @@ Rails.application.routes.draw do
   get '/at_work', to: 'attendances#at_work'
   
 # 拠点情報
-  get '/bases', to: 'bases#index'
-  post '/bases', to: 'bases#create'
-  delete '/base/:id', to: 'bases#destroy', as: 'base'
-  patch '/base/:id', to: 'bases#update'
-  put '/base/:id', to: 'bases#update'
+#  get '/bases', to: 'bases#index'
+#  post '/bases', to: 'bases#create'
+#  delete '/base/:id', to: 'bases#destroy', as: 'base'
+#  patch '/base/:id', to: 'bases#update'
+#  put '/base/:id', to: 'bases#update'
   
-  get '/bases/new', to: 'bases#new'
-  get '/bases/:id/edit', to: 'bases#edit', as: 'edit_base'
+#  get '/bases/new', to: 'bases#new'
+#  get '/bases/:id/edit', to: 'bases#edit', as: 'edit_base'
   
-#  resources :bases do
+  resources :bases do
   
-#  end
+  end
 
   resources :users do
       
