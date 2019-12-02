@@ -36,6 +36,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # システム管理権限所有でないかどうか判定します。
+  def not_admin_user
+    if current_user.admin?
+      flash[:danger] = "編集権限がありません。"
+      redirect_to root_path
+    end
+  end
+
   # beforeフィルター
     
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
