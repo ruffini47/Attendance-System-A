@@ -14,9 +14,14 @@
       <tbody>
       <% @bases.each do |base| %>
       <tr>
-        <td><%= link_to "修正", edit_basis_path(base.id), method: :get, class: "btn btn-primary button-base-edit" %></td>
+        <td>
+          <div class="parent clearfix">
+            <div class="left">
+              <%= link_to "修正", edit_basis_path(base.id), method: :get, class: "btn btn-primary button-base-edit" %></td>
+            </div>        
+          </div>
         <td><%= link_to "削除", basis_path(base.id), method: :delete,
-              data: { confirm: "「#{base.name}」を削除してよろしいですか？" }, class: "btn btn-primary button-base-delete" %></td>
+            data: { confirm: "「#{base.name}」を削除してよろしいですか？" }, class: "btn btn-primary " %></td>
         <td><%= base.number %></td>
         <td><%= base.name %></td>
         <td><%= base.attendance_type %></td>
@@ -26,10 +31,12 @@
   </table>
 </div>
 <div>
-  <table class="table table-bordered table-condensed table-striped table-hover bases-add-table">
+  <table class="table table-bordered table-condensed table-striped table-hover">
     <tr>
       <td>
-        <%= link_to "拠点情報追加", new_basis_path, method: :get, class: "btn btn-primary button-base-add" %>
+        <div class="button-base-add">
+          <%= link_to "拠点情報追加", new_basis_path, method: :get, class: "btn btn-primary" %>
+        </div>      
       </td>
     </tr>
   </table>

@@ -1,8 +1,29 @@
 /* 拠点一覧テーブル */
-.bases-table>thead {
+.bases-table{
   text-align: center;
 }
 
-.button-base-delete {
-  text-align: center;
+.left {
+    float: left;
+}
+
+.button-base-edit {
+  width: 100px;
+}
+
+.button-base-add {
+  width: 150px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 10px;
+}
+
+/* _form.html.erb */
+
+.btn-base--create {
+  margin-top: 10px;
+}
+
+.btn-base--edit {
+  margin-top: 10px;
 }
