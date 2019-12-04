@@ -49,8 +49,7 @@
 </div>
 
 <div>
-  <!--<table class="table table-bordered table-striped table-condensed table-hover" id="table-attendances">-->
-  <table class="table table-bordered table-condensed table-hover" style="table-layout:fixed" id="table-attendances">
+  <table class="table table-bordered table-striped table-condensed table-hover" style="table-layout:fixed" id="table-attendances">
     <thead>
       <colgroup>
         <col style='width:30px;'>
@@ -101,7 +100,7 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", '#', class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day), class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <% if day.worked_on.wday == 0 %>
             <td class="sun"><%= $days_of_the_week[day.worked_on.wday] %></td>

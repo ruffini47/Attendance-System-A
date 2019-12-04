@@ -1,0 +1,52 @@
+<% provide(:title, "Overtime application") %>
+<h3>【残業申請】</h3>
+<%= form_with(model: @attendance, url: attendances_overtime_application_user_path(@user.id, @attendance.id), local: true)  do |f| %>
+  <%= f.hidden_field :id, :value => @attendance.id %> <!-- attendancesテーブルのidを渡す -->
+  <%= f.hidden_field :user_id, :value => @user.id %>
+  <div>
+    <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
+      <thead>
+        <tr>
+          <td>日付</td>
+          <td>曜日</td>
+          <td>終了予定時間</td>
+          <td>翌日</td>
+          <td>業務処理内容</td>
+          <td>指示者確認〇</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <%= l(@attendance.worked_on, format: :short) %>
+          </td>  
+          <td>
+            <%= $days_of_the_week[@attendance.worked_on.wday] %>
+          </td>    
+          <td>
+            <div class = "form-group" style="display: inline-flex">
+              <%= f.select :hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
+              <%= f.select :min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
+            </div>
+          </td>
+          <td>
+            <div class = "form-check ">
+              <%= f.check_box :tomorrow, class: "form-check-input"%>
+            </div>
+          </td>
+          <td>
+            <div class = "form-group ">
+              <%= f.text_field :business_processing, class: "form-control" %></td>
+            </div>          
+          <td>
+            <div class = "form-group">
+              <%= f.select :to_superior, User.where(superior: true).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <%= f.submit '変更を送信する', class: "btn btn-primary btn-block btn-overtime_application" %>
+<% end %>
+

@@ -20,20 +20,16 @@ Rails.application.routes.draw do
   
   # 出勤中社員一覧
   get '/at_work', to: 'attendances#at_work'
-  
+
+
 # 拠点情報
-#  get '/bases', to: 'bases#index'
-#  post '/bases', to: 'bases#create'
-#  delete '/base/:id', to: 'bases#destroy', as: 'base'
-#  patch '/base/:id', to: 'bases#update'
-#  put '/base/:id', to: 'bases#update'
-  
-#  get '/bases/new', to: 'bases#new'
-#  get '/bases/:id/edit', to: 'bases#edit', as: 'edit_base'
-  
   resources :bases do
   
   end
+  
+# 残業申請
+  get '/users/:user_id/attendances/:id/overtime_application/', to: 'attendances#edit_overtime_application', as: 'attendances_overtime_application_user'
+  patch '/users/:user_id/attendances/:id/overtime_application/', to: 'attendances#update_overtime_application'
 
   resources :users do
       

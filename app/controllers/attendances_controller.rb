@@ -59,6 +59,22 @@ class AttendancesController < ApplicationController
     @attendances = @attendances.where(finished_at: nil).order(:user_id)
   end
   
+  def edit_overtime_application
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+  end
+  
+  def update_overtime_application
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+    @hour = params[:attendance][:hour]
+    @min = params[:attendance][:min]
+    @tomorrow = params[:attendance][:tomorrow]
+    @business_processing = params[:attendance][:business_processing]
+    @to_superior = params[:attendance][:to_superior]
+    
+    
+  end
   
   private
   
