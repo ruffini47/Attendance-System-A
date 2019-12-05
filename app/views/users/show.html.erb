@@ -33,7 +33,15 @@
       <%= link_to "【勤怠変更申請のお知らせ】", '#',  :style=>"color: #000000;" %>
     </div> 
     <div>
-      <%= link_to "【残業申請のお知らせ】", '#', :style=>"color: #000000;" %>
+      <% n = @user.number_of_overtime_application %>
+      <% if n > 0 %>
+        <%= link_to "【残業申請のお知らせ】", '#', :style=>"color: red;" %>
+        <nav class="g-nav1"
+          <span class="g-nav2"><%= n %>件の通知があります</span>
+        </nav>
+      <% else %>
+        <%= link_to "【残業申請のお知らせ】", '#', :style=>"color: #000000;" %>
+      <% end %>
     </div>
   <% end %>
 </div>
@@ -100,7 +108,7 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day), class: "btn btn-primary" %></td>
+          <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day), remote: true, class: "btn btn-primary" %></td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <% if day.worked_on.wday == 0 %>
             <td class="sun"><%= $days_of_the_week[day.worked_on.wday] %></td>
@@ -153,3 +161,5 @@
     </tfoot>
   </table>
 </div>
+<!--モーダルウインドウ表示-->
+<div id="edit-overtime-application" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

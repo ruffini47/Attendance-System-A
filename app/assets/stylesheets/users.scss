@@ -61,6 +61,24 @@
   margin-top: 10px;
 }
 
+.g-nav1{
+  display:inline-flex;
+  list-style-type: none;
+  padding:0;
+  color: red;
+  font-weight: bold;
+  border: solid 2px red;
+}
+.g-nav2{
+  display:flex;
+  width:auto;
+  margin:10px;
+  padding:10px;
+  align-items:center;
+  justify-content: center;
+}
+
+
 /* 入力フォーム */
 
 .label-signup {

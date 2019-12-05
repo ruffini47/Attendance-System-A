@@ -2,9 +2,8 @@ class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: :edit_one_month
+  before_action :set_one_month, only: [:edit_one_month, :confirm_one_month]
   before_action :not_admin_user, only: [:edit_one_month, :update_one_month]
-  
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
@@ -72,8 +71,16 @@ class AttendancesController < ApplicationController
     @tomorrow = params[:attendance][:tomorrow]
     @business_processing = params[:attendance][:business_processing]
     @to_superior = params[:attendance][:to_superior]
+    user = User.find(@to_superior)
+    user.number_of_overtime_application += 1
+    user.save
+  end
+  
+  def confirm_one_month
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
     
-    
+    redirect_to(user_url(@user.id))
   end
   
   private
