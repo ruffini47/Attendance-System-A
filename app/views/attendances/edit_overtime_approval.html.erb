@@ -1,0 +1,6 @@
+<% @attendances.each do |attendance| %>
+  <% if attendance.overtime_applying == true %>
+    <%= attendance.user_id %>
+    <%= attendance.worked_on %>
+  <% end %>
+<% end %>

@@ -66,6 +66,8 @@ class AttendancesController < ApplicationController
   def update_overtime_application
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
+    @attendance.overtime_applying = true
+    @attendance.save
     @hour = params[:attendance][:hour]
     @min = params[:attendance][:min]
     @tomorrow = params[:attendance][:tomorrow]
@@ -74,6 +76,7 @@ class AttendancesController < ApplicationController
     user = User.find(@to_superior)
     user.number_of_overtime_application += 1
     user.save
+    
   end
   
   def confirm_one_month
@@ -81,6 +84,14 @@ class AttendancesController < ApplicationController
     @attendance = Attendance.find(params[:id])
     
     redirect_to(user_url(@user.id))
+  end
+  
+  def edit_overtime_approval
+    @users = User.all
+    @attendances = Attendance.all
+    
+    
+    
   end
   
   private
