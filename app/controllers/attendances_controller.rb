@@ -64,17 +64,25 @@ class AttendancesController < ApplicationController
   end
   
   def update_overtime_application
+    #require "date"
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @attendance.overtime_applying = true
+    d = DateTime.now
+    year = d.year
+    mon = d.month
+    day = d.day
+    hour = params[:attendance][:hour].to_i
+    min = params[:attendance][:min].to_i
+    d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+    @attendance.scheduled_end_time = d1
+    tomorrow = params[:attendance][:tomorrow]
+    business_processing = params[:attendance][:business_processing]
+    @attendance.business_processing = business_processing
     @attendance.save
-    @hour = params[:attendance][:hour]
-    @min = params[:attendance][:min]
-    @tomorrow = params[:attendance][:tomorrow]
-    @business_processing = params[:attendance][:business_processing]
-    @to_superior = params[:attendance][:to_superior]
-    user = User.find(@to_superior)
-    user.number_of_overtime_application += 1
+    to_superior = params[:attendance][:to_superior]
+    user = User.find(to_superior)
+    user.number_of_overtime_applied += 1
     user.save
     
   end
@@ -90,9 +98,20 @@ class AttendancesController < ApplicationController
     @users = User.all
     @attendances = Attendance.all
     
+    @i = 0
+    @user_id = []
+    @worked_on = []
     
-    
+    @attendances.each do |attendance|
+      if attendance.overtime_applying == true
+        @user_id[@i] = attendance.user_id
+        @worked_on[@i] = attendance.worked_on
+        @i+=1      
+      end
+    end
   end
+  
+  
   
   private
   

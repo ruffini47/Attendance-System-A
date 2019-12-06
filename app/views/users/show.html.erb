@@ -33,7 +33,7 @@
       <%= link_to "【勤怠変更申請のお知らせ】", '#',  :style=>"color: #000000;" %>
     </div> 
     <div>
-      <% n = @user.number_of_overtime_application %>
+      <% n = @user.number_of_overtime_applied %>
       <% if n > 0 %>
         <%= link_to "【残業申請のお知らせ】", attendances_overtime_approval_path, :style=>"color: red;" %>
         <nav class="g-nav1"

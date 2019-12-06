@@ -23,4 +23,11 @@ module AttendancesHelper
     format("%.2f", fhour - shour)
     
   end
+  
+  def short_times(time)
+    hour = time.hour
+    min = time.min
+    
+    format("%02d:%02d", hour, min)
+  end
 end
