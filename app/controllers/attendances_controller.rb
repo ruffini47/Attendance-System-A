@@ -99,14 +99,52 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.all
     
     @i = 0
+    @j = 0
     @user_id = []
-    @worked_on = []
+    @attendance_m = [][]
+    hit = false
+    
+    i_max = 0
+    jj = 0
+    j_max = 0
     
     @attendances.each do |attendance|
       if attendance.overtime_applying == true
-        @user_id[@i] = attendance.user_id
-        @worked_on[@i] = attendance.worked_on
-        @i+=1      
+        @user_id.each do |user_id|
+          if attendance.user_id == user_id
+            hit = true        
+          end
+        end
+        if hit == false
+          i_max += 1
+          jj = 0
+        end
+        jj += 1
+        j_max[i_max] = 
+        hit = false
+      end
+    end
+    
+    
+    
+    @i = 0
+    @j[0] = 0
+    
+    @attendances.each do |attendance|
+      if attendance.overtime_applying == true
+        @user_id.each do |user_id|
+          if attendance.user_id == user_id
+            hit = true        
+          end
+        end
+        if hit == false
+          @user_id[@i] = attendance.user_id
+          @i += 1
+          @j[@i] = 0
+        end
+        @attendance_m[@i,@j] = attendance
+        @j[@i] += 1
+        hit = false
       end
     end
   end

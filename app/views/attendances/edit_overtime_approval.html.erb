@@ -34,7 +34,7 @@
               <td>
                 <%= short_times(user.designated_work_end_time) %>
               </td>
-              <td></td>
+              <td><%= format("%.2f", (attendance.scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
               <td>
                 <%= attendance.business_processing %>
               </td>
