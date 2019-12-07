@@ -1,53 +1,55 @@
 <%= form_with(url: '#', local: true)  do |f| %>
-  <% @attendances.each do |attendance| %>
-    <% if attendance.overtime_applying == true %>
-      <%= f.hidden_field :id, :value => attendance.id %> <!-- attendancesテーブルのidを渡す -->
-      <% user = User.find(attendance.user_id) %>
-      <%= f.hidden_field :user_id, :value => user.id %>
-      <h3><%= user.name %>からの【残業申請】</h3>
-      <div>
-        <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
-          <thead>
-            <tr>
-              <td>日付</td>
-              <td>曜日</td>
-              <td>終了予定時間</td>
-              <td>指定勤務終了時間</td>
-              <td>時間外時間</td>
-              <td>業務処理内容</td>
-              <td>指示者確認〇</td>
-              <td>変更</td>
-              <td>勤怠を確認する</td>
-            </tr>
-          </thead>
-          <tbody>
+  <% for n in 0..(@user_id_number-1) do %>
+    <% i = @count_max_sum[n] %>
+    <% user = User.find(@attendance[i].user_id) %>
+    <%= f.hidden_field :user_id, :value => user.id %>
+    <h3><%= user.name %>からの【残業申請】</h3>
+    <div>
+      <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
+        <thead>
+          <tr>
+            <td>日付</td>
+            <td>曜日</td>
+            <td>終了予定時間</td>
+            <td>指定勤務終了時間</td>
+            <td>時間外時間</td>
+            <td>業務処理内容</td>
+            <td>指示者確認〇</td>
+            <td>変更</td>
+            <td>勤怠を確認する</td>
+          </tr>
+        </thead>
+        <tbody>
+          <% for m in 0..@count_max[n]-1 do %>
+            <% i = @count_max_sum[n] + m %>
+            <%= f.hidden_field :id, :value => @attendance[i].id %> <!-- attendancesテーブルのidを渡す -->
             <tr>
               <td>
-                <%= l(attendance.worked_on, format: :short) %>
+                <%= l(@attendance[i].worked_on, format: :short) %>
               </td>  
               <td>
-                <%= $days_of_the_week[attendance.worked_on.wday] %>
+                <%= $days_of_the_week[@attendance[i].worked_on.wday] %>
               </td>    
               <td>
-                <%= short_times(attendance.scheduled_end_time) %>
+                <%= short_times(@attendance[i].scheduled_end_time) %>
               </td>
               <td>
                 <%= short_times(user.designated_work_end_time) %>
               </td>
-              <td><%= format("%.2f", (attendance.scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
+              <td><%= format("%.2f", (@attendance[i].scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
               <td>
-                <%= attendance.business_processing %>
+                <%= @attendance[i].business_processing %>
               </td>
               <td></td>
               <td></td>
               <td>
-                <%= link_to '確認', attendance_confirm_one_month_user_url(user.id,attendance.id), class: "btn btn-primary btn-one-month-confirmation" %>
+                <%= link_to '確認', attendance_confirm_one_month_user_url(user.id,@attendance[i].id), class: "btn btn-primary btn-one-month-confirmation" %>
               </td>
             </tr>
-          </tbody>
-        </table>
-      </div>
-    <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% end %>
   <%= f.submit '変更を送信する', class: "btn btn-primary btn-block btn-overtime_application" %>
 <% end %>

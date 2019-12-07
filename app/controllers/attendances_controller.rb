@@ -98,58 +98,104 @@ class AttendancesController < ApplicationController
     @users = User.all
     @attendances = Attendance.all
     
-    @i = 0
-    @j = 0
-    @user_id = []
-    @attendance_m = [][]
+    a = []
+    @attendance = []
+
+    i = 0
+    n = 0
+    user_ids = []
+    @attendances.each do |attendance|
+      if attendance.overtime_applying  == true
+        user_ids[0] = attendance.user_id
+      end
+    end
+    
     hit = false
-    
-    i_max = 0
-    jj = 0
-    j_max = 0
-    
     @attendances.each do |attendance|
       if attendance.overtime_applying == true
-        @user_id.each do |user_id|
+        n += 1
+        user_ids.each do |user_id|
           if attendance.user_id == user_id
-            hit = true        
+            hit = true
+            #puts "hit"
           end
         end
         if hit == false
-          i_max += 1
-          jj = 0
+          #puts "not hit"
+          i += 1
+          user_ids[i] = attendance.user_id
         end
-        jj += 1
-        j_max[i_max] = 
         hit = false
+        a.push([attendance.user_id,attendance.worked_on])
+        @attendance.push(attendance)
       end
     end
     
-    
-    
-    @i = 0
-    @j[0] = 0
-    
-    @attendances.each do |attendance|
-      if attendance.overtime_applying == true
-        @user_id.each do |user_id|
-          if attendance.user_id == user_id
-            hit = true        
+    @user_id_number = user_ids.length
+    puts "user_id_number = #{@user_id_number}"
+ 
+    puts "n= #{n}"
+
+    count = []
+
+    for i in 0..n-1
+      count.push(0)
+    end
+
+    for i in 0..n-1 do
+      for j in 0..n-1
+        if a[i][0] != a[j][0]
+          count[i] += 1
+        end
+      end
+    end
+
+    for i in 0..n-1 do
+      count[i] = n - count[i]
+    end
+
+    p count
+
+    @count_max = []
+
+    isBreak = false
+    i = 0
+    for m in 0..@user_id_number-1 do
+      for j in 1..n-1 do
+        #puts "m = #{m} i = #{i} j = #{j}"
+        if !a[i + j].nil?
+          isBreak = false 
+          if a[i][0] != a[i + j][0]
+            @count_max.push(j)
+            i += j
+            isBreak = true
+            break
           end
+        elsif !(a[i + j - 1].nil?) && a[i + j].nil?
+          @count_max.push(j)
         end
-        if hit == false
-          @user_id[@i] = attendance.user_id
-          @i += 1
-          @j[@i] = 0
-        end
-        @attendance_m[@i,@j] = attendance
-        @j[@i] += 1
-        hit = false
+        break if isBreak
       end
     end
+
+
+    puts "@count_max ="
+    p @count_max
+
+    puts "count_maxが答えだ！！"
+
+    @count_max_sum = []
+    @count_max_sum[0] = 0
+    #count_max_sum[1] = count_max[0]
+    #count_max_sum[2] = count_max[0] + count_max[1]
+    #count_max_sum[3] = count_max[0] + count_max[1] +count_max[2]
+    for k in 1..@user_id_number-1 do
+      @count_max_sum[k] = @count_max_sum[k-1] + @count_max[k-1]
+    end
+
   end
-  
-  
+
+
   
   private
   
