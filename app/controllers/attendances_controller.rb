@@ -65,9 +65,12 @@ class AttendancesController < ApplicationController
   
   def update_overtime_application
     #require "date"
+    # @userは申請元ユーザ
     @user = User.find(params[:user_id])
+    # @attendanceは申請元ユーザの@attendance
     @attendance = Attendance.find(params[:id])
     @attendance.overtime_applying = true
+    
     d = DateTime.now
     year = d.year
     mon = d.month
@@ -79,11 +82,22 @@ class AttendancesController < ApplicationController
     tomorrow = params[:attendance][:tomorrow]
     business_processing = params[:attendance][:business_processing]
     @attendance.business_processing = business_processing
-    @attendance.save
+
     to_superior = params[:attendance][:to_superior]
+    # userは申請先ユーザ
     user = User.find(to_superior)
     user.number_of_overtime_applied += 1
+    
+    # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
+    @attendance.to_superior_user_id = user.id
     user.save
+    @attendance.save
+    #以下無駄コード
+    # attendanceは申請先のattendance
+    #attendance = Attendance.where(user_id: user.id).where(worked_on: @attendance.worked_on).first
+    #attendance.overtime_applied = true
+    
+    
     
   end
   
@@ -105,14 +119,16 @@ class AttendancesController < ApplicationController
     n = 0
     user_ids = []
     @attendances.each do |attendance|
-      if attendance.overtime_applying  == true
+      # 申請元のattendanceがapplyしていて、かつ、申請元のattendanceのto_superioro_user_idカラムが申請先のユーザidを指すものだけ取り出す
+      
+      if attendance.overtime_applying  == true && attendance.to_superior_user_id == params[:id].to_i
         user_ids[0] = attendance.user_id
       end
     end
     
     hit = false
     @attendances.each do |attendance|
-      if attendance.overtime_applying == true
+      if attendance.overtime_applying == true && attendance.to_superior_user_id == params[:id].to_i
         n += 1
         user_ids.each do |user_id|
           if attendance.user_id == user_id

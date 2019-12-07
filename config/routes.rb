@@ -33,7 +33,7 @@ Rails.application.routes.draw do
 # 残業申請_1カ月勤怠確認
   get '/users/:user_id/attendance/:id/confirm_one_month/', to: 'attendances#confirm_one_month', as: 'attendance_confirm_one_month_user'
 # 残業承認
-  get '/attendance/overtime_approval/', to: 'attendances#edit_overtime_approval', as: 'attendances_overtime_approval'
+  get '/users/:id/attendance/overtime_approval/', to: 'attendances#edit_overtime_approval', as: 'attendances_overtime_approval_user'
 
   resources :users do
       
