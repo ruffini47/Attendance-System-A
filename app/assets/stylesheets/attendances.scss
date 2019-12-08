@@ -18,10 +18,27 @@
   }
 }
 
-/* 残業申請モーダルウィンドウ */
+/* 残業申請モーダルウィンドウ 残業申請承認モーダルウィンドウ */
 
 .title-center {
   text-align: center;
+}
+
+.center {
+  float: center;
+  margin-bottom: 30px;
+}
+
+.btn-overtime_application {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 20%;
+}
+
+.btn-overtime_approval {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 20%;
 }
 
 /* 基本情報編集モーダルウインドウ */
