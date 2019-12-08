@@ -176,24 +176,27 @@ class AttendancesController < ApplicationController
 
     isBreak = false
     i = 0
-    for m in 0..@user_id_number-1 do
-      for j in 1..n-1 do
-        #puts "m = #{m} i = #{i} j = #{j}"
-        if !a[i + j].nil?
-          isBreak = false 
-          if a[i][0] != a[i + j][0]
+    if @user_id_number == 1
+      @count_max.push(n)
+    else
+      for m in 0..@user_id_number-1 do
+        for j in 1..n-1 do
+          #puts "m = #{m} i = #{i} j = #{j}"
+          if !a[i + j].nil?
+            isBreak = false 
+            if a[i][0] != a[i + j][0]
+              @count_max.push(j)
+              i += j
+              isBreak = true
+              break
+            end
+          elsif !(a[i + j - 1].nil?) && a[i + j].nil?
             @count_max.push(j)
-            i += j
-            isBreak = true
-            break
           end
-        elsif !(a[i + j - 1].nil?) && a[i + j].nil?
-          @count_max.push(j)
+          break if isBreak
         end
-        break if isBreak
       end
     end
-
 
     puts "@count_max ="
     p @count_max
