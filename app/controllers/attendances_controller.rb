@@ -1,9 +1,9 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application, :edit_overtime_approval]
+  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application]
   before_action :set_one_month, only: [:edit_one_month, :confirm_one_month]
-  before_action :not_admin_user, only: [:edit_one_month, :update_one_month]
+  before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application, :edit_overtime_approval]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
@@ -92,11 +92,6 @@ class AttendancesController < ApplicationController
     @attendance.to_superior_user_id = user.id
     user.save
     @attendance.save
-    #以下無駄コード
-    # attendanceは申請先のattendance
-    #attendance = Attendance.where(user_id: user.id).where(worked_on: @attendance.worked_on).first
-    #attendance.overtime_applied = true
-    
     
     
   end
@@ -214,7 +209,11 @@ class AttendancesController < ApplicationController
 
   end
 
-
+  def update_overtime_approval
+    @user = User.find(params[:id])
+    instructor_confirmation = params[:attendance][:instructor_confirmation]
+    debugger
+  end
   
   private
   

@@ -1,6 +1,6 @@
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
-    <%= form_with(url: '#', local: true)  do |f| %>
+    <%= form_with(model: @attendance, url: attendances_overtime_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
       <% for n in 0..(@user_id_number-1) do %>
         <% i = @count_max_sum[n] %>
         <% user = User.find(@attendance[i].user_id) %>

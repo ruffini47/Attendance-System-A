@@ -34,7 +34,8 @@ Rails.application.routes.draw do
   get '/users/:user_id/attendance/:id/confirm_one_month/', to: 'attendances#confirm_one_month', as: 'attendance_confirm_one_month_user'
 # 残業承認
   get '/users/:id/attendance/overtime_approval/', to: 'attendances#edit_overtime_approval', as: 'attendances_overtime_approval_user'
-
+  patch '/users/:id/attendance/overtime_approval/', to: 'attendances#update_overtime_approval'
+  
   resources :users do
       
     member do
