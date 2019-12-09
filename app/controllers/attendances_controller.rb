@@ -207,12 +207,18 @@ class AttendancesController < ApplicationController
       @count_max_sum[k] = @count_max_sum[k-1] + @count_max[k-1]
     end
 
+    
+
   end
 
   def update_overtime_approval
     @user = User.find(params[:id])
     instructor_confirmation = params[:attendance][:instructor_confirmation]
+    user = User.find(params[:attendance][:user_id])
+    attendance = Attendance.find(params[:id])
     debugger
+    
+    
   end
   
   private
