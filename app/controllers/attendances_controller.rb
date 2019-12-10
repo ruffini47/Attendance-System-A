@@ -96,6 +96,7 @@ class AttendancesController < ApplicationController
     user.save
     @attendance.save
     
+    redirect_to user_url(@user.id)
     
   end
   
@@ -118,7 +119,6 @@ class AttendancesController < ApplicationController
     user_ids = []
     @attendances.each do |attendance|
       # 申請元のattendanceがapplyしていて、かつ、申請元のattendanceのto_superioro_user_idカラムが申請先のユーザidを指すものだけ取り出す
-      
       if attendance.overtime_applying  == true && attendance.to_superior_user_id == params[:id].to_i
         user_ids[0] = attendance.user_id
       end
@@ -224,7 +224,7 @@ class AttendancesController < ApplicationController
     attendance = []
     instructor_confirmation = []
     #user[i]はi番目の申請元ユーザ
-    #attendance[i]はi番目のattendance
+    #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])      
@@ -248,40 +248,45 @@ class AttendancesController < ApplicationController
     end
       
     for i in 0..n-1 do
-        # 残業承認済み削除ループ
-        loop do
-          if !attendance[i].result.nil?
-            if attendance[i].result.include?("残業承認済")
-              attendance[i].result.slice!("残業承認済")
-            else
-              break
-            end
+      # 残業承認済み削除ループ
+      loop do
+        if !attendance[i].result.nil?
+          if attendance[i].result.include?("残業承認済")
+            attendance[i].result.slice!("残業承認済")
           else
             break
           end
+        else
+          break
         end
+      end
         # 残業否認削除ループ
-        loop do
-          if !attendance[i].result.nil?
-            if attendance[i].result.include?("残業否認")
-              attendance[i].result.slice!("残業否認")
-            else
-              break
-            end
+      loop do
+        if !attendance[i].result.nil?
+          if attendance[i].result.include?("残業否認")
+            attendance[i].result.slice!("残業否認")
           else
             break
           end
+        else
+          break
         end
-        
-          if attendance[i].result.nil?
-            attendance[i].result = result[i]  
-          else
-            attendance[i].result.insert(0,result[i])
-          end
-          attendance[i].save
-        
+      end
+          
+      if attendance[i].result.nil?
+        attendance[i].result = result[i]  
+      else
+        attendance[i].result.insert(0,result[i])
+      end
+      if instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3
+        @user.number_of_overtime_applied -= 1
+        attendance[i].overtime_applying = false
+      end
+      @user.save
+      attendance[i].save
     end
     
+    redirect_to user_url(@user.id)
     
   end
   
