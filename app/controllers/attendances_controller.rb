@@ -1,9 +1,12 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application, :edit_overtime_approval]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application,
+                                        :edit_overtime_approval, :update_overtime_approval]
+  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application,
+                                               :update_overtime_application]
   before_action :set_one_month, only: [:edit_one_month, :confirm_one_month]
-  before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application, :edit_overtime_approval]
+  before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
+                                        :edit_overtime_approval, :update_overtime_approval]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
@@ -108,7 +111,7 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.all
     
     a = []
-    @attendance = []
+    @attendancesb = []
 
     i = 0
     n = 0
@@ -138,7 +141,7 @@ class AttendancesController < ApplicationController
         end
         hit = false
         a.push([attendance.user_id,attendance.worked_on])
-        @attendance.push(attendance)
+        @attendancesb.push(attendance)
       end
     end
     
@@ -212,11 +215,72 @@ class AttendancesController < ApplicationController
   end
 
   def update_overtime_approval
+    # 申請先上長ユーザが@user
     @user = User.find(params[:id])
-    instructor_confirmation = params[:attendance][:instructor_confirmation]
-    user = User.find(params[:attendance][:user_id])
-    attendance = Attendance.find(params[:id])
-    debugger
+    
+    # nは申請元の件数
+    n = params[:attendance][:id].length
+    user = []
+    attendance = []
+    instructor_confirmation = []
+    #user[i]はi番目の申請元ユーザ
+    #attendance[i]はi番目のattendance
+    for i in 0..n-1 do
+      user[i] = User.find(params[:attendance][:user_id][i])
+      attendance[i] = Attendance.find(params[:attendance][:id][i])      
+      instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i    
+    end
+    
+    inst_hash = Attendance.instructor_confirmations
+    result = []
+    #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
+    for i in 0..n-1 do
+      result[i] = inst_hash.invert[instructor_confirmation[i]]
+    end
+    for i in 0..n-1 do
+      if instructor_confirmation[i] == 2
+        result[i] = "残業承認済"
+      elsif instructor_confirmation[i] == 3
+        result[i] = "残業否認"
+      else
+        result[i] = ""
+      end
+    end
+      
+    for i in 0..n-1 do
+        # 残業承認済み削除ループ
+        loop do
+          if !attendance[i].result.nil?
+            if attendance[i].result.include?("残業承認済")
+              attendance[i].result.slice!("残業承認済")
+            else
+              break
+            end
+          else
+            break
+          end
+        end
+        # 残業否認削除ループ
+        loop do
+          if !attendance[i].result.nil?
+            if attendance[i].result.include?("残業否認")
+              attendance[i].result.slice!("残業否認")
+            else
+              break
+            end
+          else
+            break
+          end
+        end
+        
+          if attendance[i].result.nil?
+            attendance[i].result = result[i]  
+          else
+            attendance[i].result.insert(0,result[i])
+          end
+          attendance[i].save
+        
+    end
     
     
   end
