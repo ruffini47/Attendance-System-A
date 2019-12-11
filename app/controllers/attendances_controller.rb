@@ -83,8 +83,8 @@ class AttendancesController < ApplicationController
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.scheduled_end_time = d1
     tomorrow = params[:attendance][:tomorrow]
-    business_processing = params[:attendance][:business_processing]
-    @attendance.business_processing = business_processing
+    temp_business_processing = params[:attendance][:temp_business_processing]
+    @attendance.temp_business_processing = temp_business_processing
 
     to_superior = params[:attendance][:to_superior]
     # userは申請先ユーザ
@@ -95,6 +95,7 @@ class AttendancesController < ApplicationController
     @attendance.to_superior_user_id = user.id
     user.save
     @attendance.save
+    
     
     redirect_to user_url(@user.id)
     
@@ -210,7 +211,9 @@ class AttendancesController < ApplicationController
       @count_max_sum[k] = @count_max_sum[k-1] + @count_max[k-1]
     end
 
-    
+    # ここまではtemp_business_processing 行っている。
+    #@attendancesb.first.temp_business_processing
+    debugger
 
   end
 
