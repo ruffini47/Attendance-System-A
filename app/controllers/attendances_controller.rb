@@ -96,7 +96,6 @@ class AttendancesController < ApplicationController
     user.save
     @attendance.save
     
-    
     redirect_to user_url(@user.id)
     
   end
@@ -236,6 +235,8 @@ class AttendancesController < ApplicationController
     
     inst_hash = Attendance.instructor_confirmations
     result = []
+    scheduled_end_time_hour = []
+    scheduled_end_time_min = []
     #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
     for i in 0..n-1 do
       result[i] = inst_hash.invert[instructor_confirmation[i]]
@@ -286,6 +287,8 @@ class AttendancesController < ApplicationController
         attendance[i].overtime_applying = false
         attendance[i].business_processing = attendance[i].temp_business_processing
         attendance[i].temp_business_processing = nil
+        attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
+        attendance[i].temp_scheduled_end_time = nil
       end
       
       @user.save

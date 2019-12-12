@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20191211114720) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "overtime_applying", default: false
-    t.datetime "scheduled_end_time", default: "2019-12-12 09:00:00"
+    t.datetime "scheduled_end_time"
     t.string "business_processing"
     t.integer "to_superior_user_id"
     t.integer "instructor_confirmation", default: 0

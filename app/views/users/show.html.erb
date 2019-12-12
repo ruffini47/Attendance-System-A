@@ -134,8 +134,8 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td></td>
-          <td></td>
+          <td><%= day.scheduled_end_time.hour.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
+          <td><%= day.scheduled_end_time.min.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
           <td></td>
           <td><%= day.business_processing %></td>
           <td><%= day.result %></td>
