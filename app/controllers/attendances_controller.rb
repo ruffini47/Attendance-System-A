@@ -284,11 +284,14 @@ class AttendancesController < ApplicationController
       if instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3
         @user.number_of_overtime_applied -= 1
         attendance[i].overtime_applying = false
+        attendance[i].business_processing = attendance[i].temp_business_processing
+        attendance[i].temp_business_processing = nil
       end
+      
       @user.save
       attendance[i].save
     end
-    
+    debugger
     redirect_to user_url(@user.id)
     
   end
