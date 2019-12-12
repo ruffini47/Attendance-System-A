@@ -81,7 +81,7 @@ class AttendancesController < ApplicationController
     hour = params[:attendance][:hour].to_i
     min = params[:attendance][:min].to_i
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
-    @attendance.scheduled_end_time = d1
+    @attendance.temp_scheduled_end_time = d1
     tomorrow = params[:attendance][:tomorrow]
     temp_business_processing = params[:attendance][:temp_business_processing]
     @attendance.temp_business_processing = temp_business_processing
@@ -291,7 +291,7 @@ class AttendancesController < ApplicationController
       @user.save
       attendance[i].save
     end
-    debugger
+    
     redirect_to user_url(@user.id)
     
   end
