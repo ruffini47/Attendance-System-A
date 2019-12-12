@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 20191211114720) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "overtime_applying", default: false
-    t.datetime "scheduled_end_time", default: "2019-12-11 09:00:00"
+    t.datetime "scheduled_end_time", default: "2019-12-12 09:00:00"
     t.string "business_processing"
     t.integer "to_superior_user_id"
     t.integer "instructor_confirmation", default: 0
@@ -51,9 +51,9 @@ ActiveRecord::Schema.define(version: 20191211114720) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2019-12-10 23:00:00"
-    t.datetime "designated_work_start_time", default: "2019-12-11 00:00:00"
-    t.datetime "designated_work_end_time", default: "2019-12-11 09:00:00"
+    t.datetime "basic_work_time", default: "2019-12-11 23:00:00"
+    t.datetime "designated_work_start_time", default: "2019-12-12 00:00:00"
+    t.datetime "designated_work_end_time", default: "2019-12-12 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
   end

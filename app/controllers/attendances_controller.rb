@@ -213,7 +213,7 @@ class AttendancesController < ApplicationController
 
     # ここまではtemp_business_processing 行っている。
     #@attendancesb.first.temp_business_processing
-    debugger
+    
 
   end
 

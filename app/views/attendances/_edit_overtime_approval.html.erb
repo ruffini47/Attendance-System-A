@@ -42,7 +42,7 @@
                   </td>
                   <td><%= format("%.2f", (@attendancesb[i].scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
                   <td>
-                    <%= @attendancesb[i].business_processing %>
+                    <%= @attendancesb[i].temp_business_processing %>
                   </td>
                   <td>
                     <div class = "form-group">
