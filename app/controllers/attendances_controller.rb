@@ -84,6 +84,8 @@ class AttendancesController < ApplicationController
     @attendance.temp_scheduled_end_time = d1
     @attendance.tomorrow = params[:attendance][:tomorrow].to_i
     
+    change_application = params[:attendance][:change_application].to_i
+    
     temp_business_processing = params[:attendance][:temp_business_processing]
     @attendance.temp_business_processing = temp_business_processing
 
@@ -94,8 +96,11 @@ class AttendancesController < ApplicationController
     
     # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
     @attendance.to_superior_user_id = user.id
-    user.save
-    @attendance.save
+    if change_application == 1
+      user.save
+      @attendance.save
+    end
+    
     
     redirect_to user_url(@user.id)
     
@@ -231,7 +236,7 @@ class AttendancesController < ApplicationController
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])      
-      instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i    
+      instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
     end
     
     inst_hash = Attendance.instructor_confirmations

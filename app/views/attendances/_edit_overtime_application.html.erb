@@ -21,6 +21,7 @@
                 <td>翌日</td>
                 <td>業務処理内容</td>
                 <td>指示者確認〇</td>
+                <td>変更</td>
                 <td>勤怠を確認する</td>
               </tr>
             </thead>
@@ -52,6 +53,11 @@
                     <%= f.select :to_superior, User.where(superior: true).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
                   </div>
                 </td>
+                <td>
+                    <div class = "form-check ">
+                      <%= f.check_box :change_application,  class: "form-check-input" %>
+                    </div>
+                  </td>
                 <td>
                   <%= link_to '確認', attendance_confirm_one_month_user_url(@user.id,@attendance.id), class: "btn btn-primary btn-one-month-confirmation" %>
                 </td>
