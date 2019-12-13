@@ -243,9 +243,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = "残業承認済"
+        result[i] = "#{@user.name}残業承認済"
       elsif instructor_confirmation[i] == 3
-        result[i] = "残業否認"
+        result[i] = "#{@user.name}残業否認"
       else
         result[i] = ""
       end
@@ -253,29 +253,29 @@ class AttendancesController < ApplicationController
       
     for i in 0..n-1 do
       # 残業承認済み削除ループ
-      loop do
-        if !attendance[i].result.nil?
-          if attendance[i].result.include?("残業承認済")
-            attendance[i].result.slice!("残業承認済")
-          else
-            break
-          end
-        else
-          break
-        end
-      end
+      #loop do
+      #  if !attendance[i].result.nil?
+      #    if attendance[i].result.include?("残業承認済")
+      #      attendance[i].result.slice!("残業承認済")
+      #    else
+      #      break
+      #    end
+      #  else
+      #    break
+      #  end
+      #end
         # 残業否認削除ループ
-      loop do
-        if !attendance[i].result.nil?
-          if attendance[i].result.include?("残業否認")
-            attendance[i].result.slice!("残業否認")
-          else
-            break
-          end
-        else
-          break
-        end
-      end
+      #loop do
+      #  if !attendance[i].result.nil?
+      #    if attendance[i].result.include?("残業否認")
+      #      attendance[i].result.slice!("残業否認")
+      #    else
+      #      break
+      #    end
+      #  else
+      #    break
+      #  end
+      #end
           
       if attendance[i].result.nil?
         attendance[i].result = result[i]  
