@@ -136,7 +136,7 @@
           <td><%= day.note %></td>
           <td><%= day.scheduled_end_time.hour.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
           <td><%= day.scheduled_end_time.min.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
-          <td><%= working_times(@user.designated_work_end_time, day.scheduled_end_time) if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %></td>
+          <td><%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %></td>
           <td><%= day.business_processing %></td>
           <td><%= day.result %></td>
         </tr>

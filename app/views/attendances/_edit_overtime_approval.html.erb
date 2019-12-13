@@ -40,7 +40,11 @@
                   <td>
                     <%= short_times(user.designated_work_end_time) %>
                   </td>
-                  <td><%= format("%.2f", (@attendancesb[i].temp_scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
+                  <% if @attendancesb[i].tomorrow == 1 %>
+                    <td><%= format("%.2f", (@attendancesb[i].temp_scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0 + 24.0) %></td>
+                  <% else %>
+                    <td><%= format("%.2f", (@attendancesb[i].temp_scheduled_end_time.to_f - user.designated_work_end_time.to_f) / 60.0 / 60.0) %></td>
+                  <% end %>
                   <td>
                     <%= @attendancesb[i].temp_business_processing %>
                   </td>

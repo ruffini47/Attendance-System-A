@@ -82,7 +82,8 @@ class AttendancesController < ApplicationController
     min = params[:attendance][:min].to_i
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.temp_scheduled_end_time = d1
-    tomorrow = params[:attendance][:tomorrow]
+    @attendance.tomorrow = params[:attendance][:tomorrow].to_i
+    
     temp_business_processing = params[:attendance][:temp_business_processing]
     @attendance.temp_business_processing = temp_business_processing
 
