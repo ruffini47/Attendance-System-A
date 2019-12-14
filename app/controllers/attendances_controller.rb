@@ -231,12 +231,24 @@ class AttendancesController < ApplicationController
     user = []
     attendance = []
     instructor_confirmation = []
+    change_approval = []
     #user[i]はi番目の申請元ユーザ
     #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])      
       instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
+    end
+
+    change_approval = params[:attendance][:change_approval]
+    
+    i = 0
+    change_approval.length.times do
+      if change_approval[i] == "true"
+        change_approval.delete_at(i-1)
+        i -= 1
+      end
+      i += 1
     end
     
     inst_hash = Attendance.instructor_confirmations
@@ -283,18 +295,19 @@ class AttendancesController < ApplicationController
       #  end
       #end
           
-      if attendance[i].result.nil?
-        attendance[i].result = result[i]  
-      else
-        attendance[i].result.insert(0,result[i])
-      end
-      if instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3
+      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3) && change_approval[i] == "true" 
+        
         @user.number_of_overtime_applied -= 1
         attendance[i].overtime_applying = false
         attendance[i].business_processing = attendance[i].temp_business_processing
         attendance[i].temp_business_processing = nil
         attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
         attendance[i].temp_scheduled_end_time = nil
+        if attendance[i].result.nil?
+          attendance[i].result = result[i]  
+        else
+          attendance[i].result.insert(0,result[i])
+        end
       end
       
       @user.save
