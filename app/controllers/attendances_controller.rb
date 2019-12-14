@@ -4,7 +4,7 @@ class AttendancesController < ApplicationController
                                         :edit_overtime_approval, :update_overtime_approval]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application,
                                                :update_overtime_application]
-  before_action :set_one_month, only: [:edit_one_month, :confirm_one_month]
+  before_action :set_one_month, only: [:edit_one_month, :confirm_one_month_application, :confirm_one_month_approval]
   before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
                                         :edit_overtime_approval, :update_overtime_approval]
   
@@ -110,10 +110,16 @@ class AttendancesController < ApplicationController
     
   end
   
-  def confirm_one_month
+  def confirm_one_month_application
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
-    
+    @worked_sum = @attendances.where.not(finished_at: nil).count
+  end
+  
+  def confirm_one_month_approval
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+    @worked_sum = @attendances.where.not(finished_at: nil).count
   end
   
   def edit_overtime_approval
