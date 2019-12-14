@@ -20,7 +20,7 @@ module AttendancesHelper
     shour = shour + smin / 60.0
     fhour = fhour + fmin / 60.0
 
-    if tomorrow == 1  
+    if tomorrow == 1 || fhour - shour < 0
       format("%.2f", fhour - shour + 24.0)
     else
       format("%.2f", fhour - shour)

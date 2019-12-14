@@ -88,19 +88,23 @@ class AttendancesController < ApplicationController
     
     temp_business_processing = params[:attendance][:temp_business_processing]
     @attendance.temp_business_processing = temp_business_processing
-
+  
     to_superior = params[:attendance][:to_superior]
     # userは申請先ユーザ
     user = User.find(to_superior)
     user.number_of_overtime_applied += 1
-    
+    if @attendance.result.nil?
+      @attendance.result = "#{user.name}へ残業申請中"
+    else
+      @attendance.result.insert(0,"#{user.name}へ残業申請中")
+    end
+    #attendance[i].result.insert(0,result[i])
     # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
     @attendance.to_superior_user_id = user.id
     if change_application == 1
       user.save
       @attendance.save
     end
-    
     
     redirect_to user_url(@user.id)
     
@@ -261,9 +265,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = "#{@user.name}残業承認済"
+        result[i] = "残業承認済"
       elsif instructor_confirmation[i] == 3
-        result[i] = "#{@user.name}残業否認"
+        result[i] = "残業否認"
       else
         result[i] = ""
       end
@@ -305,7 +309,8 @@ class AttendancesController < ApplicationController
         attendance[i].temp_scheduled_end_time = nil
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
-        else
+        elsif attendance[i].result.include?("#{@user.name}へ残業申請中")
+          attendance[i].result.delete!("#{@user.name}へ残業申請中")
           attendance[i].result.insert(0,result[i])
         end
       end
