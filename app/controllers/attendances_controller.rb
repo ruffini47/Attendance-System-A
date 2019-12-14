@@ -114,12 +114,14 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
+    
   end
   
   def confirm_one_month_approval
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
+    
   end
   
   def edit_overtime_approval
