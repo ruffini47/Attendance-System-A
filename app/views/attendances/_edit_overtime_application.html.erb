@@ -46,8 +46,9 @@
                 </td>
                 <td>
                   <div class = "form-group ">
-                    <%= f.text_field :temp_business_processing, class: "form-control" %></td>
+                    <%= f.text_field :temp_business_processing, class: "form-control" %>
                   </div>          
+                </td>
                 <td>
                   <div class = "form-group">
                     <%= f.select :to_superior, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
@@ -57,15 +58,15 @@
                     <div class = "form-check ">
                       <%= f.check_box :change_application,  class: "form-check-input" %>
                     </div>
-                  </td>
+                </td>
                 <td>
-                  <%= link_to '確認', attendance_confirm_one_month_application_user_url(@user.id,@attendance.id), class: "btn btn-primary btn-one-month-confirmation" %>
+                  <%= f.submit '確認', :name => "confirmation", class: "btn btn-primary btn-one-month-confirmation" %>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <%= f.submit '変更を送信する', class: "btn btn-primary btn-block btn-overtime_application" %>
+        <%= f.submit '変更を送信する', :name => "submit", class: "btn btn-primary btn-block btn-overtime_application" %>
       <% end %>
     </div>  
   </div>

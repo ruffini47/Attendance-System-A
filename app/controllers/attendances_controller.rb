@@ -67,20 +67,46 @@ class AttendancesController < ApplicationController
   end
   
   def update_overtime_application
+    ##########################################################
+    # 共通の処理
+    
     #require "date"
     # @userは申請元ユーザ
     @user = User.find(params[:user_id])
     # @attendanceは申請元ユーザの@attendance
     @attendance = Attendance.find(params[:id])
-    @attendance.overtime_applying = true
+    @attendance.overtime_applying = true 
     
-    d = DateTime.now
-    year = d.year
-    mon = d.month
-    day = d.day
+
     hour = params[:attendance][:hour].to_i
     min = params[:attendance][:min].to_i
+    
+    # 共通の処理終わり
+    ##########################################################
+    
+    
+    
+    
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
+    if params[:confirmation] == "確認"
+      
+      redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min) and return
+    
+    end
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
+  
+  
+  
+    ##########################################################
+    # 変更を送信するボタン押下後の処理
+    
+    year = @attendance.worked_on.year
+    mon = @attendance.worked_on.mon
+    day = @attendance.worked_on.day
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+       
     @attendance.temp_scheduled_end_time = d1
     @attendance.tomorrow = params[:attendance][:tomorrow].to_i
     
@@ -101,19 +127,35 @@ class AttendancesController < ApplicationController
     #attendance[i].result.insert(0,result[i])
     # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
     @attendance.to_superior_user_id = user.id
+    
+    
+    
+   
     if change_application == 1
       user.save
       @attendance.save
     end
     
     redirect_to user_url(@user.id)
-    
+    # 変更を送信するボタン押下後の処理終わり
+    ##########################################################
   end
+  
+  
   
   def confirm_one_month_application
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
+    year = @attendance.worked_on.year
+    mon = @attendance.worked_on.mon
+    day = @attendance.worked_on.day
+    hour = params[:hour].to_i
+    min = params[:min].to_i
+    d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+    @attendance.cl_scheduled_end_time = d1
+    @attendance.save
+    
     
   end
   
@@ -123,6 +165,11 @@ class AttendancesController < ApplicationController
     @worked_sum = @attendances.where.not(finished_at: nil).count
     
   end
+  
+  
+  
+  
+  
   
   def edit_overtime_approval
     @users = User.all
@@ -234,6 +281,35 @@ class AttendancesController < ApplicationController
   end
 
   def update_overtime_approval
+    ##########################################################
+    # 共通の処理
+    debugger
+    # 共通の処理終わり
+    ##########################################################
+    
+    
+    
+    
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
+    
+    if params[:confirmation] == "確認"
+      
+      redirect_to attendance_confirm_one_month_approval_user_url(@user.id, @attendance.id, hour, min) and return
+    
+    end
+    
+    
+    
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
+    
+    
+    
+    ##########################################################
+    # 変更を送信するボタン押下後の処理
+    
+    
     # 申請先上長ユーザが@user
     @user = User.find(params[:id])
     
@@ -327,6 +403,8 @@ class AttendancesController < ApplicationController
     end
     
     redirect_to user_url(@user.id)
+    # 変更を送信するボタン押下後の処理終わり
+    ##########################################################
     
   end
   
