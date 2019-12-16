@@ -53,9 +53,9 @@ ActiveRecord::Schema.define(version: 20191215132641) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2019-12-14 23:00:00"
-    t.datetime "designated_work_start_time", default: "2019-12-15 00:00:00"
-    t.datetime "designated_work_end_time", default: "2019-12-15 09:00:00"
+    t.datetime "basic_work_time", default: "2019-12-15 23:00:00"
+    t.datetime "designated_work_start_time", default: "2019-12-16 00:00:00"
+    t.datetime "designated_work_end_time", default: "2019-12-16 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
   end
