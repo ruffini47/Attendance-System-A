@@ -65,11 +65,15 @@ class AttendancesController < ApplicationController
   def edit_overtime_application
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
+    @first_day = params[:date]
+    
   end
   
   def update_overtime_application
     ##########################################################
     # 共通の処理
+    
+    @first_day = params[:date].to_date
     
     #require "date"
     # @userは申請元ユーザ
@@ -93,7 +97,7 @@ class AttendancesController < ApplicationController
     if params[:confirmation] == "確認"
       
       
-      redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min) and return
+      redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
     
     end
     # 勤怠を確認するボタン押下後の処理終わり
@@ -168,6 +172,7 @@ class AttendancesController < ApplicationController
   
   
   def edit_overtime_approval
+    
     @users = User.all
     @attendances = Attendance.all
     
