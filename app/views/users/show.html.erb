@@ -34,7 +34,7 @@
     <div>
       <% n = @user.number_of_overtime_applied %>
       <% if n > 0 %>
-        <%= link_to "【残業申請のお知らせ】", attendances_overtime_approval_user_path(@user.id), remote: true, :style=>"color: red;" %>
+        <%= link_to "【残業申請のお知らせ】", attendances_overtime_approval_user_path(@user.id, date: @first_day), remote: true, :style=>"color: red;" %>
         <nav class="g-nav1"
           <span class="g-nav2"><%= n %>件の通知があります</span>
         </nav>

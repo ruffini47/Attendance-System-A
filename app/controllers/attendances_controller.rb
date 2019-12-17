@@ -175,6 +175,8 @@ class AttendancesController < ApplicationController
     
     @users = User.all
     @attendances = Attendance.all
+    @first_day = params[:date]
+    
     
     a = []
     @attendancesb = []
@@ -303,24 +305,31 @@ class AttendancesController < ApplicationController
     
     user = []
     id = []
+    attendance = []
+    first_day = []
     #user[i]はi番目の申請元ユーザ
     #id[i]はi番目の申請元のattendance.id
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
-      id[i]= Attendance.find(params[:attendance][:id][i]).id
+      attendance[i] = Attendance.find(params[:attendance][:id][i])
+      id[i]= attendance[i].id
+      first_day[i] = attendance[i].worked_on.beginning_of_month
     end
     
-    j = 0
     
     for i in 0..n-1 do
       if params[:"#{id[i]}"] == "確認"
+        
         j = i
+        
+        redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
+      
       end
     end
     
     
     
-    redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j]) and return
+    
     
     
     
