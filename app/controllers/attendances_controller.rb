@@ -96,7 +96,7 @@ class AttendancesController < ApplicationController
     # 勤怠を確認ボタン押下後の処理
     if params[:confirmation] == "確認"
       
-      
+        
       redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
     
     end
@@ -142,7 +142,7 @@ class AttendancesController < ApplicationController
       @attendance.save
     end
     
-    redirect_to user_url(@user.id)
+    redirect_to user_url(@user.id, date: @first_day)
     # 変更を送信するボタン押下後の処理終わり
     ##########################################################
   end
@@ -150,6 +150,7 @@ class AttendancesController < ApplicationController
   
   
   def confirm_one_month_application
+    
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
@@ -293,6 +294,8 @@ class AttendancesController < ApplicationController
     # nは申請元の件数
     n = params[:attendance][:id].length
     
+    @first_day = params[:date]
+    
     # 共通の処理終わり
     ##########################################################
     
@@ -434,13 +437,14 @@ class AttendancesController < ApplicationController
       attendance[i].save
     end
     
-    redirect_to user_url(@user.id)
+    redirect_to user_url(@user.id, date: @first_day)
     # 変更を送信するボタン押下後の処理終わり
     ##########################################################
     
   end
   
   def confirm_one_month_approval
+    
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
