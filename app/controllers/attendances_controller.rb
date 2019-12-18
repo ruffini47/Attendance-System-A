@@ -96,7 +96,7 @@ class AttendancesController < ApplicationController
     # 勤怠を確認ボタン押下後の処理
     if params[:confirmation] == "確認"
       
-     
+       
       redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
     
     end
@@ -487,6 +487,13 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
+    
+    @attendance.cr_scheduled_end_time = @attendance.temp_scheduled_end_time
+    @attendance.save
+    
+    
+    
+    
     
   end
   

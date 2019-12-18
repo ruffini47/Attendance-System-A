@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191215132641) do
+ActiveRecord::Schema.define(version: 20191218123936) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 20191215132641) do
     t.string "temp_business_processing"
     t.integer "tomorrow"
     t.datetime "cl_scheduled_end_time"
+    t.datetime "cr_scheduled_end_time"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
