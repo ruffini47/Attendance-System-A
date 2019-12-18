@@ -96,7 +96,7 @@ class AttendancesController < ApplicationController
     # 勤怠を確認ボタン押下後の処理
     if params[:confirmation] == "確認"
       
-        
+      
       redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
     
     end
@@ -108,9 +108,10 @@ class AttendancesController < ApplicationController
     ##########################################################
     # 変更を送信するボタン押下後の処理
     
-    year = @attendance.worked_on.year
-    mon = @attendance.worked_on.mon
-    day = @attendance.worked_on.day
+    year = Time.now.year
+    mon = Time.now.mon
+    day = Time.now.day
+    
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
        
     @attendance.temp_scheduled_end_time = d1
@@ -154,16 +155,16 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
-    year = @attendance.worked_on.year
-    mon = @attendance.worked_on.mon
-    day = @attendance.worked_on.day
+    year = Time.now.year
+    mon = Time.now.mon
+    day = Time.now.day
     hour = params[:hour].to_i
     min = params[:min].to_i
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.cl_scheduled_end_time = d1
     @attendance.save
     
-   
+     
   end
   
   
@@ -224,9 +225,9 @@ class AttendancesController < ApplicationController
       user_ids.each do |user_id|
         if user_id == attendance.user_id
           user[i] = User.find(attendance.user_id)
-          year = attendance.worked_on.year
-          mon = attendance.worked_on.mon
-          day = attendance.worked_on.day
+          year = Time.now.year
+          mon = Time.now.mon
+          day = Time.now.day
           hour = user[i].designated_work_end_time.hour
           min = user[i].designated_work_end_time.min
           d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
