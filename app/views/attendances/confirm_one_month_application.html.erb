@@ -95,9 +95,27 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td><%= day.cl_scheduled_end_time.hour.to_s.rjust(2,'0') if day.cl_scheduled_end_time.present? %></td>
-          <td><%= day.cl_scheduled_end_time.min.to_s.rjust(2,'0') if day.cl_scheduled_end_time.present? %></td>
-          <td><%= working_times(@user.designated_work_end_time, day.cl_scheduled_end_time, day.tomorrow) if @user.designated_work_end_time.present? && day.cl_scheduled_end_time.present? %></td>
+          <td>
+            <% if day.cl_scheduled_end_time.present? %>
+              <%= day.cl_scheduled_end_time.hour.to_s.rjust(2,'0') %>
+            <% elsif day.scheduled_end_time.present? %>
+              <%= day.scheduled_end_time.hour.to_s.rjust(2, '0') %>
+            <% end %>
+          </td>
+          <td>
+            <% if day.cl_scheduled_end_time.present? %>
+              <%= day.cl_scheduled_end_time.min.to_s.rjust(2,'0') %>
+            <% elsif day.scheduled_end_time.present? %>
+              <%= day.scheduled_end_time.min.to_s.rjust(2, '0') %>
+            <% end %>
+          </td>
+          <td>
+            <% if @user.designated_work_end_time.present? && day.cl_scheduled_end_time.present? %>
+              <%= working_times(@user.designated_work_end_time, day.cl_scheduled_end_time, day.tomorrow) %>
+            <% elsif @user.designated_work_end_time.present? && day.scheduled_end_time.present? %>
+              <%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) %>
+            <% end %>
+          </td>
           <td><%= day.temp_business_processing %></td>
           <td><%= day.result %></td>
         </tr>
