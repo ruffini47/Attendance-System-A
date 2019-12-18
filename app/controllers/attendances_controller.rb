@@ -163,7 +163,7 @@ class AttendancesController < ApplicationController
     @attendance.cl_scheduled_end_time = d1
     @attendance.save
     
-    
+   
   end
   
   
@@ -216,6 +216,31 @@ class AttendancesController < ApplicationController
     @user_id_number = user_ids.length
     puts "user_id_number = #{@user_id_number}"
  
+ 
+    # user.designated_work_end_timeの設定 
+    i = 0
+    user = []
+    @attendancesb.each do |attendance|
+      user_ids.each do |user_id|
+        if user_id == attendance.user_id
+          user[i] = User.find(attendance.user_id)
+          year = attendance.worked_on.year
+          mon = attendance.worked_on.mon
+          day = attendance.worked_on.day
+          hour = user[i].designated_work_end_time.hour
+          min = user[i].designated_work_end_time.min
+          d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+          user[i].designated_work_end_time = d1
+          user[i].save
+          
+          i += 1
+        end
+      end
+    end
+    
+
+    
+
     puts "n= #{n}"
 
     count = []
@@ -280,6 +305,18 @@ class AttendancesController < ApplicationController
 
     # ここまではtemp_business_processing 行っている。
     #@attendancesb.first.temp_business_processing
+
+    
+    #users[j]はj番目の申請元ユーザ
+    j = 0
+    users = []
+    for n in 0..(@user_id_number-1) do 
+      i = @count_max_sum[n]
+      users[j] = User.find(@attendancesb[i].user_id)
+      j += 1
+    end 
+    
+    
     
 
   end
