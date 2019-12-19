@@ -116,7 +116,13 @@
               <%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) %>
             <% end %>
           </td>
-          <td><%= day.business_processing %></td>
+          <td>
+            <% if day.cr_business_processing.present? %>
+              <%= day.cr_business_processing %>
+            <% elsif day.business_processing.present? %>
+              <%= day.business_processing %>
+            <% end %>
+          </td>
           <td><%= day.result %></td>
         </tr>
       <% end %>

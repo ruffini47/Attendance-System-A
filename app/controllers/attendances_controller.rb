@@ -86,6 +86,10 @@ class AttendancesController < ApplicationController
     hour = params[:attendance][:hour].to_i
     min = params[:attendance][:min].to_i
     
+    
+    
+    
+    
     # 共通の処理終わり
     ##########################################################
     
@@ -96,7 +100,11 @@ class AttendancesController < ApplicationController
     # 勤怠を確認ボタン押下後の処理
     if params[:confirmation] == "確認"
       
-       
+      business_processing = params[:attendance][:business_processing]
+      @attendance.cl_business_processing = business_processing
+      @attendance.save
+      
+      
       redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
     
     end
@@ -119,7 +127,7 @@ class AttendancesController < ApplicationController
     
     change_application = params[:attendance][:change_application].to_i
     
-    temp_business_processing = params[:attendance][:temp_business_processing]
+    temp_business_processing = params[:attendance][:business_processing]
     @attendance.temp_business_processing = temp_business_processing
   
     to_superior = params[:attendance][:to_superior]
@@ -162,9 +170,11 @@ class AttendancesController < ApplicationController
     min = params[:min].to_i
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.cl_scheduled_end_time = d1
+
     @attendance.save
     
     
+      
   end
   
   
@@ -361,6 +371,10 @@ class AttendancesController < ApplicationController
     
     for i in 0..n-1 do
       if params[:"#{id[i]}"] == "確認"
+        
+        cr_business_processing = attendance[i].temp_business_processing
+        attendance[i].cr_business_processing = cr_business_processing
+        attendance[i].save
         
         j = i
         

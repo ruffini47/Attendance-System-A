@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191218123936) do
+ActiveRecord::Schema.define(version: 20191219130850) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -31,6 +31,8 @@ ActiveRecord::Schema.define(version: 20191218123936) do
     t.integer "tomorrow"
     t.datetime "cl_scheduled_end_time"
     t.datetime "cr_scheduled_end_time"
+    t.string "cl_business_processing"
+    t.string "cr_business_processing"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -54,9 +56,9 @@ ActiveRecord::Schema.define(version: 20191218123936) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2019-12-17 23:00:00"
-    t.datetime "designated_work_start_time", default: "2019-12-18 00:00:00"
-    t.datetime "designated_work_end_time", default: "2019-12-18 09:00:00"
+    t.datetime "basic_work_time", default: "2019-12-18 23:00:00"
+    t.datetime "designated_work_start_time", default: "2019-12-19 00:00:00"
+    t.datetime "designated_work_end_time", default: "2019-12-19 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
   end
