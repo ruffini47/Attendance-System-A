@@ -133,27 +133,83 @@ class AttendancesController < ApplicationController
     to_superior = params[:attendance][:to_superior]
     # userは申請先ユーザ
     user = User.find(to_superior)
-    user.number_of_overtime_applied += 1
-    if @attendance.result.nil?
-      @attendance.result = "#{user.name}へ残業申請中"
-    else
-      @attendance.result.insert(0,"#{user.name}へ残業申請中")
-    end
-    #attendance[i].result.insert(0,result[i])
-    # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
-    @attendance.to_superior_user_id = user.id
     
     
-    
-   
     if change_application == 1
+    
+      #前回と違う上長を指定した場合または上長指定が初めての場合
+      if user.number_of_overtime_applied == 0
+        unless @attendance.previous_superior_user_id.nil?
+          previous_superior_user = User.find(@attendance.previous_superior_user_id)
+          # 以前に指定した上長と異なる上長を指定した場合以前の上長のnumber_of_overtime_appliedを0にする。
+          if user.id != previous_superior_user.id
+            previous_superior_user.number_of_overtime_applied = 0
+            previous_superior_user.save
+          end
+        end
+        
+        # @attendance.resultの最初の空白より前の文字列を消す
+        unless @attendance.result.nil?
+          result_array = @attendance.result.split
+          result_array[0] = nil
+          str = result_array.join
+          @attendance.result = str
+        end
+        
+        user.number_of_overtime_applied += 1
+        
+        
+        
+        
+      # 前回指定した上長と同じ上長を指定した場合
+      elsif user.number_of_overtime_applied > 0
+        
+        
+        # @attendance.resultの最初の空白より前の文字列を消す
+        unless @attendance.result.nil?
+          result_array = @attendance.result.split
+          result_array[0] = nil
+          str = result_array.join
+          @attendance.result = str
+        end
+        
+        
+      end  
+      
+    
+      if @attendance.result.nil?
+        @attendance.result = "#{user.name}へ残業申請中"
+      else
+        @attendance.result.insert(0,"#{user.name}へ残業申請中")
+      end
+    
+      
+      # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
+      @attendance.to_superior_user_id = user.id
+      @attendance.previous_superior_user_id = user.id
+      
+      
       user.save
       @attendance.save
     end
     
+    
     redirect_to user_url(@user.id, date: @first_day)
+  
+    
+      
+      
+  
+  
+  
+  
+  
+  
     # 変更を送信するボタン押下後の処理終わり
     ##########################################################
+  
+  
+  
   end
   
   
