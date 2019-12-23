@@ -444,7 +444,7 @@ class AttendancesController < ApplicationController
         attendance[i].save
         
         j = i
-             
+           
         redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
       
       end
