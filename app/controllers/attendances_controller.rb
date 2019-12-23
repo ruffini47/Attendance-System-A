@@ -80,15 +80,11 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     # @attendanceは申請元ユーザの@attendance
     @attendance = Attendance.find(params[:id])
-    @attendance.overtime_applying = true 
+    
     
 
     hour = params[:attendance][:hour].to_i
     min = params[:attendance][:min].to_i
-    
-    
-    
-    
     
     # 共通の処理終わり
     ##########################################################
@@ -136,64 +132,73 @@ class AttendancesController < ApplicationController
     
     
     if change_application == 1
-    
-      #前回と違う上長を指定した場合または上長指定が初めての場合
-      if user.number_of_overtime_applied == 0
-        unless @attendance.previous_superior_user_id.nil?
-          previous_superior_user = User.find(@attendance.previous_superior_user_id)
-          # 以前に指定した上長と異なる上長を指定した場合以前の上長のnumber_of_overtime_appliedを0にする。
-          if user.id != previous_superior_user.id
-            previous_superior_user.number_of_overtime_applied = 0
-            previous_superior_user.save
-          end
-        end
-        
-        # @attendance.resultの最初の空白より前の文字列を消す
-        unless @attendance.result.nil?
-          result_array = @attendance.result.split
-          result_array[0] = nil
-          str = result_array.join
-          @attendance.result = str
-        end
-        
-        user.number_of_overtime_applied += 1
-        
-        
-        
-        
-      # 前回指定した上長と同じ上長を指定した場合
-      elsif user.number_of_overtime_applied > 0
-        
-        
-        # @attendance.resultの最初の空白より前の文字列を消す
-        unless @attendance.result.nil?
-          result_array = @attendance.result.split
-          result_array[0] = nil
-          str = result_array.join
-          @attendance.result = str
-        end
-        
-        
-      end  
       
+      ###################################################################
+      # 過去に指定した@attendanceと同じ@attendanceに残業申請する場合
+      if @attendance.overtime_applying == true
+          
+        #前回と違う上長を指定した場合
+        if @attendance.to_superior_user_id != user.id
+            
+            previous_superior_user = User.find(@attendance.to_superior_user_id)
+            previous_superior_user.number_of_overtime_applied -= 1
+            previous_superior_user.save
+        
+            user.number_of_overtime_applied += 1
+            # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id        
+            @attendance.to_superior_user_id = user.id
+      
+        
+        # 前回と同じ上長を指定している場合
+        else
+          
+          # 何もしない
+        
+        end
+        
+      # 過去に指定した@attendanceと同じattendanceに残業申請する場合終わり
+      ###################################################################
+      
+      ###################################################################
+      # 過去に指定していない@attendanceに登録する場合
     
+      else
+        user.number_of_overtime_applied += 1
+        # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
+        @attendance.to_superior_user_id = user.id
+        
+      end
+      
+      # 過去に指定していないattendanceに登録する場合終わり
+      ###################################################################
+      
+      
+      # @attendance.resultの最初の空白より前の文字列を消す
+      unless @attendance.result.nil?
+        result_array = @attendance.result.split
+        result_array[0] = nil
+        str = result_array.join
+        @attendance.result = str
+      end
+    
+      
       if @attendance.result.nil?
         @attendance.result = "#{user.name}へ残業申請中"
       else
         @attendance.result.insert(0,"#{user.name}へ残業申請中")
       end
     
-      
-      # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
-      @attendance.to_superior_user_id = user.id
-      @attendance.previous_superior_user_id = user.id
+      #@attendance.previous_superior_user_id = user.id
+      @attendance.overtime_applying = true 
       
       
       user.save
       @attendance.save
+    
+    
     end
     
-     
+    
     redirect_to user_url(@user.id, date: @first_day)
   
 
@@ -439,18 +444,11 @@ class AttendancesController < ApplicationController
         attendance[i].save
         
         j = i
-              
+             
         redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
       
       end
     end
-    
-    
-    
-    
-    
-    
-    
     
     
     # 勤怠を確認するボタン押下後の処理終わり
@@ -460,10 +458,6 @@ class AttendancesController < ApplicationController
     
     ##########################################################
     # 変更を送信するボタン押下後の処理
-    
-    
-    
-    
     
     
     attendance = []
