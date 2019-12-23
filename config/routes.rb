@@ -21,8 +21,6 @@ Rails.application.routes.draw do
   # 出勤中社員一覧
   get '/at_work', to: 'attendances#at_work'
 
-  # 確認画面のキャンセル処理
-  get '/users/:id/cancel/', to: 'attendances#cancel_confirm_one_month', as:'attendances_cancel_confirm_one_month'
 
 # 拠点情報
   resources :bases do
