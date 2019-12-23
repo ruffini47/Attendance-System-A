@@ -225,9 +225,23 @@ class AttendancesController < ApplicationController
       
   end
   
+  def cancel_confirm_one_month
   
-  
-  
+    @first_day = params[:date].to_date
+    @user = User.find(params[:id])
+    @attendances = Attendance.all
+    
+    @attendances.each do |attendance|
+      attendance.cl_scheduled_end_time = nil
+      attendance.cl_business_processing = nil
+      attendance.cr_scheduled_end_time = nil
+      attendance.cr_business_processing = nil
+      attendance.save
+    end
+    
+    redirect_to user_url(@user.id, date: @first_day)
+    
+  end
   
   
   
