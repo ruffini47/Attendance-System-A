@@ -98,10 +98,20 @@ class AttendancesController < ApplicationController
       
       business_processing = params[:attendance][:business_processing]
       @attendance.cl_business_processing = business_processing
-      @attendance.save
+      
+      if @attendance.update_attributes(attendance_cl_business_params)
+        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
+      else
+        render :edit_overtime_application      
+      end
       
       
-      redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
+      
+      
+      #@attendance.save
+      
+      
+      
     
     end
     # 勤怠を確認するボタン押下後の処理終わり
@@ -575,6 +585,12 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
+    
+    # １ヶ月の残業申請確認を扱います。
+    def attendance_cl_business_params
+      params.require(:attendance).permit(:cl_business_processing)
+    end
+    
     
     # beforeフィルター
     
