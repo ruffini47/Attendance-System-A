@@ -2,8 +2,7 @@ class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
   before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application,
                                         :edit_overtime_approval, :update_overtime_approval]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application,
-                                               :update_overtime_application]
+  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: [:edit_one_month, :confirm_one_month_application, :confirm_one_month_approval]
   before_action :set_one_month_2, only: [:update_overtime_approval]
   before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
@@ -98,11 +97,11 @@ class AttendancesController < ApplicationController
       
       business_processing = params[:attendance][:business_processing]
       @attendance.cl_business_processing = business_processing
-      
-      if @attendance.update_attributes(attendance_cl_business_params)
+
+      if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
         redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
       else
-        render :edit_overtime_application      
+        render :show      
       end
       
       
@@ -153,6 +152,16 @@ class AttendancesController < ApplicationController
             previous_superior_user = User.find(@attendance.to_superior_user_id)
             previous_superior_user.number_of_overtime_applied -= 1
             previous_superior_user.save
+      
+                   
+            #if previous_superior_user.update_attributes(previous_superior_params)
+            #else
+            #  render :show      
+            #end
+      
+      
+      
+      
         
             user.number_of_overtime_applied += 1
             # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id        
@@ -203,7 +212,13 @@ class AttendancesController < ApplicationController
       
       
       user.save
-      @attendance.save
+      
+      if @attendance.update_attributes(update_overtime_application_params)
+      else
+        render :show      
+      end
+      
+      #@attendance.save
     
     
     end
@@ -234,6 +249,7 @@ class AttendancesController < ApplicationController
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.cl_scheduled_end_time = d1
 
+    
     @attendance.save
     
     
@@ -553,6 +569,7 @@ class AttendancesController < ApplicationController
       end
       
       @user.save
+      
       attendance[i].save
     end
     
@@ -587,11 +604,15 @@ class AttendancesController < ApplicationController
     end
     
     # １ヶ月の残業申請確認を扱います。
-    def attendance_cl_business_params
-      params.require(:attendance).permit(:cl_business_processing)
+    def attendance_confirm_one_month_application_user_params
+      params.require(:attendance).permit(:id, :confirmation, attendance: [:business_processing, :hour, :min])
     end
     
-    
+    # 残業申請の勤怠情報を扱います。
+    def update_overtime_application_params
+      params.require(:attendance).permit(:id, :confirmation, attendance: [:hour, :min, :tomorrow, :change_application, :business_processing, :to_superior])
+    end
+                                     
     # beforeフィルター
     
     # 管理者権限、または現在ログインしているユーザーを許可します。
