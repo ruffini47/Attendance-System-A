@@ -97,7 +97,7 @@ class AttendancesController < ApplicationController
       
       business_processing = params[:attendance][:business_processing]
       @attendance.cl_business_processing = business_processing
-
+      
       if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
         redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
       else
