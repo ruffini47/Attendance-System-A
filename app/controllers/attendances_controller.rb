@@ -470,7 +470,7 @@ class AttendancesController < ApplicationController
         attendance[i].save
         
         j = i
-           
+          
         redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
       
       end
@@ -510,8 +510,6 @@ class AttendancesController < ApplicationController
     
     inst_hash = Attendance.instructor_confirmations
     result = []
-    scheduled_end_time_hour = []
-    scheduled_end_time_min = []
     #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
     for i in 0..n-1 do
       result[i] = inst_hash.invert[instructor_confirmation[i]]
@@ -569,8 +567,11 @@ class AttendancesController < ApplicationController
       end
       
       @user.save
+      if attendance[i].update_attributes(update_overtime_approval_params)
+      else
+        render :show      
+      end
       
-      attendance[i].save
     end
     
     redirect_to user_url(@user.id, date: @first_day)
@@ -587,10 +588,6 @@ class AttendancesController < ApplicationController
     
     @attendance.cr_scheduled_end_time = @attendance.temp_scheduled_end_time
     @attendance.save
-    
-    
-    
-    
     
   end
   
@@ -612,7 +609,12 @@ class AttendancesController < ApplicationController
     def update_overtime_application_params
       params.require(:attendance).permit(:id, :confirmation, attendance: [:hour, :min, :tomorrow, :change_application, :business_processing, :to_superior])
     end
-                                     
+    
+    # 残業承認の勤怠情報を扱います。
+    def update_overtime_approval_params
+      params.require(:attendance).permit(attendance: [:instructor_confirmation, :change_approval])
+    end
+    
     # beforeフィルター
     
     # 管理者権限、または現在ログインしているユーザーを許可します。
