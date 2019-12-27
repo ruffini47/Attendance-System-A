@@ -29,19 +29,19 @@
               <% end %>
               <td>
                 <div class = "form-group" style="display: inline-flex">
-                  <%= f.select :hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
-                  <%= f.select :min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
+                  <%= attendance.select :attendance_hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
+                  <%= attendance.select :attendance_min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
                 </div>
               </td>
               <td>
                 <div class = "form-group" style="display: inline-flex">
-                  <%= f.select :hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
-                  <%= f.select :min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
+                  <%= attendance.select :departure_hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
+                  <%= attendance.select :departure_min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
                 </div>
               </td>  
               <td>
                 <div class = "form-check ">
-                  <%= f.check_box :tomorrow, class: "form-check-input"%>
+                  <%= attendance.check_box :tomorrow, class: "form-check-input"%>
                 </div>
               </td>
               <td>
@@ -56,7 +56,7 @@
               </td>
               <td>
                 <div class = "form-group">
-                  <%= f.select :to_superior, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
+                  <%= attendance.select :to_superior_user_id, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
                 </div>
               </td>
             </tr>

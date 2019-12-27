@@ -39,6 +39,12 @@ class AttendancesController < ApplicationController
   
   def update_one_month
 
+    @first_day = params[:date].to_date
+    # @userは申請元ユーザ
+    @user = User.find(params[:id])
+    params[:user][:attendances]["1"]
+    
+    
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
@@ -597,7 +603,8 @@ class AttendancesController < ApplicationController
   
     # 1ヶ月分の勤怠情報を扱います。
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+      params.require(:user).permit(attendances: [:attendance_hour, :attendance_min, :departure_hour, :departure_min,
+                                                 :tomorrow, :note, :to_superior_user_id])[:attendances]
     end
     
     # １ヶ月の残業申請確認を扱います。
