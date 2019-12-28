@@ -29,7 +29,15 @@
       <%= link_to "【所属長承認申請のお知らせ】", '#', :style=>"color: #000000;"%>
     </div>
     <div>
-      <%= link_to "【勤怠変更申請のお知らせ】", '#',  :style=>"color: #000000;" %>
+      <% n1 = @user.number_of_attendance_change_applied %>
+      <% if n1 > 0 %>
+        <%= link_to "【勤怠変更申請のお知らせ】", attendances_attendance_change_approval_user_path(@user.id, date: @first_day), remote: true, :style=>"color: red;" %>
+        <nav class="g-nav1"
+          <span class="g-nav2"><%= n1 %>件の通知があります</span>
+        </nav>
+      <% else %>
+        <%= link_to "【残業申請のお知らせ】", '#', :style=>"color: #000000;" %>
+      <% end %>
     </div> 
     <div>
       <% n = @user.number_of_overtime_applied %>
@@ -163,3 +171,4 @@
 <!--モーダルウインドウ表示-->
 <div id="edit-overtime-application" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overtime-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-attendance-change-approval" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

@@ -38,8 +38,8 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month
-
     @first_day = params[:date].to_date
+    
     # @userは申請元ユーザ
     @user = User.find(params[:id])
     params[:user][:attendances]["1"]
@@ -47,7 +47,26 @@ class AttendancesController < ApplicationController
     
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
+        # attendanceは申請元attendance
         attendance = Attendance.find(id)
+        unless item["attendance_hour"] == ""
+          year = @first_day.year
+          mon = @first_day.month
+          day = @first_day.day
+          attendance_hour = item["attendance_hour"].to_i
+          attendance_min = item["attendance_min"].to_i
+          a_time = DateTime.new(year, mon, day, attendance_hour, attendance_min, 0, 0.375);
+          departure_hour = item["departure_hour"].to_i
+          departure_min = item["departure_min"].to_i
+          d_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
+          to_superior= item["to_superior_user_id"].to_i
+          user = User.find(to_superior)
+          user.number_of_attendance_change_applied += 1
+          user.save
+          attendance.attendance_change_to_superior_user_id = to_superior
+          attendance.attendance_change_applying = true
+          attendance.save
+        end
         attendance.update_attributes!(item)
       end
     end
@@ -596,6 +615,161 @@ class AttendancesController < ApplicationController
     @attendance.save
     
   end
+  
+  
+  
+  
+  def edit_attendance_change_approval
+    
+    @users = User.all
+    @attendances = Attendance.all
+    @first_day = params[:date]
+    
+    
+    
+    c = []
+    @attendancesc = []
+
+    i = 0
+    n = 0
+    user_ids_c = []
+    @attendances.each do |attendance|
+      # 申請元のattendanceがattendance_change_applyしていて、かつ、申請元のattendanceのattendance_change_to_superior_user_idカラムが申請先のユーザidを指すものだけ取り出す
+      if attendance.attendance_change_applying  == true && attendance.attendance_change_to_superior_user_id == params[:id].to_i
+        user_ids_c[0] = attendance.user_id
+      end
+    end
+    
+    hit = false
+    @attendances.each do |attendance|
+      if attendance.attendance_change_applying == true && attendance.attendance_change_to_superior_user_id == params[:id].to_i
+        n += 1
+        user_ids_c.each do |user_id|
+          if attendance.user_id == user_id
+            hit = true
+            #puts "hit"
+          end
+        end
+        if hit == false
+          #puts "not hit"
+          i += 1
+          user_ids_c[i] = attendance.user_id
+        end
+        hit = false
+        c.push([attendance.user_id,attendance.worked_on])
+        @attendancesc.push(attendance)
+      end
+    end
+    
+    @user_id_number_c= user_ids_c.length
+    puts "user_id_number_c = #{@user_id_number_c}"
+ 
+ 
+    # user.designated_work_end_timeの設定 
+    i = 0
+    user = []
+    @attendancesc.each do |attendance|
+      user_ids_c.each do |user_id|
+        if user_id == attendance.user_id
+          user[i] = User.find(attendance.user_id)
+          year = Time.now.year
+          mon = Time.now.mon
+          day = Time.now.day
+          debugger
+          #hour = user[i].designated_work_end_time.hour
+          #min = user[i].designated_work_end_time.min
+          #d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+          #user[i].designated_work_end_time = d1
+          #user[i].save
+          
+          i += 1
+        end
+      end
+    end
+    
+
+    
+
+    puts "n= #{n}"
+
+    count_c = []
+
+    for i in 0..n-1
+      count_c.push(0)
+    end
+
+    for i in 0..n-1 do
+      for j in 0..n-1
+        if c[i][0] != c[j][0]
+          count_c[i] += 1
+        end
+      end
+    end
+
+    for i in 0..n-1 do
+      count_c[i] = n - count_c[i]
+    end
+
+    p count_c
+
+    @count_max_c = []
+
+    isBreak = false
+    i = 0
+    if @user_id_number_c == 1
+      @count_max_c.push(n)
+    else
+      for m in 0..@user_id_number_c-1 do
+        for j in 1..n-1 do
+          #puts "m = #{m} i = #{i} j = #{j}"
+          if !c[i + j].nil?
+            isBreak = false 
+            if c[i][0] != c[i + j][0]
+              @count_max_c.push(j)
+              i += j
+              isBreak = true
+              break
+            end
+          elsif !(c[i + j - 1].nil?) && c[i + j].nil?
+            @count_max_c.push(j)
+          end
+          break if isBreak
+        end
+      end
+    end
+
+    puts "@count_max ="
+    p @count_max
+
+    puts "count_maxが答えだ！！"
+
+    @count_max_sum_c= []
+    @count_max_sum_c[0] = 0
+    #count_max_sum_c[1] = count_max_c[0]
+    #count_max_sum_c[2] = count_max_c[0] + count_max_c[1]
+    #count_max_sum_c[3] = count_max_c[0] + count_max_c[1] +count_max_c[2]
+    for k in 1..@user_id_number_c-1 do
+      @count_max_sum_c[k] = @count_max_sum_c[k-1] + @count_max_c[k-1]
+    end
+
+    # ここまではtemp_business_processing 行っている。
+    #@attendancesb.first.temp_business_processing
+
+    
+    #users_c[j]はj番目の申請元ユーザ
+    j = 0
+    users_c = []
+    for n in 0..(@user_id_number_c-1) do 
+      i = @count_max_sum_c[n]
+      users_c[j] = User.find(@attendancesc[i].user_id)
+      j += 1
+    end 
+    
+    
+    
+
+  end
+
   
   
   
