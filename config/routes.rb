@@ -21,8 +21,6 @@ Rails.application.routes.draw do
   # 出勤中社員一覧
   get '/at_work', to: 'attendances#at_work'
 
-  # 確認画面のキャンセル処理
-  get '/users/:id/cancel/', to: 'attendances#cancel_confirm_one_month', as:'attendances_cancel_confirm_one_month'
 
 # 拠点情報
   resources :bases do
@@ -42,6 +40,16 @@ Rails.application.routes.draw do
 # 勤怠変更承認
   get '/users/:id/attendance/attendance_change_approval/', to: 'attendances#edit_attendance_change_approval', as: 'attendances_attendance_change_approval_user'
   patch '/users/:id/attendance/attendance_change_approval/', to: 'attendances#update_attendance_change_approval'
+
+# 勤怠変更_1カ月勤怠確認
+  get '/users/:user_id/attendance/:id/confirm_one_month_attendance_change_approval/', to: 'attendances#confirm_one_month_attendance_change_approval', as: 'attendance_confirm_one_month_attendance_change_approval_user'
+
+# 残業申請承認確認画面のキャンセル処理
+  get '/users/:id/cancel/', to: 'attendances#cancel_confirm_one_month', as:'attendances_cancel_confirm_one_month'
+# 勤怠変更確認画面のキャンセル処理
+  get '/users/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
+
+
   
   resources :users do
       
