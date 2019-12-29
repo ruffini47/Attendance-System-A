@@ -55,10 +55,12 @@ class AttendancesController < ApplicationController
           day = @first_day.day
           attendance_hour = item["attendance_hour"].to_i
           attendance_min = item["attendance_min"].to_i
-          a_time = DateTime.new(year, mon, day, attendance_hour, attendance_min, 0, 0.375);
+          after_change_start_time = DateTime.new(year, mon, day, attendance_hour, attendance_min, 0, 0.375);
           departure_hour = item["departure_hour"].to_i
           departure_min = item["departure_min"].to_i
-          d_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
+          after_change_end_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
+          attendance.after_change_start_time = after_change_start_time
+          attendance.after_change_end_time = after_change_end_time
           to_superior= item["to_superior_user_id"].to_i
           user = User.find(to_superior)
           user.number_of_attendance_change_applied += 1
@@ -66,6 +68,7 @@ class AttendancesController < ApplicationController
           attendance.attendance_change_to_superior_user_id = to_superior
           attendance.attendance_change_applying = true
           attendance.save
+          
         end
         attendance.update_attributes!(item)
       end
@@ -675,7 +678,7 @@ class AttendancesController < ApplicationController
           year = Time.now.year
           mon = Time.now.mon
           day = Time.now.day
-          debugger
+          
           #hour = user[i].designated_work_end_time.hour
           #min = user[i].designated_work_end_time.min
           #d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
