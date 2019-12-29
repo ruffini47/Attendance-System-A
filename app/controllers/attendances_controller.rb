@@ -61,6 +61,8 @@ class AttendancesController < ApplicationController
           after_change_end_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
           attendance.after_change_start_time = after_change_start_time
           attendance.after_change_end_time = after_change_end_time
+          attendance_change_note = item["note"]
+          attendance.attendance_change_note = attendance_change_note
           to_superior= item["to_superior_user_id"].to_i
           user = User.find(to_superior)
           user.number_of_attendance_change_applied += 1
@@ -661,6 +663,7 @@ class AttendancesController < ApplicationController
         hit = false
         c.push([attendance.user_id,attendance.worked_on])
         @attendancesc.push(attendance)
+        
       end
     end
     
@@ -679,8 +682,8 @@ class AttendancesController < ApplicationController
           mon = Time.now.mon
           day = Time.now.day
           
-          #hour = user[i].designated_work_end_time.hour
-          #min = user[i].designated_work_end_time.min
+          #@after_change_start_hour = user[i].after_change_start_time.hour
+          #@after_change_strat_min = user[i].after_change_start_time.min
           #d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
           #user[i].designated_work_end_time = d1
           #user[i].save

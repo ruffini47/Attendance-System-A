@@ -74,14 +74,34 @@
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td>
+                        <%= @attendancesc[i].after_change_start_time.hour %>
+                      </td>
+                      <td>
+                        <%= @attendancesc[i].after_change_start_time.min %>
+                      </td>
+                      <td>
+                        <%= @attendancesc[i].after_change_end_time.hour %>
+                      </td>
+                      <td>
+                        <%= @attendancesc[i].after_change_end_time.min %>
+                      </td>
+                      <td>
+                        <%= @attendancesc[i].attendance_change_note %>
+                      </td>
+                      <td>
+                    <div class = "form-group">
+                      <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
+                    </div>
+                  </td>
+                  <td>
+                    <div class = "form-check ">
+                      <%= f.check_box :change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                    </div>
+                  </td>
+                  <td>
+                    <%= f.submit "確認", :name => "#{@attendancesc[i].id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                  </td>
                     </tr>
                 <% end %>    
               </tbody>
