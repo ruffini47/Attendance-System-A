@@ -94,11 +94,7 @@
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
-          <td>
-            <% if day.attendance_change_note.present? %>
-              <%= day.attendance_change_note %>
-            <% end %>
-          </td>
+          <td></td>
           <td>
             <% if day.cr_after_change_end_time.present? %>
               <%= day.cr_after_change_end_time.hour.to_s.rjust(2,'0') %>
@@ -123,8 +119,8 @@
           <td>
             <% if day.cr_attendance_change_note.present? %>
               <%= day.cr_attendance_change_note %>
-            <% elsif day.attendance_change_note.present? %>
-              <%= day.attendance_change_note %>
+            <% elsif day.last_attendance_change_note.present? %>
+              <%= day.last_attendnace_change_note %>
             <% end %>
           </td>
           <td><%= day.result %></td>
@@ -145,5 +141,5 @@
 </div>
 
 <div class="center">
-    <%= link_to "戻る", attendances_cancel_confirm_one_month_path(@user.id, date: @first_day), class: "btn btn-lg btn-primary" %>
+    <%= link_to "戻る", attendances_cancel_attendance_change_confirm_one_month_path(@user.id, date: @first_day), class: "btn btn-lg btn-primary" %>
 </div>

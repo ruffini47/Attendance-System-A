@@ -53,18 +53,22 @@ class AttendancesController < ApplicationController
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
+
           attendance_hour = item["attendance_hour"].to_i
           attendance_min = item["attendance_min"].to_i
           temp_after_change_start_time = DateTime.new(year, mon, day, attendance_hour, attendance_min, 0, 0.375);
+          attendance.temp_after_change_start_time = temp_after_change_start_time
+
           departure_hour = item["departure_hour"].to_i
           departure_min = item["departure_min"].to_i
           temp_after_change_end_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
-          attendance.temp_after_change_start_time = temp_after_change_start_time
           attendance.temp_after_change_end_time = temp_after_change_end_time
+
           temp_attendance_change_note = item["attendance_change_note"]
           attendance.temp_attendance_change_note = temp_attendance_change_note
           
           to_superior= item["to_superior_user_id"].to_i
+          # userは申請先上長ユーザ
           user = User.find(to_superior)
           user.number_of_attendance_change_applied += 1
           user.save
@@ -815,9 +819,7 @@ class AttendancesController < ApplicationController
     for i in 0..n-1 do
       if params[:"#{id[i]}"] == "確認"
         
-        cr_attendance_change_note = attendance[i].temp_attendance_change_note
-        attendance[i].cr_attendance_change_note = cr_attendance_change_note
-        attendance[i].save
+        
         
         j = i
         
@@ -842,7 +844,9 @@ class AttendancesController < ApplicationController
     @worked_sum = @attendances.where.not(finished_at: nil).count
     
     @attendance.cr_after_change_end_time = @attendance.temp_after_change_end_time
+    @attendance.cr_attendance_change_note = @attendance.temp_attendance_change_note
     @attendance.save
+    
     
   end
   
@@ -866,7 +870,7 @@ class AttendancesController < ApplicationController
   
   private
   
-    # 1ヶ月分の勤怠情報を扱います。
+    # 勤怠編集情報を扱います。
     def attendances_params
       params.require(:user).permit(attendances: [:attendance_hour, :attendance_min, :departure_hour, :departure_min,
                                                  :tomorrow, :attendance_change_note, :to_superior_user_id])[:attendances]
