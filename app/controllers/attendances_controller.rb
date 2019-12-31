@@ -74,12 +74,32 @@ class AttendancesController < ApplicationController
           user.save
           attendance.attendance_change_to_superior_user_id = to_superior
           attendance.attendance_change_applying = true
+          
+          
+          
+          # @attendance.resultの2番目の空白より前の文字列を消す
+          #unless attendance.result.nil?
+          #  result_array = attendance.result.split
+          #  result_array[1] = nil
+          #  str = result_array.join
+          #  attendance.result = str
+          #end
+    
+      
+          if attendance.result.nil?
+            attendance.result = "#{user.name}へ勤怠変更申請中"
+          else
+            attendance.result.insert(0,"#{user.name}へ勤怠変更申請中")
+          end
+          
+          
           attendance.save
           
         end
         attendance.update_attributes!(item)
       end
     end
+    
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     
     redirect_to user_url(date: params[:date])
@@ -780,7 +800,7 @@ class AttendancesController < ApplicationController
 
 
   def update_attendance_change_approval
-    
+
     ##########################################################
     # 共通の処理
     
@@ -819,8 +839,6 @@ class AttendancesController < ApplicationController
     for i in 0..n-1 do
       if params[:"#{id[i]}"] == "確認"
         
-        
-        
         j = i
         
         redirect_to attendance_confirm_one_month_attendance_change_approval_user_path(user[j].id, id[j], date: first_day[j]) and return  
@@ -834,6 +852,109 @@ class AttendancesController < ApplicationController
     
   
   
+    ##########################################################
+    # 変更を送信するボタン押下後の処理
+    
+    
+    attendance = []
+    instructor_confirmation = []
+    change_approval = []
+    #user[i]はi番目の申請元ユーザ
+    #attendance[i]はi番目の申請元のattendance
+    for i in 0..n-1 do
+      user[i] = User.find(params[:attendance][:user_id][i])
+      attendance[i] = Attendance.find(params[:attendance][:id][i])
+      instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
+    end
+
+    change_approval = params[:attendance][:change_approval]
+    
+    i = 0
+    change_approval.length.times do
+      if change_approval[i] == "true"
+        change_approval.delete_at(i-1)
+        i -= 1
+      end
+      i += 1
+    end
+    
+    inst_hash = Attendance.instructor_confirmations
+    result = []
+    #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
+    for i in 0..n-1 do
+      result[i] = inst_hash.invert[instructor_confirmation[i]]
+    end
+    for i in 0..n-1 do
+      if instructor_confirmation[i] == 2
+        result[i] = "勤怠編集承認済"
+      elsif instructor_confirmation[i] == 3
+        result[i] = "勤怠編集否認"
+      else
+        result[i] = ""
+      end
+    end
+      
+    for i in 0..n-1 do
+      # 残業承認済み削除ループ
+      #loop do
+      #  if !attendance[i].result.nil?
+      #    if attendance[i].result.include?("残業承認済")
+      #      attendance[i].result.slice!("残業承認済")
+      #    else
+      #      break
+      #    end
+      #  else
+      #    break
+      #  end
+      #end
+        # 残業否認削除ループ
+      #loop do
+      #  if !attendance[i].result.nil?
+      #    if attendance[i].result.include?("残業否認")
+      #      attendance[i].result.slice!("残業否認")
+      #    else
+      #      break
+      #    end
+      #  else
+      #    break
+      #  end
+      #end
+          
+      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3) && change_approval[i] == "true" 
+        
+        @user.number_of_attendance_change_applied -= 1
+        attendance[i].attendance_change_applying = false
+        
+        attendance[i].last_attendance_change_note = attendance[i].temp_attendance_change_note
+        attendance[i].temp_attendance_change_note = nil
+        
+        attendance[i].started_at = attendance[i].temp_after_change_start_time
+        attendance[i].temp_after_change_start_time = nil
+        
+        attendance[i].finished_at = attendance[i].temp_after_change_end_time
+        attendance[i].temp_after_change_end_time = nil
+        
+        if attendance[i].result.nil?
+          attendance[i].result = result[i]  
+        elsif attendance[i].result.include?("#{@user.name}へ勤怠変更申請中")
+          attendance[i].result.delete!("#{@user.name}へ勤怠変更申請中")
+          attendance[i].result.insert(0,result[i])
+        end
+      end
+      
+      @user.save
+      if attendance[i].update_attributes(update_attendance_change_approval_params)
+      else
+        render :show      
+      end
+      
+    end
+    
+    redirect_to user_url(@user.id, date: @first_day)
+    # 変更を送信するボタン押下後の処理終わり
+    ##########################################################
+  
+  
   end
   
   
@@ -843,6 +964,7 @@ class AttendancesController < ApplicationController
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
     
+    @attendance.cr_after_change_start_time = @attendance.temp_after_change_start_time
     @attendance.cr_after_change_end_time = @attendance.temp_after_change_end_time
     @attendance.cr_attendance_change_note = @attendance.temp_attendance_change_note
     @attendance.save
@@ -858,6 +980,7 @@ class AttendancesController < ApplicationController
     @attendances = Attendance.all
     
     @attendances.each do |attendance|
+      attendance.cr_after_change_start_time = nil
       attendance.cr_after_change_end_time = nil
       attendance.cr_attendance_change_note = nil
       attendance.save
@@ -874,6 +997,11 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:attendance_hour, :attendance_min, :departure_hour, :departure_min,
                                                  :tomorrow, :attendance_change_note, :to_superior_user_id])[:attendances]
+    end
+    
+    # 勤怠変更承認の勤怠情報を扱います。
+    def update_attendance_change_approval_params
+      params.require(:attendance).permit(attendance: [:instructor_confirmation, :change_approval])
     end
     
     # １ヶ月の残業申請確認を扱います。

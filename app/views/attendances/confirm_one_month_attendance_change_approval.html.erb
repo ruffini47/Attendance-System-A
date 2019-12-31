@@ -82,16 +82,18 @@
           <% else %>
             <td><%= $days_of_the_week[day.worked_on.wday] %></td>
           <% end %>
-          <td><%= day.started_at.hour if day.started_at.present? %></td>
-          <td><%= day.started_at.min.to_s.rjust(2,'0') if day.started_at.present? %></td>
-          <td></td>
-          <td><%= day.finished_at.hour if day.finished_at.present? %></td>
-          <td><%= day.finished_at.min.to_s.rjust(2,'0') if day.finished_at.present? %></td>
-          <td></td>
           <td>
-            <% if day.started_at.present? && day.finished_at.present? %>
-              <%= str_times = working_times(day.started_at, day.finished_at, 0) %>
-              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+            <% if day.cr_after_change_start_time.present? %>
+              <%= day.cr_after_change_start_time.hour.to_s.rjust(2,'0') %>
+            <% elsif day.after_change_start_time.present? %>
+              <%= day.after_change_start_time.hour.to_s.rjust(2, '0') %>
+            <% end %>
+          </td>
+          <td>
+            <% if day.cr_after_change_start_time.present? %>
+              <%= day.cr_after_change_start_time.min.to_s.rjust(2,'0') %>
+            <% elsif day.after_change_start_time.present? %>
+              <%= day.after_change_start_time.min.to_s.rjust(2, '0') %>
             <% end %>
           </td>
           <td></td>
@@ -109,11 +111,14 @@
               <%= day.after_change_end_time.min.to_s.rjust(2, '0') %>
             <% end %>
           </td>
+          <td></td>
           <td>
-            <% if @user.designated_work_end_time.present? && day.cr_after_change_end_time.present? %>
-              <%= working_times(@user.designated_work_end_time, day.cr_after_change_end_time, day.tomorrow) %>
-            <% elsif @user.designated_work_end_time.present? && day.after_change_end_time.present? %>
-              <%= working_times(@user.designated_work_end_time, day.after_change_end_time, day.tomorrow) %>
+            <% if day.cr_after_change_start_time.present?.present? && day.cr_after_change_end_time.present? %>
+              <%= str_times = working_times(day.cr_after_change_start_time, day.cr_after_change_end_time, day.tomorrow) %>
+              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
+            <% elsif day.after_change_start_time.present?.present? && day.after_change_end_time.present? %>
+              <%= str_times = working_times(day.after_change_start_time, day.after_change_end_time, day.tomorrow) %>
+              <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
           <td>
@@ -122,6 +127,20 @@
             <% elsif day.last_attendance_change_note.present? %>
               <%= day.last_attendnace_change_note %>
             <% end %>
+          </td>
+          <td>
+            
+          </td>
+          <td>
+            
+            
+          </td>
+          <td>
+            
+            
+          </td>
+          <td>
+            
           </td>
           <td><%= day.result %></td>
         </tr>

@@ -140,7 +140,11 @@
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
-          <td></td>
+          <td>
+            <% if day.last_attendance_change_note.present? %>
+              <%= day.last_attendance_change_note %>
+            <% end %>
+          </td>
           <td><%= day.scheduled_end_time.hour.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
           <td><%= day.scheduled_end_time.min.to_s.rjust(2,'0') if day.scheduled_end_time.present? %></td>
           <td><%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %></td>
