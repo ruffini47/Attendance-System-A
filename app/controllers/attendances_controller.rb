@@ -71,29 +71,89 @@ class AttendancesController < ApplicationController
           
           # userは申請先上長ユーザ
           user = User.find(to_superior)
-          user.number_of_attendance_change_applied += 1
-          user.save
-          attendance.attendance_change_to_superior_user_id = to_superior
-          attendance.attendance_change_applying = true
           
           
           
-          # @attendance.resultの2番目の空白より前の文字列を消す
-          #unless attendance.result.nil?
-          #  result_array = attendance.result.split
-          #  result_array[1] = nil
-          #  str = result_array.join
-          #  attendance.result = str
-          #end
+          
+          
+      
+          ###################################################################
+          # 過去に指定したattendanceと同じattendanceに残業申請する場合
+          if attendance.attendance_change_applying == true
+          
+            #前回と違う上長を指定した場合
+            if attendance.attendance_change_to_superior_user_id != to_superior
+            
+              previous_superior_user = User.find(attendance.attendance_change_to_superior_user_id)
+              previous_superior_user.number_of_attendance_change_applied -= 1
+              previous_superior_user.save
+      
+          
+              user.number_of_attendance_change_applied += 1
+              # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id        
+              attendance.attendance_change_to_superior_user_id = to_superior
+      
+        
+            # 前回と同じ上長を指定している場合
+            else
+          
+              # 何もしない
+        
+            end
+        
+          # 過去に指定した@attendanceと同じattendanceに残業申請する場合終わり
+          ###################################################################
+      
+          ###################################################################
+          # 過去に指定していないattendanceに登録する場合
+    
+          else
+            user.number_of_attendance_change_applied += 1
+            # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id
+            attendance.attendance_change_to_superior_user_id = to_superior
+          end
+      
+          # 過去に指定していないattendanceに登録する場合終わり
+          ###################################################################
     
       
           if attendance.result.nil?
             attendance.result = " #{user.name}へ勤怠変更申請中 "
-          else
-            attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
+          elsif attendance.result.include?("へ勤怠変更申請中") || @attendance.result.include?("勤怠編集承認済") || @attendance.result.include?("勤怠編集否認")
+            result_array = attendance.result.split
+            j = 0
+            result_array.each do |result0|
+              if result0.include?("へ勤怠変更申請中") || result0.include?("勤怠編集承認済") || result0.include?("勤怠編集否認")
+                result_array[j] = nil
+              end
+              j += 1
+            end
+
+            str = result_array.join
+            attendance.result = str
+        
+            if attendance.result.nil?
+              attendance.result = " #{user.name}へ勤怠変更申請中 "
+            else
+              attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
+            end
           end
-          
-          attendance.save
+    
+      
+          attendance.attendance_change_applying = true 
+      
+      
+          user.save
+      
+          #if attendance.update_attributes(update_overtime_application_params)
+          #else
+          #  render :show      
+          #end
+      
+          #attendance.save
+    
+          # 変更を送信するボタン押下後の処理終わり
+          ##########################################################
           
         end
         attendance.update_attributes!(item)
