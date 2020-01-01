@@ -56,7 +56,7 @@
               </td>
               <td>
                 <div class = "form-group">
-                  <%= attendance.select :to_superior_user_id, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
+                  <%= attendance.select :attendance_change_to_superior_user_id, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
                 </div>
               </td>
             </tr>

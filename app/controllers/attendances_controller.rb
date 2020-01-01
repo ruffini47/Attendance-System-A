@@ -53,7 +53,7 @@ class AttendancesController < ApplicationController
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
-
+          
           attendance_hour = item["attendance_hour"].to_i
           attendance_min = item["attendance_min"].to_i
           temp_after_change_start_time = DateTime.new(year, mon, day, attendance_hour, attendance_min, 0, 0.375);
@@ -67,7 +67,8 @@ class AttendancesController < ApplicationController
           temp_attendance_change_note = item["attendance_change_note"]
           attendance.temp_attendance_change_note = temp_attendance_change_note
           
-          to_superior= item["to_superior_user_id"].to_i
+          to_superior= item["attendance_change_to_superior_user_id"].to_i
+          
           # userは申請先上長ユーザ
           user = User.find(to_superior)
           user.number_of_attendance_change_applied += 1
@@ -239,7 +240,6 @@ class AttendancesController < ApplicationController
         user.number_of_overtime_applied += 1
         # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
         @attendance.to_superior_user_id = user.id
-        
       end
       
       # 過去に指定していないattendanceに登録する場合終わり
@@ -272,7 +272,7 @@ class AttendancesController < ApplicationController
         render :show      
       end
       
-      #@attendance.save
+      @attendance.save
     
     
     end
@@ -342,7 +342,9 @@ class AttendancesController < ApplicationController
 
     i = 0
     n = 0
+    
     user_ids = []
+    
     @attendances.each do |attendance|
       # 申請元のattendanceがapplyしていて、かつ、申請元のattendanceのto_superioro_user_idカラムが申請先のユーザidを指すものだけ取り出す
       if attendance.overtime_applying  == true && attendance.to_superior_user_id == params[:id].to_i
@@ -374,7 +376,7 @@ class AttendancesController < ApplicationController
     @user_id_number = user_ids.length
     puts "user_id_number = #{@user_id_number}"
  
- 
+    
     # user.designated_work_end_timeの設定 
     i = 0
     user = []
@@ -866,17 +868,17 @@ class AttendancesController < ApplicationController
     
     
     attendance = []
-    instructor_confirmation = []
+    attendance_change_instructor_confirmation = []
     change_approval = []
     #user[i]はi番目の申請元ユーザ
     #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])
-      instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
+      attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
 
-    change_approval = params[:attendance][:change_approval]
+    change_approval = params[:attendance][:attendance_change_change_approval]
     
     i = 0
     change_approval.length.times do
@@ -891,12 +893,12 @@ class AttendancesController < ApplicationController
     result = []
     #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
     for i in 0..n-1 do
-      result[i] = inst_hash.invert[instructor_confirmation[i]]
+      result[i] = inst_hash.invert[attendance_change_instructor_confirmation[i]]
     end
     for i in 0..n-1 do
-      if instructor_confirmation[i] == 2
+      if attendance_change_instructor_confirmation[i] == 2
         result[i] = " 勤怠編集承認済 "
-      elsif instructor_confirmation[i] == 3
+      elsif attendance_change_instructor_confirmation[i] == 3
         result[i] = " 勤怠編集否認 "
       else
         result[i] = ""
@@ -929,7 +931,7 @@ class AttendancesController < ApplicationController
       #  end
       #end
           
-      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3) && change_approval[i] == "true" 
+      if (attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3) && change_approval[i] == "true" 
         
         @user.number_of_attendance_change_applied -= 1
         attendance[i].attendance_change_applying = false
@@ -1015,12 +1017,12 @@ class AttendancesController < ApplicationController
     # 勤怠編集情報を扱います。
     def attendances_params
       params.require(:user).permit(attendances: [:attendance_hour, :attendance_min, :departure_hour, :departure_min,
-                                                 :tomorrow, :attendance_change_note, :to_superior_user_id])[:attendances]
+                                                 :attendance_change_tomorrow, :attendance_change_note, :attendance_change_to_superior_user_id])[:attendances]
     end
     
     # 勤怠変更承認の勤怠情報を扱います。
     def update_attendance_change_approval_params
-      params.require(:attendance).permit(attendance: [:instructor_confirmation, :change_approval])
+      params.require(:attendance).permit(attendance: [:attendance_change_instructor_confirmation, :attendance_change_change_approval])
     end
     
     # １ヶ月の残業申請確認を扱います。

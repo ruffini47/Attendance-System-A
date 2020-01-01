@@ -94,12 +94,12 @@
                       </td>
                       <td>
                         <div class = "form-group">
-                          <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
+                          <%= f.select :attendance_change_instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
                         </div>
                       </td>
                       <td>
                         <div class = "form-check ">
-                          <%= f.check_box :change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                          <%= f.check_box :attendance_change_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
                         </div>
                       </td>
                       <td>
