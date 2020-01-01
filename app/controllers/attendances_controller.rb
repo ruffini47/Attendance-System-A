@@ -257,8 +257,24 @@ class AttendancesController < ApplicationController
       
       if @attendance.result.nil?
         @attendance.result = " #{user.name}へ残業申請中 "
-      else
-        @attendance.result.concat(" #{user.name}へ残業申請中 ")
+      elsif @attendance.result.include?("へ残業申請中") || @attendance.result.include?("残業承認済") || @attendance.result.include?("残業否認")
+        result_array = @attendance.result.split
+        j = 0
+        result_array.each do |result0|
+          if result0.include?("へ残業申請中") || result0.include?("残業承認済") || result0.include?("残業否認")
+            result_array[j] = nil
+          end
+          j += 1
+        end
+
+        str = result_array.join
+        @attendance.result = str
+        
+        if @attendance.result.nil?
+          @attendance.result = " #{user.name}へ残業申請中 "
+        else
+          @attendance.result.concat(" #{user.name}へ残業申請中 ")
+        end
       end
     
       #@attendance.previous_superior_user_id = user.id
@@ -614,14 +630,15 @@ class AttendancesController < ApplicationController
         attendance[i].temp_business_processing = nil
         attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
         attendance[i].temp_scheduled_end_time = nil
+        
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
-        elsif attendance[i].result.include?("#{@user.name}へ残業申請中")
-          # @attendance.resultの1番目の空白より前の文字列を消す
+        elsif attendance[i].result.include?("へ残業申請中")
+          # @attendance.resultの残業申請中の文字列を消す
           result_array = attendance[i].result.split
           j = 0
           result_array.each do |result0|
-            if result0 == "#{@user.name}へ残業申請中"
+            if result0.include?("へ残業申請中")
               result_array[j] = nil
             end
             j += 1
