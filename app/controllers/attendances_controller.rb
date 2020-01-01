@@ -87,11 +87,10 @@ class AttendancesController < ApplicationController
     
       
           if attendance.result.nil?
-            attendance.result = "#{user.name}へ勤怠変更申請中"
+            attendance.result = " #{user.name}へ勤怠変更申請中 "
           else
-            attendance.result.insert(0,"#{user.name}へ勤怠変更申請中")
+            attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
           end
-          
           
           attendance.save
           
@@ -248,18 +247,18 @@ class AttendancesController < ApplicationController
       
       
       # @attendance.resultの最初の空白より前の文字列を消す
-      unless @attendance.result.nil?
-        result_array = @attendance.result.split
-        result_array[0] = nil
-        str = result_array.join
-        @attendance.result = str
-      end
+      #unless @attendance.result.nil?
+      #  result_array = @attendance.result.split
+      #  result_array[0] = nil
+      #  str = result_array.join
+      #  @attendance.result = str
+      #end
     
       
       if @attendance.result.nil?
-        @attendance.result = "#{user.name}へ残業申請中"
+        @attendance.result = " #{user.name}へ残業申請中 "
       else
-        @attendance.result.insert(0,"#{user.name}へ残業申請中")
+        @attendance.result.concat(" #{user.name}へ残業申請中 ")
       end
     
       #@attendance.previous_superior_user_id = user.id
@@ -571,9 +570,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = "残業承認済"
+        result[i] = " 残業承認済 "
       elsif instructor_confirmation[i] == 3
-        result[i] = "残業否認"
+        result[i] = " 残業否認 "
       else
         result[i] = ""
       end
@@ -616,8 +615,18 @@ class AttendancesController < ApplicationController
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
         elsif attendance[i].result.include?("#{@user.name}へ残業申請中")
-          attendance[i].result.delete!("#{@user.name}へ残業申請中")
-          attendance[i].result.insert(0,result[i])
+          # @attendance.resultの1番目の空白より前の文字列を消す
+          result_array = attendance[i].result.split
+          j = 0
+          result_array.each do |result0|
+            if result0 == "#{@user.name}へ残業申請中"
+              result_array[j] = nil
+            end
+            j += 1
+          end
+          str = result_array.join
+          attendance[i].result = str
+          attendance[i].result.concat(result[i])
         end
       end
       
@@ -886,9 +895,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = "勤怠編集承認済"
+        result[i] = " 勤怠編集承認済 "
       elsif instructor_confirmation[i] == 3
-        result[i] = "勤怠編集否認"
+        result[i] = " 勤怠編集否認 "
       else
         result[i] = ""
       end
@@ -937,9 +946,19 @@ class AttendancesController < ApplicationController
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
         elsif attendance[i].result.include?("#{@user.name}へ勤怠変更申請中")
-          attendance[i].result.delete!("#{@user.name}へ勤怠変更申請中")
-          attendance[i].result.insert(0,result[i])
+          result_array = attendance[i].result.split
+          j = 0
+          result_array.each do |result0|
+            if result0 == "#{@user.name}へ勤怠変更申請中"
+              result_array[j] = nil
+            end
+            j += 1
+          end
+          str = result_array.join
+          attendance[i].result = str
+          attendance[i].result.concat(result[i])
         end
+        
       end
       
       @user.save
