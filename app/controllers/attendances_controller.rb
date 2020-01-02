@@ -662,14 +662,19 @@ class AttendancesController < ApplicationController
       
     for i in 0..n-1 do
           
-      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3) && change_approval[i] == "true" 
+      if instructor_confirmation[i] == 2 && change_approval[i] == "true" 
         
-        @user.number_of_overtime_applied -= 1
-        attendance[i].overtime_applying = false
         attendance[i].business_processing = attendance[i].temp_business_processing
         attendance[i].temp_business_processing = nil
         attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
         attendance[i].temp_scheduled_end_time = nil
+        
+      end
+      
+      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3 ) && change_approval[i] == "true"                
+        
+        @user.number_of_overtime_applied -= 1
+        attendance[i].overtime_applying = false
         
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
@@ -966,10 +971,7 @@ class AttendancesController < ApplicationController
     end
      
     for i in 0..n-1 do
-      if (attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3) && attendance_change_change_approval[i] == "true" 
-        
-        @user.number_of_attendance_change_applied -= 1
-        attendance[i].attendance_change_applying = false
+      if attendance_change_instructor_confirmation[i] == 2 && attendance_change_change_approval[i] == "true" 
         
         attendance[i].last_attendance_change_note = attendance[i].temp_attendance_change_note
         attendance[i].temp_attendance_change_note = nil
@@ -979,6 +981,13 @@ class AttendancesController < ApplicationController
         
         attendance[i].finished_at = attendance[i].temp_after_change_end_time
         attendance[i].temp_after_change_end_time = nil
+        
+      end
+      
+      if ( attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3 ) && attendance_change_change_approval[i] == "true" 
+        
+        @user.number_of_attendance_change_applied -= 1
+        attendance[i].attendance_change_applying = false
         
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
@@ -1007,12 +1016,8 @@ class AttendancesController < ApplicationController
         
         #attendance[i].save
         #attendance[i].errors
-        
-        
+
       end
-      
-      
-      
       
     end
     
