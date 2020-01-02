@@ -119,7 +119,7 @@ class AttendancesController < ApplicationController
       
           if attendance.result.nil?
             attendance.result = " #{user.name}へ勤怠変更申請中 "
-          elsif attendance.result.include?("へ勤怠変更申請中") || @attendance.result.include?("勤怠編集承認済") || @attendance.result.include?("勤怠編集否認")
+          elsif attendance.result.include?("へ勤怠変更申請中") || attendance.result.include?("勤怠編集承認済") || attendance.result.include?("勤怠編集否認")
             result_array = attendance.result.split
             j = 0
             result_array.each do |result0|
@@ -137,6 +137,8 @@ class AttendancesController < ApplicationController
             else
               attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
             end
+          else
+            attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
           end
     
       
@@ -243,7 +245,7 @@ class AttendancesController < ApplicationController
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
        
     @attendance.temp_scheduled_end_time = d1
-    @attendance.tomorrow = params[:attendance][:tomorrow].to_i
+    @attendance.attendance_change_tomorrow = params[:attendance][:attendance_change_tomorrow].to_i
     
     change_application = params[:attendance][:change_application].to_i
     
@@ -335,6 +337,8 @@ class AttendancesController < ApplicationController
         else
           @attendance.result.concat(" #{user.name}へ残業申請中 ")
         end
+      else
+        @attendance.result.concat(" #{user.name}へ残業申請中 ")
       end
     
       #@attendance.previous_superior_user_id = user.id
