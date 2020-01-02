@@ -661,30 +661,6 @@ class AttendancesController < ApplicationController
     end
       
     for i in 0..n-1 do
-      # 残業承認済み削除ループ
-      #loop do
-      #  if !attendance[i].result.nil?
-      #    if attendance[i].result.include?("残業承認済")
-      #      attendance[i].result.slice!("残業承認済")
-      #    else
-      #      break
-      #    end
-      #  else
-      #    break
-      #  end
-      #end
-        # 残業否認削除ループ
-      #loop do
-      #  if !attendance[i].result.nil?
-      #    if attendance[i].result.include?("残業否認")
-      #      attendance[i].result.slice!("残業否認")
-      #    else
-      #      break
-      #    end
-      #  else
-      #    break
-      #  end
-      #end
           
       if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3) && change_approval[i] == "true" 
         
@@ -711,13 +687,15 @@ class AttendancesController < ApplicationController
           attendance[i].result = str
           attendance[i].result.concat(result[i])
         end
+      
+        if attendance[i].update_attributes(update_overtime_approval_params)
+        else
+          render :show      
+        end
+      
       end
       
       @user.save
-      if attendance[i].update_attributes(update_overtime_approval_params)
-      else
-        render :show      
-      end
       
     end
     
@@ -959,17 +937,18 @@ class AttendancesController < ApplicationController
       attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
 
-    change_approval = params[:attendance][:attendance_change_change_approval]
+    attendance_change_change_approval = params[:attendance][:attendance_change_change_approval]
     
     i = 0
-    change_approval.length.times do
-      if change_approval[i] == "true"
-        change_approval.delete_at(i-1)
+    attendance_change_change_approval.length.times do
+      if attendance_change_change_approval[i] == "true"
+        attendance_change_change_approval.delete_at(i-1)
         i -= 1
       end
       i += 1
     end
     
+    # ここはenumの貞義により敢えてinstructor_confirmations
     inst_hash = Attendance.instructor_confirmations
     result = []
     #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
@@ -985,34 +964,9 @@ class AttendancesController < ApplicationController
         result[i] = ""
       end
     end
-      
+     
     for i in 0..n-1 do
-      # 残業承認済み削除ループ
-      #loop do
-      #  if !attendance[i].result.nil?
-      #    if attendance[i].result.include?("残業承認済")
-      #      attendance[i].result.slice!("残業承認済")
-      #    else
-      #      break
-      #    end
-      #  else
-      #    break
-      #  end
-      #end
-        # 残業否認削除ループ
-      #loop do
-      #  if !attendance[i].result.nil?
-      #    if attendance[i].result.include?("残業否認")
-      #      attendance[i].result.slice!("残業否認")
-      #    else
-      #      break
-      #    end
-      #  else
-      #    break
-      #  end
-      #end
-          
-      if (attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3) && change_approval[i] == "true" 
+      if (attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3) && attendance_change_change_approval[i] == "true" 
         
         @user.number_of_attendance_change_applied -= 1
         attendance[i].attendance_change_applying = false
@@ -1041,14 +995,24 @@ class AttendancesController < ApplicationController
           attendance[i].result = str
           attendance[i].result.concat(result[i])
         end
+      
+        @user.save
+        
+        if attendance[i].update_attributes(update_attendance_change_approval_params)
+        else
+          render :show      
+        end
+         
+        #attendance[i].save!
+        
+        #attendance[i].save
+        #attendance[i].errors
+        
         
       end
       
-      @user.save
-      if attendance[i].update_attributes(update_attendance_change_approval_params)
-      else
-        render :show      
-      end
+      
+      
       
     end
     
