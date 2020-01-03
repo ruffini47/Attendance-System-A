@@ -73,10 +73,26 @@
                       <td>
                         <%= $days_of_the_week[@attendancesc[i].worked_on.wday] %>
                       </td>    
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td>
+                        <% if @attendancesc[i].started_at.present? %>
+                          <%= @attendancesc[i].started_at.hour %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @attendancesc[i].started_at.present? %>
+                          <%= @attendancesc[i].started_at.min %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @attendancesc[i].finished_at.present? %>
+                          <%= @attendancesc[i].finished_at.hour %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @attendancesc[i].finished_at.present? %>
+                          <%= @attendancesc[i].finished_at.min %>
+                        <% end %>
+                      </td>
                       <td>
                         <%= @attendancesc[i].temp_after_change_start_time.hour %>
                       </td>
