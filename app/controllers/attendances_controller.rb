@@ -49,7 +49,7 @@ class AttendancesController < ApplicationController
       attendances_params.each do |id, item|
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
-        unless item["attendance_change_to_superior_user_id"] == ""
+        unless item["attendance_hour"] == ""
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -193,10 +193,16 @@ class AttendancesController < ApplicationController
     # @attendanceは申請元ユーザの@attendance
     @attendance = Attendance.find(params[:id])
     
-    
+    hour1 = params[:attendance][:hour]
+    min1 =  params[:attendance][:min] 
 
-    hour = params[:attendance][:hour].to_i
-    min = params[:attendance][:min].to_i
+    if hour1 == "" || min1 == ""
+      flash[:danger] = "終了予定時間が空です。"
+      redirect_to user_url(@user.id, date: @first_day)  and return
+    end  
+
+    hour = hour1.to_i
+    min = min.to_i
     
     # 共通の処理終わり
     ##########################################################
@@ -249,6 +255,13 @@ class AttendancesController < ApplicationController
     @attendance.temp_business_processing = temp_business_processing
   
     to_superior = params[:attendance][:to_superior]
+    
+    
+    if to_superior == ""
+      flash[:danger] = "指示者確認欄が空です。"
+      redirect_to user_url(@user.id, date: @first_day)  and return
+    end
+    
     # userは申請先ユーザ
     user = User.find(to_superior)
     
@@ -626,6 +639,13 @@ class AttendancesController < ApplicationController
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])
+      
+      
+      instructor_confirmation1 = params[:attendance][:instructor_confirmation]
+      if instructor_confirmation1 == nil
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id, date: @first_day)  and return
+      end
       instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
     end
 
@@ -929,12 +949,17 @@ class AttendancesController < ApplicationController
     
     attendance = []
     attendance_change_instructor_confirmation = []
-    change_approval = []
+    attendance_change_change_approval = []
     #user[i]はi番目の申請元ユーザ
     #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
       user[i] = User.find(params[:attendance][:user_id][i])
       attendance[i] = Attendance.find(params[:attendance][:id][i])
+      attendance_change_instructor_confirmation1 =  params[:attendance][:attendance_change_instructor_confirmation]
+      if attendance_change_instructor_confirmation1 == nil
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id, date: @first_day)  and return
+      end
       attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
 
@@ -1002,6 +1027,7 @@ class AttendancesController < ApplicationController
         end
       
         @user.save
+        
         
         if attendance[i].update_attributes(update_attendance_change_approval_params)
         else
