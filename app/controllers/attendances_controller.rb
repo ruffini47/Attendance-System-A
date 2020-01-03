@@ -49,7 +49,7 @@ class AttendancesController < ApplicationController
       attendances_params.each do |id, item|
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
-        unless item["attendance_hour"] == ""
+        unless item["attendance_change_to_superior_user_id"] == ""
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -73,10 +73,6 @@ class AttendancesController < ApplicationController
           user = User.find(to_superior)
           
           
-          
-          
-          
-      
           ###################################################################
           # 過去に指定したattendanceと同じattendanceに残業申請する場合
           if attendance.attendance_change_applying == true
@@ -245,7 +241,7 @@ class AttendancesController < ApplicationController
     d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
        
     @attendance.temp_scheduled_end_time = d1
-    @attendance.attendance_change_tomorrow = params[:attendance][:attendance_change_tomorrow].to_i
+    @attendance.tomorrow = params[:attendance][:tomorrow].to_i
     
     change_application = params[:attendance][:change_application].to_i
     

@@ -111,7 +111,7 @@
           </td>
           <td>
             <% if @user.designated_work_end_time.present? && day.cl_scheduled_end_time.present? %>
-              <%= working_times(@user.designated_work_end_time, day.cl_scheduled_end_time, day.tomorrow) %>
+              <%= working_times(@user.designated_work_end_time, day.cl_scheduled_end_time, 0) %>
             <% elsif @user.designated_work_end_time.present? && day.scheduled_end_time.present? %>
               <%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) %>
             <% end %>
