@@ -7,12 +7,10 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <%= form_with(model: @attendancesd, url: attendances_manager_approval_approval_user_path(current_user.id, date: @first_day.to_date), local: true, method: :patch)  do |f| %>
-      <% for n in 0..(@user_id_number_d-1) do %>
-        <% i = @count_max_sum_d[n] %>
-        <% user = User.find(@attendancesd[i].user_id) %>
+    <%= form_with(url: attendances_manager_approval_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
+      <% for i in 0..(@user_number_d-1) do %>
         <div class="modal-header">
-          <h3 class="modal-title title-center">【<%= user.name %>からの1ヵ月分勤怠申請】</h3>
+          <h3 class="modal-title title-center">【<%=  @user_d[i].name %>からの1ヵ月分勤怠申請】</h3>
         </div>
         <div class="modal-body">
           <div>
@@ -32,14 +30,13 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- m in 0..@count_max_d[n]-1 do -->
-                  <%= f.hidden_field :user_id, multiple: true, :value => user.id %>
-                  <% i = @count_max_sum_d[n] %>
-                    <%= f.hidden_field :id, multiple: true, :value => @attendancesd[i].id %> <!-- attendancesbテーブルのidを渡す -->
-                    <%= f.hidden_field :date, :value => @first_day %>
+                <!--%= f.hidden_field :user_id, multiple: true, :value => user.id %-->
+                  <% @attendancesd[i].each do |attendance| %>
+                    <!--%= f.hidden_field :id, multiple: true, :value => @attendancesd[i].id %> <!-- attendancesbテーブルのidを渡す -->
+                    <!--%= f.hidden_field :date, :value => @first_day %-->
                     <tr>
                       <td>
-                        <%= l(@attendancesd[i].worked_on, format: :short) %>月
+                        <%= l(attendance.worked_on, format: :short) %>月
                       </td>
                       <td>
                         <div class = "form-group">
@@ -52,10 +49,10 @@
                         </div>
                       </td>
                       <td>
-                        <%= f.submit "確認", :name => "#{@attendancesd[i].id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                        <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
                       </td>
                     </tr>
-                <!-- end -->    
+                  <% end %>
               </tbody>
             </table>
           </div>
