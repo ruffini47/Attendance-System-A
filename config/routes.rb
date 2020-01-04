@@ -49,7 +49,11 @@ Rails.application.routes.draw do
 # 勤怠変更確認画面のキャンセル処理
   get '/users/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
 
-
+# 所属長承認申請
+  post '/users/:id/attendance/attendance_manager_approval_appication/', to: 'attendances#post_manager_approval_application', as: 'attendances_manager_approval_application_user'
+  
+# 所属長承認モーダル
+  get '/users/:id/attendance/attendance_manager_approval_approval/', to: 'attendances#edit_manager_approval_approval', as: 'attendances_manager_approval_approval_user'             
   
   resources :users do
       
