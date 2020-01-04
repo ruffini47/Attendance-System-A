@@ -49,7 +49,7 @@ class AttendancesController < ApplicationController
       attendances_params.each do |id, item|
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
-        unless item["attendance_hour"] == ""
+        if item["attendance_hour"] != "" || item["attendance_min"] != "" || item["departure_hour"] != "" || item["departure_min"] != "" 
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -67,6 +67,11 @@ class AttendancesController < ApplicationController
           temp_attendance_change_note = item["attendance_change_note"]
           attendance.temp_attendance_change_note = temp_attendance_change_note
           
+          if item["attendance_change_to_superior_user_id"] == ""
+            flash[:danger] = "指示者確認欄が空です。"
+            redirect_to user_url(@user.id, date: @first_day)  and return
+          end  
+    
           to_superior= item["attendance_change_to_superior_user_id"].to_i
           
           # userは申請先上長ユーザ
@@ -315,15 +320,7 @@ class AttendancesController < ApplicationController
       
       # 過去に指定していないattendanceに登録する場合終わり
       ###################################################################
-      
-      
-      # @attendance.resultの最初の空白より前の文字列を消す
-      #unless @attendance.result.nil?
-      #  result_array = @attendance.result.split
-      #  result_array[0] = nil
-      #  str = result_array.join
-      #  @attendance.result = str
-      #end
+    
     
       
       if @attendance.result.nil?
@@ -714,9 +711,11 @@ class AttendancesController < ApplicationController
           render :show      
         end
       
+        @user.save
+      
       end
       
-      @user.save
+      
       
     end
     
