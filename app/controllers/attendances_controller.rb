@@ -1108,9 +1108,9 @@ class AttendancesController < ApplicationController
     @attendancesd_number_d = []
     i = 0
     users.each do |user|
-      if user.attendances.where(manager_approval_applying:true).count > 0
-        # @attendances[i]は所属長承認申請しているi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
-        @attendancesd[i] = user.attendances.where(manager_approval_applying:true).order(:worked_on)
+      if user.attendances.where(manager_approval_applying: true).where(manager_approval_to_superior_user_id: params[:id].to_i).count > 0
+        # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
+        @attendancesd[i] = user.attendances.where(manager_approval_applying: true).where(manager_approval_to_superior_user_id: params[:id].to_i).order(:worked_on)
         # @user[i]は所属長承認申請しているi番目のユーザ
         @user_d[i] =  User.find(@attendancesd[i].first.user_id)         
         i += 1
