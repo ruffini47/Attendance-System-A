@@ -119,9 +119,9 @@ class AttendancesController < ApplicationController
     
       
           if attendance.result.nil?
-            attendance.result = " #{user.name}へ勤怠変更申請中 "
+            attendance.result = ",#{user.name}へ勤怠変更申請中"
           elsif attendance.result.include?("へ勤怠変更申請中") || attendance.result.include?("勤怠編集承認済") || attendance.result.include?("勤怠編集否認")
-            result_array = attendance.result.split
+            result_array = attendance.result.split(",")
             j = 0
             result_array.each do |result0|
               if result0.include?("へ勤怠変更申請中") || result0.include?("勤怠編集承認済") || result0.include?("勤怠編集否認")
@@ -129,19 +129,23 @@ class AttendancesController < ApplicationController
               end
               j += 1
             end
-
-            str = result_array.join
+            str = result_array.join(",")
+            
             attendance.result = str
         
             if attendance.result.nil?
-              attendance.result = " #{user.name}へ勤怠変更申請中 "
+              attendance.result = ",#{user.name}へ勤怠変更申請中"
             else
-              attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
+              attendance.result.concat(",#{user.name}へ勤怠変更申請中")
             end
           else
-            attendance.result.concat(" #{user.name}へ勤怠変更申請中 ")
+            attendance.result.concat(",#{user.name}へ勤怠変更申請中")
           end
     
+          attendance.result.gsub!(",,",",")
+          if attendance.result[0] == ","
+            attendance.result.slice!(0)
+          end
       
           attendance.attendance_change_applying = true 
       
@@ -307,9 +311,9 @@ class AttendancesController < ApplicationController
     
       
       if @attendance.result.nil?
-        @attendance.result = " #{user.name}へ残業申請中 "
+        @attendance.result = ",#{user.name}へ残業申請中"
       elsif @attendance.result.include?("へ残業申請中") || @attendance.result.include?("残業承認済") || @attendance.result.include?("残業否認")
-        result_array = @attendance.result.split
+        result_array = @attendance.result.split(",")
         j = 0
         result_array.each do |result0|
           if result0.include?("へ残業申請中") || result0.include?("残業承認済") || result0.include?("残業否認")
@@ -317,17 +321,22 @@ class AttendancesController < ApplicationController
           end
           j += 1
         end
-
-        str = result_array.join
+        str = result_array.join(",")
+        
         @attendance.result = str
         
         if @attendance.result.nil?
-          @attendance.result = " #{user.name}へ残業申請中 "
+          @attendance.result = ",#{user.name}へ残業申請中"
         else
-          @attendance.result.concat(" #{user.name}へ残業申請中 ")
+          @attendance.result.concat(",#{user.name}へ残業申請中")
         end
       else
-        @attendance.result.concat(" #{user.name}へ残業申請中 ")
+        @attendance.result.concat(",#{user.name}へ残業申請中")
+      end
+    
+      @attendance.result.gsub!(",,",",")
+      if @attendance.result[0] == ","
+        @attendance.result.slice!(0)
       end
     
       #@attendance.previous_superior_user_id = user.id
@@ -676,16 +685,18 @@ class AttendancesController < ApplicationController
           attendance[i].result = result[i]  
         elsif attendance[i].result.include?("へ残業申請中")
           # @attendance.resultの残業申請中の文字列を消す
-          result_array = attendance[i].result.split
+          result_array = attendance[i].result.split(",")
           j = 0
           result_array.each do |result0|
             if result0.include?("へ残業申請中")
               result_array[j] = nil
+              
             end
             j += 1
           end
-          str = result_array.join
+          str = result_array.join(",")
           attendance[i].result = str
+          attendance[i].result.concat(",")
           attendance[i].result.concat(result[i])
         end
       
@@ -1003,8 +1014,9 @@ class AttendancesController < ApplicationController
             end
             j += 1
           end
-          str = result_array.join
+          str = result_array.join(",")
           attendance[i].result = str
+          attendance[i].result.concat(",")
           attendance[i].result.concat(result[i])
         end
       
@@ -1129,9 +1141,9 @@ class AttendancesController < ApplicationController
    
     
     if attendance.result.nil?
-      attendance.result = " #{user.name}へ所属長承認申請中 "
+      attendance.result = ",#{user.name}へ所属長承認申請中"
     elsif attendance.result.include?("へ所属長承認申請中") || attendance.result.include?("から承認済") || attendance.result.include?("から否認")
-      result_array = attendance.result.split
+      result_array = attendance.result.split(",")
       j = 0
       result_array.each do |result0|
         if result0.include?("へ所属長承認申請中") || result0.include?("から承認済") || result0.include?("から否認")
@@ -1140,17 +1152,24 @@ class AttendancesController < ApplicationController
         j += 1
       end
 
-      str = result_array.join
+      str = result_array.join(",")
+     
       attendance.result = str
         
       if attendance.result.nil?
-        attendance.result = " #{user.name}へ所属長承認申請中 "
+        attendance.result = ",#{user.name}へ所属長承認申請中"
       else
-        attendance.result.concat(" #{user.name}へ所属長承認申請中 ")
+        attendance.result.concat(",#{user.name}へ所属長承認申請中")
       end
     else
-        attendance.result.concat(" #{user.name}へ所属長承認申請中 ")
+        attendance.result.concat(",#{user.name}へ所属長承認申請中")
     end
+  
+    attendance.result.gsub!(",,",",")
+    if attendance.result[0] == ","
+      attendance.result.slice!(0)
+    end  
+    
   
     attendance.manager_approval_applying = true   
   
