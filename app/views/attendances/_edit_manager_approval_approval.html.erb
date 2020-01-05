@@ -36,7 +36,7 @@
                     <!--%= f.hidden_field :date, :value => @first_day %-->
                     <tr>
                       <td>
-                        <%= l(attendance.worked_on, format: :short) %>月
+                        <%= attendance.worked_on.to_date.month%>月
                       </td>
                       <td>
                         <div class = "form-group">

@@ -259,13 +259,15 @@ class AttendancesController < ApplicationController
     temp_business_processing = params[:attendance][:business_processing]
     @attendance.temp_business_processing = temp_business_processing
   
-    to_superior = params[:attendance][:to_superior]
+    to_superior1 = params[:attendance][:to_superior]
     
     
-    if to_superior == ""
+    if to_superior1 == ""
       flash[:danger] = "指示者確認欄が空です。"
       redirect_to user_url(@user.id, date: @first_day)  and return
     end
+    
+    to_superior = to_superior1.to_i
     
     # userは申請先ユーザ
     user = User.find(to_superior)
@@ -283,16 +285,7 @@ class AttendancesController < ApplicationController
             previous_superior_user = User.find(@attendance.to_superior_user_id)
             previous_superior_user.number_of_overtime_applied -= 1
             previous_superior_user.save
-      
-                   
-            #if previous_superior_user.update_attributes(previous_superior_params)
-            #else
-            #  render :show      
-            #end
-      
-      
-      
-      
+
         
             user.number_of_overtime_applied += 1
             # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id        
@@ -1086,8 +1079,17 @@ class AttendancesController < ApplicationController
     # @userは申請元ユーザ
     @user = User.find(params[:id])
     @first_day = params[:date].to_date
-    to_superior = params[:manager_approval_to_superior].to_i
-    #userは申請先上長ユーザ
+    
+    to_superior1 = params[:manager_approval_to_superior]
+    
+    if to_superior1 == ""
+      flash[:danger] = "指示者確認欄が空です。"
+      redirect_to user_url(@user.id, date: @first_day)  and return
+    end
+    
+    to_superior = to_superior1.to_i
+    
+    # userは申請先上長ユーザ
     user = User.find(to_superior)
     user.number_of_manager_approval_applied += 1
     user.save
@@ -1095,8 +1097,37 @@ class AttendancesController < ApplicationController
     attendances = @user.attendances.where(worked_on:@first_day)
     attendance = attendances.first
     attendance.manager_approval_applying = true
+    
+    
     attendance.manager_approval_to_superior_user_id = to_superior
-    attendance.save
+   
+    
+    if attendance.result.nil?
+      attendance.result = " #{user.name}へ所属長承認申請中 "
+    elsif attendance.result.include?("へ所属長承認申請中") || attendance.result.include?("から承認済") || attendance.result.include?("から否認")
+      result_array = attendance.result.split
+      j = 0
+      result_array.each do |result0|
+        if result0.include?("へ所属長承認申請中") || result0.include?("から承認済") || result0.include?("から否認")
+          result_array[j] = nil
+        end
+        j += 1
+      end
+
+      str = result_array.join
+      attendance.result = str
+        
+      if attendance.result.nil?
+        attendance.result = " #{user.name}へ所属長承認申請中 "
+      else
+        attendance.result.concat(" #{user.name}へ所属長承認申請中 ")
+      end
+    else
+        attendance.result.concat(" #{user.name}へ所属長承認申請中 ")
+    end
+  
+    attendance.save  
+    redirect_to user_url(@user.id, date:@first_day)
     
   end
   
