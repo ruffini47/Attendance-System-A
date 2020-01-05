@@ -145,18 +145,8 @@ class AttendancesController < ApplicationController
       
           attendance.attendance_change_applying = true 
       
-      
+          attendance.save
           user.save
-      
-          #if attendance.update_attributes(update_overtime_application_params)
-          #else
-          #  render :show      
-          #end
-      
-          #attendance.save
-    
-          # 変更を送信するボタン押下後の処理終わり
-          ##########################################################
           
         end
         attendance.update_attributes!(item)
@@ -1091,15 +1081,51 @@ class AttendancesController < ApplicationController
     
     # userは申請先上長ユーザ
     user = User.find(to_superior)
-    user.number_of_manager_approval_applied += 1
-    user.save
     
     attendances = @user.attendances.where(worked_on:@first_day)
     attendance = attendances.first
-    attendance.manager_approval_applying = true
     
     
-    attendance.manager_approval_to_superior_user_id = to_superior
+    ###################################################################
+    # 過去に指定したattendanceと同じattendanceに残業申請する場合
+    if attendance.manager_approval_applying == true
+          
+      #前回と違う上長を指定した場合
+      if attendance.manager_approval_to_superior_user_id != to_superior
+            
+        previous_superior_user = User.find(attendance.manager_approval_to_superior_user_id)
+        previous_superior_user.number_of_manager_approval_applied -= 1
+        previous_superior_user.save
+      
+          
+        user.number_of_manager_approval_applied += 1
+        # 申請元attendanceに申請先user.idの値を持たせるカラムmanager_approval_to_superior_user_id        
+        attendance.manager_approval_to_superior_user_id = to_superior
+      
+        
+      # 前回と同じ上長を指定している場合
+      else
+        
+        # 何もしない
+        
+      end
+        
+    # 過去に指定した@attendanceと同じattendanceに残業申請する場合終わり
+    ###################################################################
+      
+    ###################################################################
+    # 過去に指定していないattendanceに登録する場合
+    
+    else
+      user.number_of_manager_approval_applied += 1
+      # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id
+      attendance.manager_approval_to_superior_user_id = to_superior
+      
+    end
+      
+    # 過去に指定していないattendanceに登録する場合終わり
+    ###################################################################
+       
    
     
     if attendance.result.nil?
@@ -1126,7 +1152,10 @@ class AttendancesController < ApplicationController
         attendance.result.concat(" #{user.name}へ所属長承認申請中 ")
     end
   
-    attendance.save  
+    attendance.manager_approval_applying = true   
+  
+    attendance.save
+    user.save
     redirect_to user_url(@user.id, date:@first_day)
     
   end
