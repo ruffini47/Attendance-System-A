@@ -222,13 +222,6 @@ class AttendancesController < ApplicationController
         render :show      
       end
       
-      
-      
-      
-      #@attendance.save
-      
-      
-      
     
     end
     # 勤怠を確認するボタン押下後の処理終わり
@@ -410,154 +403,35 @@ class AttendancesController < ApplicationController
   
   def edit_overtime_approval
     
-    @users = User.all
-    @attendances = Attendance.all
-    @first_day = params[:date]
-    
-    
-    a = []
+    users = User.all
     @attendancesb = []
-
+    @user_b = []
+    @attendancesb_number_b = []
     i = 0
-    n = 0
-    
-    user_ids = []
-    
-    @attendances.each do |attendance|
-      # 申請元のattendanceがapplyしていて、かつ、申請元のattendanceのto_superioro_user_idカラムが申請先のユーザidを指すものだけ取り出す
-      if attendance.overtime_applying  == true && attendance.to_superior_user_id == params[:id].to_i
-        user_ids[0] = attendance.user_id
+    users.each do |user|
+      if user.attendances.where(overtime_applying: true).where(to_superior_user_id: params[:id].to_i).count > 0
+        # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
+        @attendancesb[i] = user.attendances.where(overtime_applying: true).where(to_superior_user_id: params[:id].to_i).order(:worked_on)
+        # @user[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザ
+        @user_b[i] =  User.find(@attendancesb[i].first.user_id)         
+        i += 1
       end
     end
     
-    hit = false
-    @attendances.each do |attendance|
-      if attendance.overtime_applying == true && attendance.to_superior_user_id == params[:id].to_i
-        n += 1
-        user_ids.each do |user_id|
-          if attendance.user_id == user_id
-            hit = true
-            #puts "hit"
-          end
-        end
-        if hit == false
-          #puts "not hit"
-          i += 1
-          user_ids[i] = attendance.user_id
-        end
-        hit = false
-        a.push([attendance.user_id,attendance.worked_on])
-        @attendancesb.push(attendance)
-      end
-    end
     
-    @user_id_number = user_ids.length
-    puts "user_id_number = #{@user_id_number}"
- 
+    @user_number_b = i
     
-    # user.designated_work_end_timeの設定 
-    i = 0
-    user = []
-    @attendancesb.each do |attendance|
-      user_ids.each do |user_id|
-        if user_id == attendance.user_id
-          user[i] = User.find(attendance.user_id)
-          year = Time.now.year
-          mon = Time.now.mon
-          day = Time.now.day
-          hour = user[i].designated_work_end_time.hour
-          min = user[i].designated_work_end_time.min
-          d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
-          user[i].designated_work_end_time = d1
-          user[i].save
-          
-          i += 1
-        end
-      end
-    end
-    
-
-    
-
-    puts "n= #{n}"
-
-    count = []
-
-    for i in 0..n-1
-      count.push(0)
-    end
-
-    for i in 0..n-1 do
-      for j in 0..n-1
-        if a[i][0] != a[j][0]
-          count[i] += 1
-        end
-      end
-    end
-
-    for i in 0..n-1 do
-      count[i] = n - count[i]
-    end
-
-    p count
-
-    @count_max = []
-
-    isBreak = false
-    i = 0
-    if @user_id_number == 1
-      @count_max.push(n)
-    else
-      for m in 0..@user_id_number-1 do
-        for j in 1..n-1 do
-          #puts "m = #{m} i = #{i} j = #{j}"
-          if !a[i + j].nil?
-            isBreak = false 
-            if a[i][0] != a[i + j][0]
-              @count_max.push(j)
-              i += j
-              isBreak = true
-              break
-            end
-          elsif !(a[i + j - 1].nil?) && a[i + j].nil?
-            @count_max.push(j)
-          end
-          break if isBreak
-        end
-      end
-    end
-
-    puts "@count_max ="
-    p @count_max
-
-    puts "count_maxが答えだ！！"
-
-    @count_max_sum = []
-    @count_max_sum[0] = 0
-    #count_max_sum[1] = count_max[0]
-    #count_max_sum[2] = count_max[0] + count_max[1]
-    #count_max_sum[3] = count_max[0] + count_max[1] +count_max[2]
-    for k in 1..@user_id_number-1 do
-      @count_max_sum[k] = @count_max_sum[k-1] + @count_max[k-1]
-    end
-
-    # ここまではtemp_business_processing 行っている。
-    #@attendancesb.first.temp_business_processing
-
-    
-    #users[j]はj番目の申請元ユーザ
     j = 0
-    users = []
-    for n in 0..(@user_id_number-1) do 
-      i = @count_max_sum[n]
-      users[j] = User.find(@attendancesb[i].user_id)
+    @user_number_b.times do
+      @attendancesb_number_b[j] = @attendancesb[j].length 
       j += 1
-    end 
+    end
     
     
     
-
   end
+
+
 
   def update_overtime_approval
     ##########################################################
@@ -1190,7 +1064,7 @@ class AttendancesController < ApplicationController
       if user.attendances.where(manager_approval_applying: true).where(manager_approval_to_superior_user_id: params[:id].to_i).count > 0
         # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
         @attendancesd[i] = user.attendances.where(manager_approval_applying: true).where(manager_approval_to_superior_user_id: params[:id].to_i).order(:worked_on)
-        # @user[i]は所属長承認申請しているi番目のユーザ
+        # @user[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザ
         @user_d[i] =  User.find(@attendancesd[i].first.user_id)         
         i += 1
       end

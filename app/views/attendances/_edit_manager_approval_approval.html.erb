@@ -31,28 +31,28 @@
               </thead>
               <tbody>
                 <!--%= f.hidden_field :user_id, multiple: true, :value => user.id %-->
-                  <% @attendancesd[i].each do |attendance| %>
-                    <!--%= f.hidden_field :id, multiple: true, :value => @attendancesd[i].id %> <!-- attendancesbテーブルのidを渡す -->
-                    <!--%= f.hidden_field :date, :value => @first_day %-->
-                    <tr>
-                      <td>
-                        <%= attendance.worked_on.to_date.month%>月
-                      </td>
-                      <td>
-                        <div class = "form-group">
-                          <%= f.select :manager_approval_instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
-                        </div>
-                      </td>
-                      <td>
-                        <div class = "form-check ">
-                          <%= f.check_box :manager_approval_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
-                        </div>
-                      </td>
-                      <td>
-                        <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
-                      </td>
-                    </tr>
-                  <% end %>
+                <% @attendancesd[i].each do |attendance| %>
+                  <!--%= f.hidden_field :id, multiple: true, :value => @attendancesd[i].id %> <!-- attendancesbテーブルのidを渡す -->
+                  <!--%= f.hidden_field :date, :value => @first_day %-->
+                  <tr>
+                    <td>
+                      <%= attendance.worked_on.to_date.month%>月
+                    </td>
+                    <td>
+                      <div class = "form-group">
+                        <%= f.select :manager_approval_instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
+                      </div>
+                    </td>
+                    <td>
+                      <div class = "form-check ">
+                        <%= f.check_box :manager_approval_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                      </div>
+                    </td>
+                    <td>
+                      <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                    </td>
+                  </tr>
+                <% end %>
               </tbody>
             </table>
           </div>
