@@ -1,3 +1,4 @@
+<% provide(:title, "Attendance change approval") %>
 <% provide(:class_text, 'attendance-change-approval') %>
 <% provide(:button_text, '更新') %>
 
@@ -6,12 +7,10 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <%= form_with(model: @attendancesc, url: attendances_attendance_change_approval_user_path(current_user.id, date: @first_day.to_date), local: true, method: :patch)  do |f| %>
-      <% for n in 0..(@user_id_number_c-1) do %>
-        <% i = @count_max_sum_c[n] %>
-        <% user = User.find(@attendancesc[i].user_id) %>
+    <%= form_with(model: @attendancesc, url: attendances_attendance_change_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
+      <% for i in 0..(@user_number_c-1) do %>
         <div class="modal-header">
-          <h3 class="modal-title title-center">【<%= user.name %>からの勤怠変更申請】</h3>
+          <h3 class="modal-title title-center">【<%= @user_c[i].name %>からの勤怠変更申請】</h3>
         </div>
         <div class="modal-body">
           <div>
@@ -61,67 +60,66 @@
                 </tr>
               </thead>
               <tbody>
-                <% for m in 0..@count_max_c[n]-1 do %>
-                  <%= f.hidden_field :user_id, multiple: true, :value => user.id %>
-                  <% i = @count_max_sum_c[n] + m %>
-                    <%= f.hidden_field :id, multiple: true, :value => @attendancesc[i].id %> <!-- attendancesbテーブルのidを渡す -->
-                    <%= f.hidden_field :date, :value => @first_day %>
-                    <tr>
-                      <td>
-                        <%= l(@attendancesc[i].worked_on, format: :short) %>
-                      </td>  
-                      <td>
-                        <%= $days_of_the_week[@attendancesc[i].worked_on.wday] %>
-                      </td>    
-                      <td>
-                        <% if @attendancesc[i].started_at.present? %>
-                          <%= @attendancesc[i].started_at.hour %>
-                        <% end %>
-                      </td>
-                      <td>
-                        <% if @attendancesc[i].started_at.present? %>
-                          <%= @attendancesc[i].started_at.min %>
-                        <% end %>
-                      </td>
-                      <td>
-                        <% if @attendancesc[i].finished_at.present? %>
-                          <%= @attendancesc[i].finished_at.hour %>
-                        <% end %>
-                      </td>
-                      <td>
-                        <% if @attendancesc[i].finished_at.present? %>
-                          <%= @attendancesc[i].finished_at.min %>
-                        <% end %>
-                      </td>
-                      <td>
-                        <%= @attendancesc[i].temp_after_change_start_time.hour %>
-                      </td>
-                      <td>
-                        <%= @attendancesc[i].temp_after_change_start_time.min %>
-                      </td>
-                      <td>
-                        <%= @attendancesc[i].temp_after_change_end_time.hour %>
-                      </td>
-                      <td>
-                        <%= @attendancesc[i].temp_after_change_end_time.min %>
-                      </td>
-                      <td>
-                        <%= @attendancesc[i].temp_attendance_change_note %>
-                      </td>
-                      <td>
-                        <div class = "form-group">
-                          <%= f.select :attendance_change_instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
-                        </div>
-                      </td>
-                      <td>
-                        <div class = "form-check ">
-                          <%= f.check_box :attendance_change_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
-                        </div>
-                      </td>
-                      <td>
-                        <%= f.submit "確認", :name => "#{@attendancesc[i].id}", class: "btn btn-primary btn-one-month-confirmation" %>
-                      </td>
-                    </tr>
+                <%= f.hidden_field :user_id, multiple: true, :value => @user_c[i].id %>
+                <% @attendancesc[i].each do |attendance| %>
+                  <%= f.hidden_field :id, multiple: true, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
+                  <%= f.hidden_field :date, :value => @first_day %>
+                  <tr>
+                    <td>
+                      <%= l(attendance.worked_on, format: :short) %>
+                    </td>  
+                    <td>
+                      <%= $days_of_the_week[attendance.worked_on.wday] %>
+                    </td>    
+                    <td>
+                      <% if attendance.started_at.present? %>
+                        <%= attendance.started_at.hour %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if attendance.started_at.present? %>
+                        <%= attendance.started_at.min %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if attendance.finished_at.present? %>
+                        <%= attendance.finished_at.hour %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if attendance.finished_at.present? %>
+                        <%= attendance.finished_at.min %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_after_change_start_time.hour %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_after_change_start_time.min %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_after_change_end_time.hour %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_after_change_end_time.min %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_attendance_change_note %>
+                    </td>
+                    <td>
+                      <div class = "form-group">
+                        <%= f.select :attendance_change_instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
+                      </div>
+                    </td>
+                    <td>
+                      <div class = "form-check ">
+                        <%= f.check_box :attendance_change_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                      </div>
+                    </td>
+                    <td>
+                      <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                    </td>
+                  </tr>
                 <% end %>    
               </tbody>
             </table>

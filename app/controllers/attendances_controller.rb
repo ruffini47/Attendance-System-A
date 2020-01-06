@@ -609,150 +609,29 @@ class AttendancesController < ApplicationController
   
   def edit_attendance_change_approval
     
-    @users = User.all
-    @attendances = Attendance.all
-    @first_day = params[:date]
-    
-    
-    
-    c = []
+    users = User.all
     @attendancesc = []
-
+    @user_c = []
+    @attendancesc_number_c = []
     i = 0
-    n = 0
-    user_ids_c = []
-    @attendances.each do |attendance|
-      # 申請元のattendanceがattendance_change_applyしていて、かつ、申請元のattendanceのattendance_change_to_superior_user_idカラムが申請先のユーザidを指すものだけ取り出す
-      if attendance.attendance_change_applying  == true && attendance.attendance_change_to_superior_user_id == params[:id].to_i
-        user_ids_c[0] = attendance.user_id
+    users.each do |user|
+      if user.attendances.where(attendance_change_applying: true).where(attendance_change_to_superior_user_id: params[:id].to_i).count > 0
+        # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
+        @attendancesc[i] = user.attendances.where(attendance_change_applying: true).where(attendance_change_to_superior_user_id: params[:id].to_i).order(:worked_on)
+        # @user[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザ
+        @user_c[i] =  User.find(@attendancesc[i].first.user_id)         
+        i += 1
       end
     end
     
-    hit = false
-    @attendances.each do |attendance|
-      if attendance.attendance_change_applying == true && attendance.attendance_change_to_superior_user_id == params[:id].to_i
-        n += 1
-        user_ids_c.each do |user_id|
-          if attendance.user_id == user_id
-            hit = true
-            #puts "hit"
-          end
-        end
-        if hit == false
-          #puts "not hit"
-          i += 1
-          user_ids_c[i] = attendance.user_id
-        end
-        hit = false
-        c.push([attendance.user_id,attendance.worked_on])
-        @attendancesc.push(attendance)
-        
-      end
-    end
     
-    @user_id_number_c= user_ids_c.length
-    puts "user_id_number_c = #{@user_id_number_c}"
- 
- 
-    # user.designated_work_end_timeの設定 
-    i = 0
-    user = []
-    @attendancesc.each do |attendance|
-      user_ids_c.each do |user_id|
-        if user_id == attendance.user_id
-          user[i] = User.find(attendance.user_id)
-          year = Time.now.year
-          mon = Time.now.mon
-          day = Time.now.day
-          
-          #@after_change_start_hour = user[i].after_change_start_time.hour
-          #@after_change_strat_min = user[i].after_change_start_time.min
-          #d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
-          #user[i].designated_work_end_time = d1
-          #user[i].save
-          
-          i += 1
-        end
-      end
-    end
+    @user_number_c = i
     
-
-    
-
-    puts "n= #{n}"
-
-    count_c = []
-
-    for i in 0..n-1
-      count_c.push(0)
-    end
-
-    for i in 0..n-1 do
-      for j in 0..n-1
-        if c[i][0] != c[j][0]
-          count_c[i] += 1
-        end
-      end
-    end
-
-    for i in 0..n-1 do
-      count_c[i] = n - count_c[i]
-    end
-
-    p count_c
-
-    @count_max_c = []
-
-    isBreak = false
-    i = 0
-    if @user_id_number_c == 1
-      @count_max_c.push(n)
-    else
-      for m in 0..@user_id_number_c-1 do
-        for j in 1..n-1 do
-          #puts "m = #{m} i = #{i} j = #{j}"
-          if !c[i + j].nil?
-            isBreak = false 
-            if c[i][0] != c[i + j][0]
-              @count_max_c.push(j)
-              i += j
-              isBreak = true
-              break
-            end
-          elsif !(c[i + j - 1].nil?) && c[i + j].nil?
-            @count_max_c.push(j)
-          end
-          break if isBreak
-        end
-      end
-    end
-
-    puts "@count_max_c ="
-    p @count_max_c
-
-    puts "count_max_cが答えだ！！"
-
-    @count_max_sum_c= []
-    @count_max_sum_c[0] = 0
-    #count_max_sum_c[1] = count_max_c[0]
-    #count_max_sum_c[2] = count_max_c[0] + count_max_c[1]
-    #count_max_sum_c[3] = count_max_c[0] + count_max_c[1] +count_max_c[2]
-    for k in 1..@user_id_number_c-1 do
-      @count_max_sum_c[k] = @count_max_sum_c[k-1] + @count_max_c[k-1]
-    end
-
-    # ここまではtemp_business_processing 行っている。
-    #@attendancesb.first.temp_business_processing
-
-    
-    #users_c[j]はj番目の申請元ユーザ
     j = 0
-    users_c = []
-    for n in 0..(@user_id_number_c-1) do 
-      i = @count_max_sum_c[n]
-      users_c[j] = User.find(@attendancesc[i].user_id)
+    @user_number_c.times do
+      @attendancesc_number_c[j] = @attendancesc[j].length 
       j += 1
-    end 
+    end
     
   end
 
