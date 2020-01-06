@@ -7,7 +7,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <%= form_with(url: attendances_manager_approval_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
+    <%= form_with(model: @attendancesd, url: attendances_manager_approval_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
       <% for i in 0..(@user_number_d-1) do %>
         <div class="modal-header">
           <h3 class="modal-title title-center">【<%=  @user_d[i].name %>からの1ヵ月分勤怠申請】</h3>
@@ -30,10 +30,10 @@
                 </tr>
               </thead>
               <tbody>
-                <!--%= f.hidden_field :user_id, multiple: true, :value => user.id %-->
+                <%= f.hidden_field :user_id, multiple: true, :value => @user_d[i].id %>
                 <% @attendancesd[i].each do |attendance| %>
-                  <!--%= f.hidden_field :id, multiple: true, :value => @attendancesd[i].id %> <!-- attendancesbテーブルのidを渡す -->
-                  <!--%= f.hidden_field :date, :value => @first_day %-->
+                  <%= f.hidden_field :id, multiple: true, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
+                  <%= f.hidden_field :date, :value => @first_day %>
                   <tr>
                     <td>
                       <%= attendance.worked_on.to_date.month%>月

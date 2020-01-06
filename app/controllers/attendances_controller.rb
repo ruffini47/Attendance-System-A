@@ -443,8 +443,6 @@ class AttendancesController < ApplicationController
     # nは申請元の件数
     n = params[:attendance][:id].length
     
-    @first_day = params[:date]
-    
     # 共通の処理終わり
     ##########################################################
     
@@ -646,8 +644,6 @@ class AttendancesController < ApplicationController
     
     # nは申請元の件数
     n = params[:attendance][:id].length
-    
-    @first_day = params[:date]
     
     # 共通の処理終わり
     ##########################################################
@@ -960,6 +956,26 @@ class AttendancesController < ApplicationController
     
   end
   
+  def update_manager_approval_approval
+    
+  ##########################################################
+    # 共通の処理
+    
+    # 申請先上長ユーザが@user
+    @user = User.find(params[:id])
+    
+    # nは申請元の件数
+    n = params[:attendance][:id].length
+    
+    @first_day = params[:date]
+    
+    # 共通の処理終わり
+    ##########################################################  
+    
+    
+    
+    
+  end
   
   private
   

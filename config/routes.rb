@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   
 # 所属長承認モーダル
   get '/users/:id/attendance/attendance_manager_approval_approval/', to: 'attendances#edit_manager_approval_approval', as: 'attendances_manager_approval_approval_user'             
+  patch '/users/:id/attendance/attendance_manager_approval_approval/', to: 'attendances#update_manager_approval_approval' 
   
   resources :users do
       
