@@ -841,7 +841,7 @@ class AttendancesController < ApplicationController
       i += 1
     end
     
-    # ここはenumの貞義により敢えてinstructor_confirmations
+    # ここはenumの定義により敢えてinstructor_confirmations
     inst_hash = Attendance.instructor_confirmations
     result = []
     #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
