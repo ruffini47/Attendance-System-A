@@ -52,7 +52,7 @@
                 </td>
                 <td>
                   <div class = "form-group">
-                    <%= f.select :to_superior, User.where(superior: true).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
+                    <%= f.select :to_superior, User.where(superior: true).where.not(id: @user.id).map { |user| [user.name, user.id] }, { include_blank: true}, {class: "form-control"} %>
                   </div>
                 </td>
                 <td>

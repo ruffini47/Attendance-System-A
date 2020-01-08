@@ -201,7 +201,7 @@ class AttendancesController < ApplicationController
     end  
 
     hour = hour1.to_i
-    min = min.to_i
+    min = min1.to_i
     
     # 共通の処理終わり
     ##########################################################
@@ -443,6 +443,28 @@ class AttendancesController < ApplicationController
     # nは申請元の件数
     n = params[:attendance][:id].length
     
+    # mは申請元ユーザの数
+    #m = params[:attendance][:user_id].length
+    
+    user = []
+    id = []
+    attendance = []
+    first_day = []
+    
+    #attendance[i]i番目の申請元のattendance
+    #id[i]はi番目の申請元のattendance.id
+    for i in 0..n-1 do
+      attendance[i] = Attendance.find(params[:attendance][:id][i])
+      user[i] = User.find(attendance[i].user_id)
+      id[i]= attendance[i].id
+      first_day[i] = attendance[i].worked_on.beginning_of_month
+    end
+    
+    #user[j]はi番目の申請元ユーザ
+    #for j in 0..m-1 do
+    #  user[j] = User.find(params[:attendance][:user_id][j])
+    #end
+    
     # 共通の処理終わり
     ##########################################################
     
@@ -451,22 +473,6 @@ class AttendancesController < ApplicationController
     
     ##########################################################
     # 勤怠を確認ボタン押下後の処理
-    
-    
-    user = []
-    id = []
-    attendance = []
-    first_day = []
-    #user[i]はi番目の申請元ユーザ
-    #attendance[i]i番目の申請元のattendance
-    #id[i]はi番目の申請元のattendance.id
-    for i in 0..n-1 do
-      user[i] = User.find(params[:attendance][:user_id][i])
-      attendance[i] = Attendance.find(params[:attendance][:id][i])
-      id[i]= attendance[i].id
-      first_day[i] = attendance[i].worked_on.beginning_of_month
-    end
-    
     
     for i in 0..n-1 do
       if params[:"#{id[i]}"] == "確認"
@@ -491,21 +497,20 @@ class AttendancesController < ApplicationController
     ##########################################################
     # 変更を送信するボタン押下後の処理
     
-    
-    attendance = []
     instructor_confirmation = []
     change_approval = []
     #user[i]はi番目の申請元ユーザ
     #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
-      user[i] = User.find(params[:attendance][:user_id][i])
-      attendance[i] = Attendance.find(params[:attendance][:id][i])
-      
-      
+      #user[i] = User.find(params[:attendance][:user_id][i])
+      #attendance[i] = Attendance.find(params[:attendance][:id][i])
       instructor_confirmation1 = params[:attendance][:instructor_confirmation]
       if instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: @first_day)  and return
+        redirect_to user_url(@user.id)  and return
+      elsif instructor_confirmation1.length != n
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id)  and return
       end
       instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
     end
@@ -536,6 +541,7 @@ class AttendancesController < ApplicationController
         result[i] = ""
       end
     end
+
       
     for i in 0..n-1 do
           
