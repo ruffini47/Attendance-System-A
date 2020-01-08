@@ -332,6 +332,17 @@ class AttendancesController < ApplicationController
         @attendance.result.slice!(0)
       end
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
       #@attendance.previous_superior_user_id = user.id
       @attendance.overtime_applying = true 
       
@@ -499,11 +510,7 @@ class AttendancesController < ApplicationController
     
     instructor_confirmation = []
     change_approval = []
-    #user[i]はi番目の申請元ユーザ
-    #attendance[i]はi番目の申請元のattendance
     for i in 0..n-1 do
-      #user[i] = User.find(params[:attendance][:user_id][i])
-      #attendance[i] = Attendance.find(params[:attendance][:id][i])
       instructor_confirmation1 = params[:attendance][:instructor_confirmation]
       if instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
@@ -534,9 +541,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = " 残業承認済 "
+        result[i] = ",残業承認済 "
       elsif instructor_confirmation[i] == 3
-        result[i] = " 残業否認 "
+        result[i] = ",残業否認 "
       else
         result[i] = ""
       end
@@ -574,9 +581,16 @@ class AttendancesController < ApplicationController
           end
           str = result_array.join(",")
           attendance[i].result = str
-          attendance[i].result.concat(",")
+          #attendance[i].result.concat(",")
           attendance[i].result.concat(result[i])
         end
+      
+        
+        attendance[i].result.gsub!(",,",",")
+        if attendance[i].result[0] == ","
+          attendance[i].result.slice!(0)
+        end      
+        
       
         if attendance[i].update_attributes(update_overtime_approval_params)
         else
@@ -651,6 +665,20 @@ class AttendancesController < ApplicationController
     # nは申請元の件数
     n = params[:attendance][:id].length
     
+    attendance = []
+    user = []
+    id = []
+    first_day = []
+    #attendance[i]i番目の申請元のattendance
+    #user[i]はi番目の申請元ユーザ
+    #id[i]はi番目の申請元のattendance.id
+    for i in 0..n-1
+      attendance[i] = Attendance.find(params[:attendance][:id][i])
+      user[i] = User.find(attendance[i].user_id)
+      id[i]= attendance[i].id
+      first_day[i] = attendance[i].worked_on.beginning_of_month
+    end
+    
     # 共通の処理終わり
     ##########################################################
     
@@ -658,21 +686,6 @@ class AttendancesController < ApplicationController
   
   ##########################################################
     # 勤怠を確認ボタン押下後の処理
-    
-    
-    user = []
-    id = []
-    attendance = []
-    first_day = []
-    #user[i]はi番目の申請元ユーザ
-    #attendance[i]i番目の申請元のattendance
-    #id[i]はi番目の申請元のattendance.id
-    for i in 0..n-1 do
-      user[i] = User.find(params[:attendance][:user_id][i])
-      attendance[i] = Attendance.find(params[:attendance][:id][i])
-      id[i]= attendance[i].id
-      first_day[i] = attendance[i].worked_on.beginning_of_month
-    end
     
     
     for i in 0..n-1 do
@@ -695,22 +708,23 @@ class AttendancesController < ApplicationController
     # 変更を送信するボタン押下後の処理
     
     
-    attendance = []
     attendance_change_instructor_confirmation = []
     attendance_change_change_approval = []
-    #user[i]はi番目の申請元ユーザ
-    #attendance[i]はi番目の申請元のattendance
+    
+    attendance_change_instructor_confirmation = []
+    attendance_change_change_approval = []
     for i in 0..n-1 do
-      user[i] = User.find(params[:attendance][:user_id][i])
-      attendance[i] = Attendance.find(params[:attendance][:id][i])
-      attendance_change_instructor_confirmation1 =  params[:attendance][:attendance_change_instructor_confirmation]
+      attendance_change_instructor_confirmation1 = params[:attendance][:attendance_change_instructor_confirmation]
       if attendance_change_instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: @first_day)  and return
+        redirect_to user_url(@user.id)  and return
+      elsif attendance_change_instructor_confirmation1.length != n
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id)  and return
       end
       attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
-
+  
     attendance_change_change_approval = params[:attendance][:attendance_change_change_approval]
     
     i = 0
@@ -731,9 +745,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if attendance_change_instructor_confirmation[i] == 2
-        result[i] = " 勤怠編集承認済 "
+        result[i] = ",勤怠編集承認済"
       elsif attendance_change_instructor_confirmation[i] == 3
-        result[i] = " 勤怠編集否認 "
+        result[i] = ",勤怠編集否認"
       else
         result[i] = ""
       end
@@ -760,20 +774,27 @@ class AttendancesController < ApplicationController
         
         if attendance[i].result.nil?
           attendance[i].result = result[i]  
-        elsif attendance[i].result.include?("#{@user.name}へ勤怠変更申請中")
-          result_array = attendance[i].result.split
+        elsif attendance[i].result.include?("へ勤怠変更申請中")
+          result_array = attendance[i].result.split(",")
           j = 0
           result_array.each do |result0|
-            if result0 == "#{@user.name}へ勤怠変更申請中"
+            if result0.include?("へ勤怠変更申請中")
               result_array[j] = nil
             end
             j += 1
           end
           str = result_array.join(",")
           attendance[i].result = str
-          attendance[i].result.concat(",")
+          #attendance[i].result.concat(",")
           attendance[i].result.concat(result[i])
         end
+      
+      
+        attendance[i].result.gsub!(",,",",")
+        if attendance[i].result[0] == ","
+          attendance[i].result.slice!(0)
+        end      
+      
       
         @user.save
         
