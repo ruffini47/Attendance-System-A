@@ -170,9 +170,9 @@
         <td colspan="6"></td>
         <td>
           <%= form_with url: attendances_manager_approval_application_user_path(@user.id, date: @first_day.to_date), local: true  do |f| %>
-            <div class="form-group">
-              <%= f.label "所属長承認 未", class:"control-label" %>
-            </div>
+            <!--div class="form-group"-->
+              <!--%= f.label "所属長承認 未", class:"control-label" %-->
+            <!--/div-->
             <div class = "form-group">
               <%= f.collection_select :manager_approval_to_superior, User.where(superior:true).where.not(id: @user.id), :id, :name, {:include_blank => true},  {class:"form-control"} %>
             </div>

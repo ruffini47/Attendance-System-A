@@ -1031,6 +1031,130 @@ class AttendancesController < ApplicationController
     
     # 勤怠を確認するボタン押下後の処理終わり
     ##########################################################
+  
+    ##########################################################
+    # 変更を送信するボタン押下後の処理
+    
+    
+    manager_approval_instructor_confirmation = []
+    manager_approval_change_approval = []
+    
+    manager_approval_instructor_confirmation = []
+    manager_approval_change_approval = []
+    for i in 0..n-1 do
+      manager_approval_instructor_confirmation1 = params[:attendance][:manager_approval_instructor_confirmation]
+      if manager_approval_instructor_confirmation1 == nil
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id)  and return
+      elsif manager_approval_instructor_confirmation1.length != n
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id)  and return
+      end
+      manager_approval_instructor_confirmation[i] = params[:attendance][:manager_approval_instructor_confirmation][i].to_i
+    end
+  
+    manager_approval_change_approval = params[:attendance][:manager_approval_change_approval]
+    
+    i = 0
+    manager_approval_change_approval.length.times do
+      if manager_approval_change_approval[i] == "true"
+        manager_approval_change_approval.delete_at(i-1)
+        i -= 1
+      end
+      i += 1
+    end
+    
+    # ここはenumの定義により敢えてinstructor_confirmations
+    #inst_hash = Attendance.instructor_confirmations
+    #result = []
+    #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
+    #for i in 0..n-1 do
+    #  result[i] = inst_hash.invert[manager_approval_instructor_confirmation[i]]
+    #end
+    #for i in 0..n-1 do
+    #  if manager_approval_instructor_confirmation[i] == 2
+    #    result[i] = ",勤怠編集承認済"
+    #  elsif manager_approval_instructor_confirmation[i] == 3
+    #    result[i] = ",勤怠編集否認"
+    #  else
+    #    result[i] = ""
+    #  end
+    #end
+     
+    for i in 0..n-1 do
+      
+      if ( manager_approval_instructor_confirmation[i] == 2 || manager_approval_instructor_confirmation[i] == 3 ) && manager_approval_change_approval[i] == "true" 
+        
+        @user.number_of_manager_approval_applied -= 1
+        attendance[i].manager_approval_applying = false
+        
+        #if attendance[i].result.nil?
+        #  attendance[i].result = result[i]  
+        if attendance[i].result.include?("へ所属長承認申請中")
+          result_array = attendance[i].result.split(",")
+          j = 0
+          result_array.each do |result0|
+            if result0.include?("へ所属長承認申請中")
+              result_array[j] = nil
+            end
+            j += 1
+          end
+          str = result_array.join(",")
+          attendance[i].result = str
+          #attendance[i].result.concat(",")
+          #attendance[i].result.concat(result[i])
+        end
+      
+      
+        attendance[i].result.gsub!(",,",",")
+        if attendance[i].result[0] == ","
+          attendance[i].result.slice!(0)
+        end      
+      
+      
+        @user.save
+        
+        
+        if attendance[i].update_attributes(update_manager_approval_approval_params)
+        else
+          render :show      
+        end
+         
+        #attendance[i].save!
+        
+        #attendance[i].save
+        #attendance[i].errors
+
+      end
+      
+      if manager_approval_instructor_confirmation[i] == 2 && manager_approval_change_approval[i] == "true" 
+        
+        #attendance[i].manager_approval = "所属長承認 #{@user.name}から承認済"
+        
+        #attendance[i].save
+        
+        
+      end
+      
+      if manager_approval_instructor_confirmation[i] == 3 && manager_approval_change_approval[i] == "true" 
+        
+        #attendance[i].manager_approval = "所属長承認 否認"
+        
+        #attendance[i].save
+        
+      end
+      
+      
+      
+    end
+    
+    redirect_to user_url(@user.id, date: @first_day)
+    # 変更を送信するボタン押下後の処理終わり
+    ##########################################################
+  
+  
+  
+  
     
   end
   
@@ -1100,6 +1224,11 @@ class AttendancesController < ApplicationController
     # 残業承認の勤怠情報を扱います。
     def update_overtime_approval_params
       params.require(:attendance).permit(attendance: [:instructor_confirmation, :change_approval])
+    end
+    
+    # 所属長承認承認の勤怠情報を扱います。
+    def update_manager_approval_approval_params
+      params.require(:attendance).permit(attendance: [:manager_approval_instructor_confirmation, :manager_approval_change_approval])
     end
     
     # beforeフィルター
