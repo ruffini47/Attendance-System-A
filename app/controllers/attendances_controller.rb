@@ -3,7 +3,8 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application,
                                         :edit_overtime_approval, :update_overtime_approval]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: [:edit_one_month, :confirm_one_month_application, :confirm_one_month_approval, :confirm_one_month_attendance_change_approval]
+  before_action :set_one_month, only: [:edit_one_month, :confirm_one_month_application, :confirm_one_month_approval,
+                                       :confirm_one_month_attendance_change_approval, :confirm_one_month_manager_approval_approval]
   before_action :set_one_month_2, only: [:update_overtime_approval, :post_manager_approval_application]
   before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
                                         :edit_overtime_approval, :update_overtime_approval]
@@ -994,13 +995,82 @@ class AttendancesController < ApplicationController
     # nは申請元の件数
     n = params[:attendance][:id].length
     
-    @first_day = params[:date]
+    #@first_day = params[:date]
+    
+    attendance = []
+    user = []
+    id = []
+    first_day = []
+    #attendance[i]i番目の申請元のattendance
+    #user[i]はi番目の申請元ユーザ
+    #id[i]はi番目の申請元のattendance.id
+    for i in 0..n-1
+      attendance[i] = Attendance.find(params[:attendance][:id][i])
+      user[i] = User.find(attendance[i].user_id)
+      id[i]= attendance[i].id
+      first_day[i] = attendance[i].worked_on.beginning_of_month
+    end
     
     # 共通の処理終わり
-    ##########################################################  
+    ##########################################################
+    
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
     
     
+    for i in 0..n-1 do
+      if params[:"#{id[i]}"] == "確認"
+        
+        j = i
+        
+        redirect_to attendance_confirm_one_month_manager_approval_approval_user_path(user[j].id, id[j], date: first_day[j]) and return  
+      
+      end
+    end
     
+    
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
+    
+  end
+  
+  def confirm_one_month_manager_approval_approval
+    
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
+    @worked_sum = @attendances.where.not(finished_at: nil).count
+    
+    
+    #@attendance.cr_manager_approval_start_time = @attendance.started_at
+    #@attendance.cr_manager_approval_end_time = @attendance.finished_at
+    #@attendance.cr_manager_approval_note = @attendance.last_attendance_change_note
+    
+    #@attendance.cr_manager_approval_scheduled_end_time = @attendance.scheduled_end_time
+    #@attendance.cr_manager_approval_business_processing = @attendance.business_processing
+    #@attendance.cr_manager_approval_result = @attendance.result
+    
+    
+    #@attendance.save
+    
+    
+  end
+  
+  
+  def cancel_manager_approval_confirm_one_month
+  
+    @first_day = params[:date].to_date
+    @user = User.find(params[:id])
+    @attendances = Attendance.all
+    
+    
+    #@attendances.each do |attendance|
+    #  attendance.cr_after_change_start_time = nil
+    #  attendance.cr_after_change_end_time = nil
+    #  attendance.cr_attendance_change_note = nil
+    #  attendance.save
+    #end
+    
+    redirect_to user_url(@user.id, date: @first_day)
     
   end
   

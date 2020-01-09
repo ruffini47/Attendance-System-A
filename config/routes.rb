@@ -48,6 +48,8 @@ Rails.application.routes.draw do
   get '/users/:id/cancel/', to: 'attendances#cancel_confirm_one_month', as:'attendances_cancel_confirm_one_month'
 # 勤怠変更確認画面のキャンセル処理
   get '/users/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
+# 所属長承認確認画面のキャンセル処理
+  get '/users/:id/cancel_manager_approval/', to: 'attendances#cancel_manager_approval_confirm_one_month', as:'attendances_cancel_manager_approval_confirm_one_month'
 
 # 所属長承認申請
   post '/users/:id/attendance/attendance_manager_approval_appication/', to: 'attendances#post_manager_approval_application', as: 'attendances_manager_approval_application_user'
@@ -55,6 +57,9 @@ Rails.application.routes.draw do
 # 所属長承認モーダル
   get '/users/:id/attendance/attendance_manager_approval_approval/', to: 'attendances#edit_manager_approval_approval', as: 'attendances_manager_approval_approval_user'             
   patch '/users/:id/attendance/attendance_manager_approval_approval/', to: 'attendances#update_manager_approval_approval' 
+  
+# 所属長承認_1カ月勤怠確認  
+  get '/users/:user_id/attendance/:id/confirm_one_month_manager_approval_approval/', to: 'attendances#confirm_one_month_manager_approval_approval', as: 'attendance_confirm_one_month_manager_approval_approval_user'
   
   resources :users do
       
