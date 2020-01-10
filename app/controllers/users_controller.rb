@@ -18,6 +18,7 @@ class UsersController < ApplicationController
   end
   
   def show
+    @last_attendance = Attendance.find_by(user_id:@user.id, worked_on:@last_day)
     @worked_sum = @attendances.where.not(finished_at: nil).count
   end
 

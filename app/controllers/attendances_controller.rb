@@ -30,6 +30,10 @@ class AttendancesController < ApplicationController
       end
     end
     @first_day = @attendance.worked_on
+    last_day = @first_day.end_of_month
+    @last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
+    @last_attendance.manager_approval = "所属長承認　未"
+    @last_attendance.save
     
     redirect_to user_url(@user, date: @first_day.beginning_of_month)
     
@@ -40,10 +44,12 @@ class AttendancesController < ApplicationController
   
   def update_one_month
     @first_day = params[:date].to_date
+    last_day = @first_day.end_of_month
     
     # @userは申請元ユーザ
     @user = User.find(params[:id])
-    #params[:user][:attendances]["1"]
+    # @last_attendance[i]はユーザがi番目の申請元ユーザ、worked_onが月末日のattencance
+    @last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
     
     
     ActiveRecord::Base.transaction do # トランザクションを開始します。
@@ -150,6 +156,9 @@ class AttendancesController < ApplicationController
       
           attendance.attendance_change_applying = true 
       
+          @last_attendance.manager_approval = "所属長承認　未"
+          @last_attendance.save
+      
           attendance.save
           user.save
           
@@ -186,12 +195,17 @@ class AttendancesController < ApplicationController
     # 共通の処理
     
     @first_day = params[:date].to_date
+    last_day = @first_day.end_of_month
+    
     
     #require "date"
     # @userは申請元ユーザ
     @user = User.find(params[:user_id])
     # @attendanceは申請元ユーザの@attendance
     @attendance = Attendance.find(params[:id])
+    # @last_attendance[i]はユーザがi番目の申請元ユーザ、worked_onが月末日のattencance
+    @last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
+    
     
     hour1 = params[:attendance][:hour]
     min1 =  params[:attendance][:min] 
@@ -354,6 +368,9 @@ class AttendancesController < ApplicationController
       else
         render :show      
       end
+    
+      @last_attendance.manager_approval = "所属長承認　未"  
+      @last_attendance.save
       
       @attendance.save
     
@@ -858,6 +875,7 @@ class AttendancesController < ApplicationController
     # @userは申請元ユーザ
     @user = User.find(params[:id])
     @first_day = params[:date].to_date
+    last_day = @first_day.end_of_month
     
     to_superior1 = params[:manager_approval_to_superior]
     
@@ -872,6 +890,9 @@ class AttendancesController < ApplicationController
     user = User.find(to_superior)
     
     attendances = @user.attendances.where(worked_on:@first_day)
+    # attendances_on_this_monthはユーザが申請元@userで今月中の全てのattendance
+    attendances_on_this_month = @user.attendances.where(worked_on:@first_day..last_day)
+    # attendanceはユーザが申請元@userで月初のattendance
     attendance = attendances.first
     
     
@@ -947,6 +968,20 @@ class AttendancesController < ApplicationController
       attendance.result.slice!(0)
     end  
     
+    
+    attendances_on_this_month.each do |day|
+      if day.overtime_applying == true
+        flash[:danger] = "残業申請中は所属長承認はできません。"
+        redirect_to user_url(@user.id, date: @first_day)  and return
+      end
+      
+      if day.attendance_change_applying == true
+        flash[:danger] = "勤怠変更申請中は所属長承認はできません。"
+        redirect_to user_url(@user.id, date: @first_day)  and return
+      end  
+      
+    end
+    
   
     attendance.manager_approval_applying = true   
   
@@ -1001,6 +1036,7 @@ class AttendancesController < ApplicationController
     user = []
     id = []
     first_day = []
+    last_day = []
     #attendance[i]i番目の申請元のattendance
     #user[i]はi番目の申請元ユーザ
     #id[i]はi番目の申請元のattendance.id
@@ -1009,6 +1045,7 @@ class AttendancesController < ApplicationController
       user[i] = User.find(attendance[i].user_id)
       id[i]= attendance[i].id
       first_day[i] = attendance[i].worked_on.beginning_of_month
+      last_day[i] = first_day[i].end_of_month
     end
     
     # 共通の処理終わり
@@ -1081,6 +1118,8 @@ class AttendancesController < ApplicationController
     #  end
     #end
      
+    @last_attendance = []
+    
     for i in 0..n-1 do
       
       if ( manager_approval_instructor_confirmation[i] == 2 || manager_approval_instructor_confirmation[i] == 3 ) && manager_approval_change_approval[i] == "true" 
@@ -1127,7 +1166,16 @@ class AttendancesController < ApplicationController
 
       end
       
+      # @last_attendance[i]はユーザがi番目の申請元ユーザ、worked_onが月末日のattencance
+      @last_attendance[i] =  Attendance.find_by(user_id:user[i].id, worked_on:last_day[i])
+      
+      
       if manager_approval_instructor_confirmation[i] == 2 && manager_approval_change_approval[i] == "true" 
+        
+        
+        
+        @last_attendance[i].manager_approval = "所属長承認 #{@user.name}から承認済"
+        @last_attendance[i].save
         
         #attendance[i].manager_approval = "所属長承認 #{@user.name}から承認済"
         
@@ -1137,6 +1185,11 @@ class AttendancesController < ApplicationController
       end
       
       if manager_approval_instructor_confirmation[i] == 3 && manager_approval_change_approval[i] == "true" 
+        
+        
+        
+        @last_attendance[i].manager_approval = "所属長承認 #{@user.name}から否認"
+        @last_attendance[i].save
         
         #attendance[i].manager_approval = "所属長承認 否認"
         
