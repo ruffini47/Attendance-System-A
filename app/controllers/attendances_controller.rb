@@ -51,6 +51,7 @@ class AttendancesController < ApplicationController
     # @last_attendance[i]はユーザがi番目の申請元ユーザ、worked_onが月末日のattencance
     @last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
     
+    delete_id_numbers = []
     
     ActiveRecord::Base.transaction do # トランザクションを開始します。
       attendances_params.each do |id, item|
@@ -86,13 +87,13 @@ class AttendancesController < ApplicationController
           
           
           ###################################################################
-          # 過去に指定したattendanceと同じattendanceに残業申請する場合
+          # 過去に指定したattendanceと同じattendanceに勤怠変更申請する場合
           if attendance.attendance_change_applying == true
           
             #前回と違う上長を指定した場合
-            if attendance.attendance_change_to_superior_user_id != to_superior
+            if attendance.saved_attendance_change_to_superior_user_id != to_superior
             
-              previous_superior_user = User.find(attendance.attendance_change_to_superior_user_id)
+              previous_superior_user = User.find(attendance.saved_attendance_change_to_superior_user_id)
               previous_superior_user.number_of_attendance_change_applied -= 1
               previous_superior_user.save
       
@@ -105,11 +106,11 @@ class AttendancesController < ApplicationController
             # 前回と同じ上長を指定している場合
             else
           
-              # 何もしない
+              attendance.attendance_change_to_superior_user_id = to_superior
         
             end
         
-          # 過去に指定した@attendanceと同じattendanceに残業申請する場合終わり
+          # 過去に指定した@attendanceと同じattendanceに勤怠変更申請する場合終わり
           ###################################################################
       
           ###################################################################
@@ -123,7 +124,7 @@ class AttendancesController < ApplicationController
       
           # 過去に指定していないattendanceに登録する場合終わり
           ###################################################################
-    
+            
       
           if attendance.result.nil?
             attendance.result = ",#{user.name}へ勤怠変更申請中"
@@ -156,23 +157,53 @@ class AttendancesController < ApplicationController
       
           attendance.attendance_change_applying = true 
       
+          attendance.saved_attendance_change_to_superior_user_id = attendance.attendance_change_to_superior_user_id
+          
+          
           @last_attendance.manager_approval = "所属長承認　未"
           @last_attendance.save
       
-          attendance.save
+          
+          
+          #attendance.save
           user.save
           
+          
         end
+        #user.save
+        unless params[:user][:attendances][id][:attendance_change_to_superior_user_id] == ""
+          #params[:user][:attendances][id][:attendance_change_note] == "" &&
+          #params[:user][:attendances][id][:attendance_hour] == "" &&
+          #params[:user][:attendances][id][:attendance_min] == "" &&
+          #params[:user][:attendances][id][:departure_hour] == "" &&
+          #params[:user][:attendances][id][:departure_min] == ""
+            
+            
+            delete_id_numbers.push(id)
+            
+        end
+           
         attendance.update_attributes!(item)
+        
       end
+      
+      
+      
     end
     
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
     
+    delete_id_numbers.each do |number|
+      attendance1 = Attendance.find(number)
+      attendance1.attendance_change_to_superior_user_id = nil
+      attendance1.attendance_change_note = nil
+      #attendance1.attendance_change_tomorrow = nil
+      attendance1.save
+    end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-      flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
-      redirect_to attendances_edit_one_month_user_url(date: params[:date])
+    flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
+    redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
   
   def at_work
@@ -651,9 +682,9 @@ class AttendancesController < ApplicationController
     @attendancesc_number_c = []
     i = 0
     users.each do |user|
-      if user.attendances.where(attendance_change_applying: true).where(attendance_change_to_superior_user_id: params[:id].to_i).count > 0
+      if user.attendances.where(attendance_change_applying: true).where(saved_attendance_change_to_superior_user_id: params[:id].to_i).count > 0
         # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
-        @attendancesc[i] = user.attendances.where(attendance_change_applying: true).where(attendance_change_to_superior_user_id: params[:id].to_i).order(:worked_on)
+        @attendancesc[i] = user.attendances.where(attendance_change_applying: true).where(saved_attendance_change_to_superior_user_id: params[:id].to_i).order(:worked_on)
         # @user[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザ
         @user_c[i] =  User.find(@attendancesc[i].first.user_id)         
         i += 1

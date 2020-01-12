@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200110120653) do
+ActiveRecord::Schema.define(version: 20200112052536) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(version: 20200110120653) do
     t.boolean "manager_approval_applying", default: false
     t.integer "manager_approval_to_superior_user_id"
     t.string "manager_approval", default: "所属長承認　未"
+    t.integer "saved_attendance_change_to_superior_user_id"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -77,9 +78,9 @@ ActiveRecord::Schema.define(version: 20200110120653) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-01-09 23:00:00"
-    t.datetime "designated_work_start_time", default: "2020-01-10 00:00:00"
-    t.datetime "designated_work_end_time", default: "2020-01-10 09:00:00"
+    t.datetime "basic_work_time", default: "2020-01-11 23:00:00"
+    t.datetime "designated_work_start_time", default: "2020-01-12 00:00:00"
+    t.datetime "designated_work_end_time", default: "2020-01-12 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.integer "number_of_attendance_change_applied", default: 0
     t.integer "number_of_manager_approval_applied", default: 0
