@@ -154,6 +154,9 @@ class AttendancesController < ApplicationController
           if attendance.result[0] == ","
             attendance.result.slice!(0)
           end
+          if attendance.result.end_with?(",")
+            attendance.result.chop!
+          end
       
           attendance.attendance_change_applying = true 
       
@@ -377,8 +380,9 @@ class AttendancesController < ApplicationController
       if @attendance.result[0] == ","
         @attendance.result.slice!(0)
       end
-    
-    
+      if @attendance.result.end_with?(",")
+        @attendance.result.chop!
+      end  
     
     
     
@@ -997,7 +1001,10 @@ class AttendancesController < ApplicationController
     attendance.result.gsub!(",,",",")
     if attendance.result[0] == ","
       attendance.result.slice!(0)
-    end  
+    end
+    if attendance.result.end_with?(",")
+      attendance.result.chop!
+    end
     
     
     attendances_on_this_month.each do |day|
@@ -1013,6 +1020,9 @@ class AttendancesController < ApplicationController
       
     end
     
+    last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
+    last_attendance.manager_approval = "所属長承認　未"
+    last_attendance.save
   
     attendance.manager_approval_applying = true   
   
@@ -1179,7 +1189,10 @@ class AttendancesController < ApplicationController
         attendance[i].result.gsub!(",,",",")
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
-        end      
+        end
+        if attendance[i].result.end_with?(",")
+          attendance[i].result.chop!
+        end
       
       
         @user.save
