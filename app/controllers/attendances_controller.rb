@@ -382,7 +382,8 @@ class AttendancesController < ApplicationController
       end
       if @attendance.result.end_with?(",")
         @attendance.result.chop!
-      end  
+      end
+    
     
     
     
@@ -594,9 +595,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = ",残業承認済 "
+        result[i] = ",残業承認済"
       elsif instructor_confirmation[i] == 3
-        result[i] = ",残業否認 "
+        result[i] = ",残業否認"
       else
         result[i] = ""
       end
@@ -643,7 +644,9 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-        
+        if attendance[i].result.end_with?(",")
+          attendance[i].result.chop!
+        end
       
         if attendance[i].update_attributes(update_overtime_approval_params)
         else
@@ -847,7 +850,9 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-      
+        if attendance[i].result.end_with?(",")
+          attendance[i].result.chop!
+        end
       
         @user.save
         
@@ -1001,11 +1006,10 @@ class AttendancesController < ApplicationController
     attendance.result.gsub!(",,",",")
     if attendance.result[0] == ","
       attendance.result.slice!(0)
-    end
+    end  
     if attendance.result.end_with?(",")
       attendance.result.chop!
     end
-    
     
     attendances_on_this_month.each do |day|
       if day.overtime_applying == true
@@ -1189,11 +1193,12 @@ class AttendancesController < ApplicationController
         attendance[i].result.gsub!(",,",",")
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
-        end
+        end      
         if attendance[i].result.end_with?(",")
           attendance[i].result.chop!
         end
-      
+        
+        
       
         @user.save
         
