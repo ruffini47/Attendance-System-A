@@ -20,6 +20,13 @@ class UsersController < ApplicationController
   def show
     @last_attendance = Attendance.find_by(user_id:@user.id, worked_on:@last_day)
     @worked_sum = @attendances.where.not(finished_at: nil).count
+    
+    respond_to do |format|
+      format.any
+      format.csv do
+        send_data render_to_string, filename: "#{@user.name}の#{@attendances.first.worked_on.month}月のattendances.csv", type: :csv
+      end
+    end
   end
 
   def new
