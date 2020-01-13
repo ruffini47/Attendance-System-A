@@ -568,10 +568,10 @@ class AttendancesController < ApplicationController
       instructor_confirmation1 = params[:attendance][:instructor_confirmation]
       if instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       elsif instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       end
       instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
     end
@@ -773,10 +773,10 @@ class AttendancesController < ApplicationController
       attendance_change_instructor_confirmation1 = params[:attendance][:attendance_change_instructor_confirmation]
       if attendance_change_instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       elsif attendance_change_instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       end
       attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
@@ -1127,10 +1127,10 @@ class AttendancesController < ApplicationController
       manager_approval_instructor_confirmation1 = params[:attendance][:manager_approval_instructor_confirmation]
       if manager_approval_instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       elsif manager_approval_instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id)  and return
+        redirect_to user_url(@user.id, date: first_day[i])  and return
       end
       manager_approval_instructor_confirmation[i] = params[:attendance][:manager_approval_instructor_confirmation][i].to_i
     end
