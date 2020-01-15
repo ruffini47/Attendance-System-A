@@ -3,26 +3,60 @@ require 'csv'
 
 
 csv_data= CSV.generate do |csv|
-  csv_column_names = %w(Worked_on Started_at Finished_at)
-  #csv << csv_column_names
+  csv_column_names = %w(Worked_on Started_at Finished_at Working_times Scheduled_end_time Overtime)
+  csv << csv_column_names
   @attendances.each do |day|
-    if !day.started_at.nil? && !day.finished_at.nil?
+    if !day.started_at.nil? && !day.finished_at.nil? && !day.scheduled_end_time.nil? 
       csv_column_values = [
         day.worked_on,
         day.started_at.strftime("%H:%M"),
-        day.finished_at.strftime("%H:%M")
+        day.finished_at.strftime("%H:%M"),
+        working_times(day.started_at, day.finished_at, day.tomorrow),
+        day.scheduled_end_time.strftime("%H:%M"),
+        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
       ]
-    elsif !day.started_at.nil?
+    elsif !day.started_at.nil? && !day.scheduled_end_time.nil?
       csv_column_values = [
         day.worked_on,
         day.started_at.strftime("%H:%M"),
-        day.finished_at
+        day.finished_at,
+        "",
+        day.scheduled_end_time.strftime("%H:%M"),
+        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
+      ]
+    elsif !day.scheduled_end_time.nil? 
+      csv_column_values = [
+        day.worked_on,
+        day.started_at,
+        day.finished_at,
+        "",
+        day.scheduled_end_time.strftime("%H:%M"),
+        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
+        
+      ]
+    elsif !day.started_at.nil? && !day.finished_at.nil? 
+      csv_column_values = [
+        day.worked_on,
+        day.started_at.strftime("%H:%M"),
+        day.finished_at.strftime("%H:%M"),
+        working_times(day.started_at, day.finished_at, day.tomorrow),
+        day.scheduled_end_time
+      ]
+    elsif !day.started_at.nil? 
+      csv_column_values = [
+        day.worked_on,
+        day.started_at.strftime("%H:%M"),
+        day.finished_at,
+        "",
+        day.scheduled_end_time
       ]
     else
       csv_column_values = [
         day.worked_on,
         day.started_at,
-        day.finished_at
+        day.finished_at,
+        "",
+        day.scheduled_end_time
       ]
     end
     csv << csv_column_values
