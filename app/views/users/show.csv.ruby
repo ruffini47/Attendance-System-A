@@ -1,9 +1,9 @@
 require "date"
 require 'csv'
 
-
-csv_data= CSV.generate do |csv|
-  csv_column_names = %w(Worked_on Started_at Finished_at Working_times Scheduled_end_time Overtime)
+bom = "\uFEFF"
+csv_data= CSV.generate(bom) do |csv|
+  csv_column_names = %w(日付 出社 退社 在社時間 終了予定時間 時間外時間)
   csv << csv_column_names
   @attendances.each do |day|
     if !day.started_at.nil? && !day.finished_at.nil? && !day.scheduled_end_time.nil? 
