@@ -1300,6 +1300,11 @@ class AttendancesController < ApplicationController
     
   end
   
+  def time_log
+    @user = User.find(params[:id])
+    
+  end
+  
   private
   
     # 勤怠編集情報を扱います。

@@ -1,0 +1,42 @@
+<% provide(:title, "Time log") %>
+<% provide(:class_text, 'time-log') %>
+<% provide(:button_text, '更新') %>
+<h1>勤怠ログ</h1>
+<div>
+  <%= form_with(model: @attendance, url: '#', local: true)  do |f| %>
+    <div class = "form-group">
+      <%= link_to "リセット", '#', class: "btn btn-default" %>
+    </div>
+    <div class = "select_year_month">
+      <%= f.select :year, options_for_select((2019..2020)), { include_blank: "年"}, { class: "form-control"} %>
+      <%= f.select :month, options_for_select((1..12)), { include_blank: "月"}, { class: "form-control"} %>
+    </div>
+  <% end %>
+</div>
+<div>
+  <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
+    <thead>
+      <colgroup>
+        <col style='width:60px;'>
+        <col style='width:80px;'>
+        <col style='width:80px;'>
+        <col style='width:60px;'>
+        <col style='width:60px;'>
+        <col style='width:45px;'>
+        <col style='width:60px;'>
+      </colgroup>
+      <tr>
+        <td>日付</td>
+        <td>変更前出社時間</td>
+        <td>変更前退社時間</td>
+        <td>変更後出社</td>
+        <td>変更後退社</td>
+        <td>指示者</td>
+        <td>承認日</td>
+      </tr>
+    </thead>
+    <tbody>
+                
+    </tbody>
+  </table>
+</div>
