@@ -36,7 +36,17 @@
       </tr>
     </thead>
     <tbody>
-                
+      <% @attendances.each do |day| %>
+        <tr>
+          <td><%= day.worked_on.strftime("%Y-%m-%d")%></td>
+          <td></td>
+          <td></td>
+          <td><%= day.started_at.strftime("%H:%M") %></td>
+          <td><%= day.finished_at.strftime("%H:%M") %></td>
+          <td><%= User.find(day.saved_attendance_change_to_superior_user_id).name %></td>
+          <td><%= day.attendance_change_approved_datetime.strftime("%Y-%m-%d") %></td>
+        </tr>
+      <% end %>  
     </tbody>
   </table>
 </div>

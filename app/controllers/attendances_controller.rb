@@ -820,6 +820,8 @@ class AttendancesController < ApplicationController
         
         attendance[i].finished_at = attendance[i].temp_after_change_end_time
         attendance[i].temp_after_change_end_time = nil
+
+        attendance[i].attendance_change_approved_datetime = DateTime.current
         
       end
       
@@ -1302,6 +1304,12 @@ class AttendancesController < ApplicationController
   
   def time_log
     @user = User.find(params[:id])
+     @first_day = params[:date].to_date
+    last_day = @first_day.end_of_month
+    @attendances = Attendance.all
+    @attendances = @user.attendances
+    @attendances= @attendances.where(worked_on:@first_day..last_day)
+    @attendances = @attendances.where('result like ?','%勤怠編集承認済%').order(:worked_on)
     
   end
   
