@@ -39,8 +39,13 @@
       <% @attendances.each do |day| %>
         <tr>
           <td><%= day.worked_on.strftime("%Y-%m-%d")%></td>
-          <td></td>
-          <td></td>
+          <% if day.time_log_count == 1 %>
+            <td></td>
+            <td></td>
+          <% else day.time_log_count %>
+            <td><%= day.before_change_start_time.strftime("%H:%M") %></td>
+            <td><%= day.before_change_end_time.strftime("%H:%M") %></td>
+          <% end %>
           <td><%= day.started_at.strftime("%H:%M") %></td>
           <td><%= day.finished_at.strftime("%H:%M") %></td>
           <td><%= User.find(day.saved_attendance_change_to_superior_user_id).name %></td>

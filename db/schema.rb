@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200117134825) do
+ActiveRecord::Schema.define(version: 20200119112654) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20200117134825) do
     t.integer "departure_hour"
     t.integer "departure_min"
     t.boolean "attendance_change_applying", default: false
-    t.integer "attendance_change_to_superior_user_id"
+    t.integer "temp_attendance_change_to_superior_user_id"
     t.datetime "after_change_start_time"
     t.datetime "after_change_end_time"
     t.string "attendance_change_note"
@@ -56,6 +56,11 @@ ActiveRecord::Schema.define(version: 20200117134825) do
     t.string "manager_approval", default: "所属長承認　未"
     t.integer "saved_attendance_change_to_superior_user_id"
     t.datetime "attendance_change_approved_datetime"
+    t.datetime "before_change_start_time"
+    t.datetime "before_change_end_time"
+    t.integer "time_log_count", default: 0
+    t.boolean "time_log_attendance_change_approved", default: false
+    t.integer "attendance_change_to_superior_user_id"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -79,9 +84,9 @@ ActiveRecord::Schema.define(version: 20200117134825) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-01-16 23:00:00"
-    t.datetime "designated_work_start_time", default: "2020-01-17 00:00:00"
-    t.datetime "designated_work_end_time", default: "2020-01-17 09:00:00"
+    t.datetime "basic_work_time", default: "2020-01-18 23:00:00"
+    t.datetime "designated_work_start_time", default: "2020-01-19 00:00:00"
+    t.datetime "designated_work_end_time", default: "2020-01-19 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.integer "number_of_attendance_change_applied", default: 0
     t.integer "number_of_manager_approval_applied", default: 0

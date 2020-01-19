@@ -99,14 +99,14 @@ class AttendancesController < ApplicationController
       
           
               user.number_of_attendance_change_applied += 1
-              # 申請元attendanceに申請先user.idの値を持たせるカラムtemp_attendance_change_to_superior_user_id        
-              attendance.temp_attendance_change_to_superior_user_id = to_superior
+              # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id        
+              attendance.attendance_change_to_superior_user_id = to_superior
       
         
             # 前回と同じ上長を指定している場合
             else
           
-              attendance.temp_attendance_change_to_superior_user_id = to_superior
+              attendance.attendance_change_to_superior_user_id = to_superior
         
             end
         
@@ -118,17 +118,16 @@ class AttendancesController < ApplicationController
     
           else
             user.number_of_attendance_change_applied += 1
-            # 申請元attendanceに申請先user.idの値を持たせるカラムtemp_attendance_change_to_superior_user_id
-            attendance.temp_attendance_change_to_superior_user_id = to_superior
+            # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id
+            attendance.attendance_change_to_superior_user_id = to_superior
           end
       
           # 過去に指定していないattendanceに登録する場合終わり
           ###################################################################
             
-          
+      
           if attendance.result.nil?
             attendance.result = ",#{user.name}へ勤怠変更申請中"
-          
           elsif attendance.result.include?("へ勤怠変更申請中") || attendance.result.include?("勤怠編集承認済") || attendance.result.include?("勤怠編集否認")
             result_array = attendance.result.split(",")
             j = 0
@@ -155,13 +154,11 @@ class AttendancesController < ApplicationController
           if attendance.result[0] == ","
             attendance.result.slice!(0)
           end
-          if attendance.result.end_with?(",")
-            attendance.result.chop!
-          end
       
           attendance.attendance_change_applying = true 
       
-          attendance.saved_attendance_change_to_superior_user_id = attendance.temp_attendance_change_to_superior_user_id
+          attendance.saved_attendance_change_to_superior_user_id = attendance.attendance_change_to_superior_user_id
+          
           
           @last_attendance.manager_approval = "所属長承認　未"
           @last_attendance.save
@@ -187,7 +184,7 @@ class AttendancesController < ApplicationController
         end
            
         attendance.update_attributes!(item)
-        #attendance.save
+        
       end
       
       
@@ -198,12 +195,9 @@ class AttendancesController < ApplicationController
     
     delete_id_numbers.each do |number|
       attendance1 = Attendance.find(number)
-      attendance1.attendance_hour = nil
-      attendance1.attendance_min = nil
-      attendance1.departure_hour = nil
-      attendance1.departure_min = nil
-      attendance1.attendance_change_note = nil
       attendance1.attendance_change_to_superior_user_id = nil
+      attendance1.attendance_change_note = nil
+      #attendance1.attendance_change_tomorrow = nil
       attendance1.save
     end
     redirect_to user_url(date: params[:date])
@@ -383,9 +377,7 @@ class AttendancesController < ApplicationController
       if @attendance.result[0] == ","
         @attendance.result.slice!(0)
       end
-      if @attendance.result.end_with?(",")
-        @attendance.result.chop!
-      end
+    
     
     
     
@@ -571,10 +563,10 @@ class AttendancesController < ApplicationController
       instructor_confirmation1 = params[:attendance][:instructor_confirmation]
       if instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       elsif instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       end
       instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
     end
@@ -598,9 +590,9 @@ class AttendancesController < ApplicationController
     end
     for i in 0..n-1 do
       if instructor_confirmation[i] == 2
-        result[i] = ",残業承認済"
+        result[i] = ",残業承認済 "
       elsif instructor_confirmation[i] == 3
-        result[i] = ",残業否認"
+        result[i] = ",残業否認 "
       else
         result[i] = ""
       end
@@ -647,9 +639,7 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-        if attendance[i].result.end_with?(",")
-          attendance[i].result.chop!
-        end
+        
       
         if attendance[i].update_attributes(update_overtime_approval_params)
         else
@@ -776,10 +766,10 @@ class AttendancesController < ApplicationController
       attendance_change_instructor_confirmation1 = params[:attendance][:attendance_change_instructor_confirmation]
       if attendance_change_instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       elsif attendance_change_instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       end
       attendance_change_instructor_confirmation[i] = params[:attendance][:attendance_change_instructor_confirmation][i].to_i
     end
@@ -823,16 +813,6 @@ class AttendancesController < ApplicationController
         
         attendance[i].finished_at = attendance[i].temp_after_change_end_time
         attendance[i].temp_after_change_end_time = nil
-
-        attendance[i].attendance_change_approved_datetime = DateTime.current
-
-        if attendance[i].time_log_count == 0
-          attendance[i].before_change_start_time = attendance[i].started_at
-          attendance[i].before_change_end_time = attendance[i].finished_at
-        end
-        
-        attendance[i].time_log_attendance_change_approved = true
-        attendance[i].time_log_count += 1
         
       end
       
@@ -863,9 +843,7 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-        if attendance[i].result.end_with?(",")
-          attendance[i].result.chop!
-        end
+      
       
         @user.save
         
@@ -981,7 +959,7 @@ class AttendancesController < ApplicationController
     
     else
       user.number_of_manager_approval_applied += 1
-      # 申請元attendanceに申請先user.idの値を持たせるカラムtemp_attendance_change_to_superior_user_id
+      # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id
       attendance.manager_approval_to_superior_user_id = to_superior
       
     end
@@ -1020,9 +998,7 @@ class AttendancesController < ApplicationController
     if attendance.result[0] == ","
       attendance.result.slice!(0)
     end  
-    if attendance.result.end_with?(",")
-      attendance.result.chop!
-    end
+    
     
     attendances_on_this_month.each do |day|
       if day.overtime_applying == true
@@ -1037,9 +1013,6 @@ class AttendancesController < ApplicationController
       
     end
     
-    last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
-    last_attendance.manager_approval = "所属長承認　未"
-    last_attendance.save
   
     attendance.manager_approval_applying = true   
   
@@ -1140,10 +1113,10 @@ class AttendancesController < ApplicationController
       manager_approval_instructor_confirmation1 = params[:attendance][:manager_approval_instructor_confirmation]
       if manager_approval_instructor_confirmation1 == nil
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       elsif manager_approval_instructor_confirmation1.length != n
         flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
+        redirect_to user_url(@user.id)  and return
       end
       manager_approval_instructor_confirmation[i] = params[:attendance][:manager_approval_instructor_confirmation][i].to_i
     end
@@ -1207,11 +1180,7 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-        if attendance[i].result.end_with?(",")
-          attendance[i].result.chop!
-        end
-        
-        
+      
       
         @user.save
         
@@ -1310,17 +1279,6 @@ class AttendancesController < ApplicationController
     #end
     
     redirect_to user_url(@user.id, date: @first_day)
-    
-  end
-  
-  def time_log
-    @user = User.find(params[:id])
-    @first_day = params[:date].to_date
-    last_day = @first_day.end_of_month
-    @attendances = Attendance.all
-    @attendances = @user.attendances
-    @attendances= @attendances.where(worked_on:@first_day..last_day)
-    @attendances = @attendances.where(time_log_attendance_change_approved:true).order(:worked_on)
     
   end
   
