@@ -384,9 +384,13 @@ class AttendancesController < ApplicationController
       end
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       if @attendance.result.end_with?(",")
         @attendance.result.chop!
       end
+=======
+    
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
 =======
     
 >>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
@@ -1029,12 +1033,15 @@ class AttendancesController < ApplicationController
     end  
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     if attendance.result.end_with?(",")
       attendance.result.chop!
     end
 =======
 >>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
 =======
+=======
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
     
 >>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
     
@@ -1220,12 +1227,15 @@ class AttendancesController < ApplicationController
         end      
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         if attendance[i].result.end_with?(",")
           attendance[i].result.chop!
         end
         
         
 =======
+=======
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
 =======
 >>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
       
