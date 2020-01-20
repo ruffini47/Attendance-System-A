@@ -58,7 +58,6 @@ class AttendancesController < ApplicationController
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
         if item["attendance_hour"] != "" || item["attendance_min"] != "" || item["departure_hour"] != "" || item["departure_min"] != "" 
-          
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -100,14 +99,14 @@ class AttendancesController < ApplicationController
       
           
               user.number_of_attendance_change_applied += 1
-              # 申請元attendanceに申請先user.idの値を持たせるカラムtemp_attendance_change_to_superior_user_id        
-              attendance.temp_attendance_change_to_superior_user_id = to_superior
+              # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id        
+              attendance.attendance_change_to_superior_user_id = to_superior
       
         
             # 前回と同じ上長を指定している場合
             else
           
-              attendance.temp_attendance_change_to_superior_user_id = to_superior
+              attendance.attendance_change_to_superior_user_id = to_superior
         
             end
         
@@ -119,17 +118,16 @@ class AttendancesController < ApplicationController
     
           else
             user.number_of_attendance_change_applied += 1
-            # 申請元attendanceに申請先user.idの値を持たせるカラムtemp_attendance_change_to_superior_user_id
-            attendance.temp_attendance_change_to_superior_user_id = to_superior
+            # 申請元attendanceに申請先user.idの値を持たせるカラムattendance_change_to_superior_user_id
+            attendance.attendance_change_to_superior_user_id = to_superior
           end
       
           # 過去に指定していないattendanceに登録する場合終わり
           ###################################################################
             
-          
+      
           if attendance.result.nil?
             attendance.result = ",#{user.name}へ勤怠変更申請中"
-          
           elsif attendance.result.include?("へ勤怠変更申請中") || attendance.result.include?("勤怠編集承認済") || attendance.result.include?("勤怠編集否認")
             result_array = attendance.result.split(",")
             j = 0
@@ -159,7 +157,8 @@ class AttendancesController < ApplicationController
       
           attendance.attendance_change_applying = true 
       
-          attendance.saved_attendance_change_to_superior_user_id = attendance.temp_attendance_change_to_superior_user_id
+          attendance.saved_attendance_change_to_superior_user_id = attendance.attendance_change_to_superior_user_id
+          
           
           @last_attendance.manager_approval = "所属長承認　未"
           @last_attendance.save
@@ -168,6 +167,7 @@ class AttendancesController < ApplicationController
           
           #attendance.save
           user.save
+          
           
         end
         #user.save
@@ -184,7 +184,7 @@ class AttendancesController < ApplicationController
         end
            
         attendance.update_attributes!(item)
-        #attendance.save!
+        
       end
       
       
@@ -195,18 +195,13 @@ class AttendancesController < ApplicationController
     
     delete_id_numbers.each do |number|
       attendance1 = Attendance.find(number)
-      #attendance1.attendance_hour = nil
-      #attendance1.attendance_min = nil
-      #attendance1.departure_hour = nil
-      #attendance1.departure_min = nil
-      #attendance1.attendance_change_tomorrow = nil
-      attendance1.attendance_change_note = nil
       attendance1.attendance_change_to_superior_user_id = nil
-      attendance1.save!
+      attendance1.attendance_change_note = nil
+      #attendance1.attendance_change_tomorrow = nil
+      attendance1.save
     end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
