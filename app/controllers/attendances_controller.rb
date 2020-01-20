@@ -58,7 +58,7 @@ class AttendancesController < ApplicationController
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
         if item["attendance_hour"] != "" || item["attendance_min"] != "" || item["departure_hour"] != "" || item["departure_min"] != "" 
-          debugger
+          
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -183,8 +183,8 @@ class AttendancesController < ApplicationController
             
         end
            
-        #attendance.update_attributes!(item)
-        attendance.save!
+        attendance.update_attributes!(item)
+        #attendance.save!
       end
       
       
@@ -200,8 +200,8 @@ class AttendancesController < ApplicationController
       #attendance1.departure_hour = nil
       #attendance1.departure_min = nil
       #attendance1.attendance_change_tomorrow = nil
-      #attendance1.attendance_change_note = nil
-      #attendance1.attendance_change_to_superior_user_id = nil
+      attendance1.attendance_change_note = nil
+      attendance1.attendance_change_to_superior_user_id = nil
       attendance1.save!
     end
     redirect_to user_url(date: params[:date])
@@ -382,21 +382,10 @@ class AttendancesController < ApplicationController
       if @attendance.result[0] == ","
         @attendance.result.slice!(0)
       end
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       if @attendance.result.end_with?(",")
         @attendance.result.chop!
       end
-=======
     
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-=======
-    
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-=======
-    
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
     
     
     
@@ -1031,19 +1020,7 @@ class AttendancesController < ApplicationController
     if attendance.result[0] == ","
       attendance.result.slice!(0)
     end  
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if attendance.result.end_with?(",")
-      attendance.result.chop!
-    end
-=======
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-=======
-=======
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-    
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
+
     
     attendances_on_this_month.each do |day|
       if day.overtime_applying == true
@@ -1225,21 +1202,7 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if attendance[i].result.end_with?(",")
-          attendance[i].result.chop!
-        end
-        
-        
-=======
-=======
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-=======
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
-      
->>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
+
       
         @user.save
         
