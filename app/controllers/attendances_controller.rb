@@ -58,6 +58,7 @@ class AttendancesController < ApplicationController
         # attendanceは申請元attendance
         attendance = Attendance.find(id)
         if item["attendance_hour"] != "" || item["attendance_min"] != "" || item["departure_hour"] != "" || item["departure_min"] != "" 
+          debugger
           year = @first_day.year
           mon = @first_day.month
           day = @first_day.day
@@ -171,7 +172,6 @@ class AttendancesController < ApplicationController
           #attendance.save
           user.save
           
-          
         end
         #user.save
         unless params[:user][:attendances][id][:attendance_change_to_superior_user_id] == ""
@@ -186,8 +186,8 @@ class AttendancesController < ApplicationController
             
         end
            
-        attendance.update_attributes!(item)
-        #attendance.save
+        #attendance.update_attributes!(item)
+        attendance.save!
       end
       
       
@@ -198,16 +198,18 @@ class AttendancesController < ApplicationController
     
     delete_id_numbers.each do |number|
       attendance1 = Attendance.find(number)
-      attendance1.attendance_hour = nil
-      attendance1.attendance_min = nil
-      attendance1.departure_hour = nil
-      attendance1.departure_min = nil
-      attendance1.attendance_change_note = nil
-      attendance1.attendance_change_to_superior_user_id = nil
-      attendance1.save
+      #attendance1.attendance_hour = nil
+      #attendance1.attendance_min = nil
+      #attendance1.departure_hour = nil
+      #attendance1.departure_min = nil
+      #attendance1.attendance_change_tomorrow = nil
+      #attendance1.attendance_change_note = nil
+      #attendance1.attendance_change_to_superior_user_id = nil
+      attendance1.save!
     end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    
     flash[:danger] = "無効な入力データがあった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date])
   end
