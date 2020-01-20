@@ -156,9 +156,6 @@ class AttendancesController < ApplicationController
           if attendance.result[0] == ","
             attendance.result.slice!(0)
           end
-          if attendance.result.end_with?(",")
-            attendance.result.chop!
-          end
       
           attendance.attendance_change_applying = true 
       
@@ -385,9 +382,13 @@ class AttendancesController < ApplicationController
       if @attendance.result[0] == ","
         @attendance.result.slice!(0)
       end
+<<<<<<< HEAD
       if @attendance.result.end_with?(",")
         @attendance.result.chop!
       end
+=======
+    
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
     
     
     
@@ -1022,9 +1023,12 @@ class AttendancesController < ApplicationController
     if attendance.result[0] == ","
       attendance.result.slice!(0)
     end  
+<<<<<<< HEAD
     if attendance.result.end_with?(",")
       attendance.result.chop!
     end
+=======
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
     
     attendances_on_this_month.each do |day|
       if day.overtime_applying == true
@@ -1039,9 +1043,6 @@ class AttendancesController < ApplicationController
       
     end
     
-    last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
-    last_attendance.manager_approval = "所属長承認　未"
-    last_attendance.save
   
     attendance.manager_approval_applying = true   
   
@@ -1209,11 +1210,15 @@ class AttendancesController < ApplicationController
         if attendance[i].result[0] == ","
           attendance[i].result.slice!(0)
         end      
+<<<<<<< HEAD
         if attendance[i].result.end_with?(",")
           attendance[i].result.chop!
         end
         
         
+=======
+      
+>>>>>>> parent of d7f8959... attendance-A-所属長承認単体テストOK_修正済み
       
         @user.save
         
