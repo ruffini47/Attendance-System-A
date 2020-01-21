@@ -201,6 +201,15 @@ class AttendancesController < ApplicationController
       attendance1.attendance_change_to_superior_user_id = nil
       attendance1.attendance_change_note = nil
       #attendance1.attendance_change_tomorrow = nil
+      attendance1.saved_attendance_change_note = attendance1.temp_attendance_change_note
+      attendance1.temp_attendance_change_note = nil
+      
+      attendance1.saved_after_change_start_time = attendance1.temp_after_change_start_time
+      attendance1.temp_after_change_start_time = nil
+      
+      attendance1.saved_after_change_end_time = attendance1.temp_after_change_end_time
+      attendance1.temp_after_change_end_time = nil
+      
       attendance1.save
     end
     redirect_to user_url(date: params[:date])
@@ -813,13 +822,13 @@ class AttendancesController < ApplicationController
     for i in 0..n-1 do
       if attendance_change_instructor_confirmation[i] == 2 && attendance_change_change_approval[i] == "true" 
         
-        attendance[i].last_attendance_change_note = attendance[i].temp_attendance_change_note
+        attendance[i].last_attendance_change_note = attendance[i].saved_attendance_change_note
         attendance[i].temp_attendance_change_note = nil
         
-        attendance[i].started_at = attendance[i].temp_after_change_start_time
+        attendance[i].started_at = attendance[i].saved_after_change_start_time
         attendance[i].temp_after_change_start_time = nil
         
-        attendance[i].finished_at = attendance[i].temp_after_change_end_time
+        attendance[i].finished_at = attendance[i].saved_after_change_end_time
         attendance[i].temp_after_change_end_time = nil
 
         attendance[i].attendance_change_approved_datetime = DateTime.current
@@ -906,9 +915,9 @@ class AttendancesController < ApplicationController
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
     
-    @attendance.cr_after_change_start_time = @attendance.temp_after_change_start_time
-    @attendance.cr_after_change_end_time = @attendance.temp_after_change_end_time
-    @attendance.cr_attendance_change_note = @attendance.temp_attendance_change_note
+    @attendance.cr_after_change_start_time = @attendance.saved_after_change_start_time
+    @attendance.cr_after_change_end_time = @attendance.saved_after_change_end_time
+    @attendance.cr_attendance_change_note = @attendance.saved_attendance_change_note
     @attendance.save
     
     
