@@ -191,7 +191,6 @@ class AttendancesController < ApplicationController
       end
       
       
-      
     end
     
     flash[:success] = "1ヶ月分の勤怠情報を更新しました。"
