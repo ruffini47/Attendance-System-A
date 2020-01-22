@@ -1,6 +1,4 @@
 <% provide(:title, "Time log") %>
-<% provide(:class_text, 'time-log') %>
-<% provide(:button_text, '更新') %>
 <h1>勤怠ログ</h1>
 <div>
   <%= form_with(model: @attendance, url: '#', local: true)  do |f| %>
@@ -8,8 +6,8 @@
       <%= link_to "リセット", '#', class: "btn btn-default" %>
     </div>
     <div class = "select_year_month">
-      <%= f.select :year, options_for_select((2019..2020)), { include_blank: "年"}, { class: "form-control"} %>
-      <%= f.select :month, options_for_select((1..12)), { include_blank: "月"}, { class: "form-control"} %>
+      <%= f.select :year, options_for_select((2017..2022)), { include_blank: "年"}, { class: "form-control"} %>
+      <%= f.select :month, options_for_select((1..12)), { include_blank: "月"}, {onchange: "submit(this.form)", class: "form-control"} %>
     </div>
   <% end %>
 </div>

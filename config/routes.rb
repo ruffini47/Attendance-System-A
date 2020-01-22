@@ -23,7 +23,8 @@ Rails.application.routes.draw do
 
   # 勤怠ログ
   get '/users/:id/attendance/time_log/', to: 'attendances#time_log', as: 'attendances_time_log_user'
-
+  post '/users/:id/attendance/time_log/', to: 'attendances#update_time_log'
+  
   # 拠点情報
   resources :bases do
   
