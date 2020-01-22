@@ -1,7 +1,14 @@
 <% provide(:title, "Time log") %>
 <h1>勤怠ログ</h1>
+<script type="text/javascript">
+$(function(){
+  $("#submit_select").change(function(){
+    $("#submit_form").submit();
+  });
+});
+</script>
 <div class="container">
-  <%= form_with(model: @attendance, url: '#', local: true)  do |f| %>
+  <%= form_with(model: @attendance, url: '#', local: true, id: "submit_form")  do |f| %>
     <div class = "form-group">
       <div class="row">
         <div class="col-sm-1 reset-buttom">
@@ -25,7 +32,7 @@
       <div class = "form-group">
         <div class="row">
           <div class="col-sm-1">
-            <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { onchange: "submit(this.form)", class: "form-control month-select"} %>
+            <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { id: "submit_select", class: "form-control month-select"} %>
           </div>
           <div class="col-sm-1">
             <%= f.label :month, "#{@user.time_log_month}", { class: "form-control month-label"} %>
