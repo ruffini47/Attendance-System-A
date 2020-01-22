@@ -1340,15 +1340,18 @@ class AttendancesController < ApplicationController
   
   def update_time_log
     @user = User.find(params[:id])
-    @year = params[:year].to_i
-    @month = params[:month].to_i
-    datetime = DateTime.new(@year, @month, 1, 1, 1, 1, 0.375);
+    year = params[:year].to_i
+    month = params[:month].to_i
+    datetime = DateTime.new(year, month, 1, 1, 1, 1, 0.375);
     @first_day = datetime.beginning_of_month
     last_day = @first_day.end_of_month
     @attendances = Attendance.all
     @attendances = @user.attendances
     @attendances= @attendances.where(worked_on:@first_day..last_day)
     @attendances = @attendances.where(time_log_attendance_change_approved:true).order(:worked_on)
+    @user.time_log_year = year
+    @user.time_log_month = month
+    @user.save
     
     redirect_to attendances_time_log_user_path(@user.id, date:@first_day)
     
