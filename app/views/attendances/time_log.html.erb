@@ -1,20 +1,35 @@
 <% provide(:title, "Time log") %>
 <h1>勤怠ログ</h1>
-<div>
+<div class="container">
   <%= form_with(model: @attendance, url: '#', local: true)  do |f| %>
     <div class = "form-group">
-      <%= link_to "リセット", '#', class: "btn btn-default" %>
-    </div>
-    <div>
-      <div class = "form-group" style="display: inline-flex">
-        <%= f.select :year, options_for_select((2017..2022)), { include_blank: "年"}, { class: "form-control"} %>
-        <%= f.label :year, "#{@user.time_log_year}", { class: "form-control"} %>
+      <div class="row">
+        <div class="col-sm-1 reset-buttom">
+          <%= link_to "リセット", '#', class: "btn btn-default" %>
+        </div>
       </div>
     </div>
     <div>
-      <div class = "form-group form-inline">
-        <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { onchange: "submit(this.form)", class: "form-control"} %>
-        <%= f.label :month, "#{@user.time_log_month}", { class: "form-control"} %>
+      <div class = "form-group">
+        <div class="row">
+          <div class="col-sm-1">
+            <%= f.select :year, options_for_select((2017..2022)), { include_blank: "年"}, { class: "form-control year-select"} %>
+          </div>
+          <div class="col-sm-1">
+            <%= f.label :year, "#{@user.time_log_year}", { class: "form-control year-label"} %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class = "form-group">
+        <div class="row">
+          <div class="col-sm-1">
+            <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { onchange: "submit(this.form)", class: "form-control month-select"} %>
+          </div>
+          <div class="col-sm-1">
+            <%= f.label :month, "#{@user.time_log_month}", { class: "form-control month-label"} %>
+          </div>
       </div>
     </div>
   <% end %>
