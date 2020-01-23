@@ -11,7 +11,7 @@ $(function(){
   <div class = "form-group">
     <div class="row">
       <div class="col-sm-1 reset-buttom">
-        <%= link_to "リセット", '#', class: "btn btn-default" %>
+        <%= link_to "リセット", attendances_reset_time_log_path(@user.id, date:@first_day), class: "btn btn-default" %>
       </div>
     </div>
   </div>

@@ -1373,6 +1373,22 @@ class AttendancesController < ApplicationController
     
   end
   
+  def reset_time_log
+    @user = User.find(params[:id])
+    @first_day = params[:date].to_date
+    #last_day = @first_day.end_of_month
+    #@attendances = Attendance.all
+    #@attendances = @user.attendances
+    #@attendances= @attendances.where(worked_on:@first_day..last_day)
+    #@attendances = @attendances.where(time_log_attendance_change_approved:true).order(:worked_on)
+    @user.time_log_year = Time.now.year
+    @user.time_log_month = Time.now.mon 
+    @user.save
+    
+    redirect_to attendances_time_log_user_path(@user.id, date:@first_day)
+  end
+  
+  
   private
   
     # 勤怠編集情報を扱います。
