@@ -1335,13 +1335,29 @@ class AttendancesController < ApplicationController
     @attendances = @user.attendances
     @attendances= @attendances.where(worked_on:@first_day..last_day)
     @attendances = @attendances.where(time_log_attendance_change_approved:true).order(:worked_on)
-    
   end
   
   def update_time_log
     @user = User.find(params[:id])
-    year = params[:year].to_i
-    month = params[:month].to_i
+    if !params[:year].nil?
+      year = params[:year].to_i
+    elsif !@user.temp_year.nil?
+      year = @user.temp_year
+    else
+      year = Time.now.year
+    end
+    @user.temp_year = year
+    
+    if !params[:month].nil?
+      month = params[:month].to_i  
+    elsif !@user.temp_month.nil?
+      month = @user.temp_month
+    else
+      month = Time.now.mon
+    end
+    @user.temp_month = month
+    
+    
     datetime = DateTime.new(year, month, 1, 1, 1, 1, 0.375);
     @first_day = datetime.beginning_of_month
     last_day = @first_day.end_of_month

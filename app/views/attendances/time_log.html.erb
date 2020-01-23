@@ -2,25 +2,25 @@
 <h1>勤怠ログ</h1>
 <script type="text/javascript">
 $(function(){
-  $("#submit_select").change(function(){
-    $("#submit_form").submit();
-  });
+    $("[id^=submit_select]").change(function(){
+        $("#submit_form"+$(this).attr("id").slice(-1)).submit();
+    });
 });
 </script>
 <div class="container">
-  <%= form_with(model: @attendance, url: '#', local: true, id: "submit_form")  do |f| %>
-    <div class = "form-group">
-      <div class="row">
-        <div class="col-sm-1 reset-buttom">
-          <%= link_to "リセット", '#', class: "btn btn-default" %>
-        </div>
+  <div class = "form-group">
+    <div class="row">
+      <div class="col-sm-1 reset-buttom">
+        <%= link_to "リセット", '#', class: "btn btn-default" %>
       </div>
     </div>
+  </div>
+  <%= form_with(model: @attendance, url: '#', local: true, id: "submit_form1")  do |f| %>  
     <div>
       <div class = "form-group">
         <div class="row">
           <div class="col-sm-1">
-            <%= f.select :year, options_for_select((2017..2022)), { include_blank: "年"}, { class: "form-control year-select"} %>
+            <%= f.select :year, options_for_select((2017..2022)), { include_blank: "年"}, { id: "submit_select1", class: "form-control year-select"} %>
           </div>
           <div class="col-sm-1">
             <%= f.label :year, "#{@user.time_log_year}", { class: "form-control year-label"} %>
@@ -28,11 +28,13 @@ $(function(){
         </div>
       </div>
     </div>
+  <% end %>
+  <%= form_with(model: @attendance, url: '#', local: true, id: "submit_form2")  do |f| %>  
     <div>
       <div class = "form-group">
         <div class="row">
           <div class="col-sm-1">
-            <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { id: "submit_select", class: "form-control month-select"} %>
+            <%= f.select :month, options_for_select((1..12)), { include_blank: " 月"}, { id: "submit_select2", class: "form-control month-select"} %>
           </div>
           <div class="col-sm-1">
             <%= f.label :month, "#{@user.time_log_month}", { class: "form-control month-label"} %>
