@@ -71,17 +71,34 @@ class AttendancesController < ApplicationController
           departure_hour = item["departure_hour"].to_i
           departure_min = item["departure_min"].to_i
           temp_after_change_end_time = DateTime.new(year, mon, day, departure_hour, departure_min, 0, 0.375);
+          
+          attendance_change_tomorrow = item["attendance_change_tomorrow"].to_i
+          if attendance_change_tomorrow == 1
+            temp_after_change_end_time = temp_after_change_end_time.since(1.days)
+          end
           attendance.temp_after_change_end_time = temp_after_change_end_time
+          attendance.attendance_change_tomorrow = attendance_change_tomorrow
+          
+          if temp_after_change_start_time > temp_after_change_end_time
+            #実際は下記は表示されない
+            flash[:danger] = "翌日チェックボックスをつけてください。"
+          end
 
           temp_attendance_change_note = item["attendance_change_note"]
           attendance.temp_attendance_change_note = temp_attendance_change_note
           
+          
+          
           if item["attendance_change_to_superior_user_id"] == ""
+            # 指示者確認欄が空のときActiveRecordのエラーを発生させる
+            item["departure_hour"] = nil
+            to_superior = 2
+            # 指示者確認欄が空のときActiveRecordのエラーを発生させる終わり
+            #実際は下記は表示されない
             flash[:danger] = "指示者確認欄が空です。"
-            redirect_to user_url(@user.id, date: @first_day)  and return
+          else
+            to_superior= item["attendance_change_to_superior_user_id"].to_i
           end  
-    
-          to_superior= item["attendance_change_to_superior_user_id"].to_i
           
           # userは申請先上長ユーザ
           user = User.find(to_superior)
@@ -201,7 +218,7 @@ class AttendancesController < ApplicationController
       attendance1 = Attendance.find(number)
       attendance1.attendance_change_to_superior_user_id = nil
       attendance1.attendance_change_note = nil
-      #attendance1.attendance_change_tomorrow = nil
+      attendance1.attendance_change_tomorrow = nil
       attendance1.saved_attendance_change_note = attendance1.temp_attendance_change_note
       attendance1.temp_attendance_change_note = nil
       
@@ -831,6 +848,8 @@ class AttendancesController < ApplicationController
         
         attendance[i].finished_at = attendance[i].saved_after_change_end_time
         attendance[i].temp_after_change_end_time = nil
+        
+        attendance[i].attendance_change_tomorrow = nil
 
         attendance[i].attendance_change_approved_datetime = DateTime.current
 
@@ -851,7 +870,8 @@ class AttendancesController < ApplicationController
         attendance[i].temp_after_change_start_time = nil
         
         attendance[i].temp_after_change_end_time = nil
-        
+
+        attendance[i].attendance_change_tomorrow = nil        
       end
       
       if ( attendance_change_instructor_confirmation[i] == 2 || attendance_change_instructor_confirmation[i] == 3 ) && attendance_change_change_approval[i] == "true" 
