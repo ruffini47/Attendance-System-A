@@ -11,7 +11,7 @@ module AttendancesHelper
   end
   
   # 出勤時間と退勤時間を受け取り、在社時間を計算して返します。
-  def working_times(start, finish, tomorrow)
+  def working_times(start, finish)
     shour = start.hour
     fhour = finish.hour
     smin = start.min
@@ -20,11 +20,8 @@ module AttendancesHelper
     shour = shour + smin / 60.0
     fhour = fhour + fmin / 60.0
 
-    if tomorrow == 1 || fhour - shour < 0
-      format("%.2f", fhour - shour + 24.0)
-    else
-      format("%.2f", fhour - shour)
-    end
+    format("%.2f", fhour - shour)
+    
   end
   
   def short_times(time)
