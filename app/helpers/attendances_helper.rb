@@ -12,6 +12,9 @@ module AttendancesHelper
   
   # 出勤時間と退勤時間を受け取り、在社時間を計算して返します。
   def working_times(start, finish)
+    sday = start.day
+    fday = finish.day
+    
     shour = start.hour
     fhour = finish.hour
     smin = start.min
@@ -20,7 +23,7 @@ module AttendancesHelper
     shour = shour + smin / 60.0
     fhour = fhour + fmin / 60.0
 
-    format("%.2f", fhour - shour)
+    format("%.2f", fhour - shour + (fday - sday) * 24.0 ) 
     
   end
   

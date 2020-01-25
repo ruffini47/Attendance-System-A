@@ -114,10 +114,10 @@
           <td></td>
           <td>
             <% if day.cr_after_change_start_time.present?.present? && day.cr_after_change_end_time.present? %>
-              <%= str_times = working_times(day.cr_after_change_start_time, day.cr_after_change_end_time, day.tomorrow) %>
+              <%= str_times = working_times(day.cr_after_change_start_time, day.cr_after_change_end_time) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% elsif day.started_at.present?.present? && day.finished_at.present? %>
-              <%= str_times = working_times(day.started_at, day.finished_at, day.tomorrow) %>
+              <%= str_times = working_times(day.started_at, day.finished_at) %>
               <% @total_working_times = @total_working_times.to_f + str_times.to_f %>
             <% end %>
           </td>
@@ -140,7 +140,7 @@
           </td>
           <td>
             <% if @user.designated_work_end_time.present? && day.scheduled_end_time.present? %>
-              <%= working_times(@user.designated_work_end_time, day.scheduled_end_time, day.tomorrow) %>
+              <%= working_times(@user.designated_work_end_time, day.scheduled_end_time) %>
             <% end %>
           </td>
           <td>

@@ -267,7 +267,9 @@ class AttendancesController < ApplicationController
     # @last_attendance[i]はユーザがi番目の申請元ユーザ、worked_onが月末日のattencance
     @last_attendance =  Attendance.find_by(user_id:@user.id, worked_on:last_day)
     
-    
+    year = Time.now.year
+    mon = Time.now.mon
+    day = Time.now.day
     hour1 = params[:attendance][:hour]
     min1 =  params[:attendance][:min] 
 
@@ -278,6 +280,26 @@ class AttendancesController < ApplicationController
 
     hour = hour1.to_i
     min = min1.to_i
+    
+    d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+    
+    hour2 = @user.designated_work_end_time.hour
+    min2 = @user.designated_work_end_time.min
+    
+    @user.designated_work_end_time = d1.change(hour: hour2, min: min2, sec: 0)
+    @user.save
+    
+    tomorrow = params[:attendance][:tomorrow].to_i
+    
+    if tomorrow == 1
+      d1 = d1.since(1.days)
+    end
+    
+    @attendance.temp_scheduled_end_time = d1
+    @attendance.tomorrow = tomorrow
+
+
+    
     
     # 共通の処理終わり
     ##########################################################
@@ -293,7 +315,7 @@ class AttendancesController < ApplicationController
       @attendance.cl_business_processing = business_processing
       
       if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
-        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, hour, min, date: @first_day) and return
+        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, date: @first_day) and return
       else
         render :show      
       end
@@ -308,14 +330,6 @@ class AttendancesController < ApplicationController
     ##########################################################
     # 変更を送信するボタン押下後の処理
     
-    year = Time.now.year
-    mon = Time.now.mon
-    day = Time.now.day
-    
-    d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
-       
-    @attendance.temp_scheduled_end_time = d1
-    @attendance.tomorrow = params[:attendance][:tomorrow].to_i
     
     change_application = params[:attendance][:change_application].to_i
     
@@ -459,13 +473,17 @@ class AttendancesController < ApplicationController
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
     @worked_sum = @attendances.where.not(finished_at: nil).count
-    year = Time.now.year
-    mon = Time.now.mon
-    day = Time.now.day
-    hour = params[:hour].to_i
-    min = params[:min].to_i
-    d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
+    
+    d1 = @attendance.temp_scheduled_end_time
+    
+    #year = Time.now.year
+    #mon = Time.now.mon
+    #day = Time.now.day
+    #hour = params[:hour].to_i
+    #min = params[:min].to_i
+    #d1 = DateTime.new(year, mon, day, hour, min, 0, 0.375);
     @attendance.cl_scheduled_end_time = d1
+    
 
     
     @attendance.save

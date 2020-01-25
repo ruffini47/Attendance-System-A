@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   get '/users/:user_id/attendances/:id/overtime_application/', to: 'attendances#edit_overtime_application', as: 'attendances_overtime_application_user'
   patch '/users/:user_id/attendances/:id/overtime_application/', to: 'attendances#update_overtime_application'
   # 残業申請_1カ月勤怠確認
-  get '/users/:user_id/attendance/:id/confirm_one_month_application/:hour/:min/', to: 'attendances#confirm_one_month_application', as: 'attendance_confirm_one_month_application_user'
+  get '/users/:user_id/attendance/:id/confirm_one_month_application/', to: 'attendances#confirm_one_month_application', as: 'attendance_confirm_one_month_application_user'
   get '/users/:user_id/attendance/:id/confirm_one_month_approval/', to: 'attendances#confirm_one_month_approval', as: 'attendance_confirm_one_month_approval_user'
   # 残業承認
   get '/users/:id/attendance/overtime_approval/', to: 'attendances#edit_overtime_approval', as: 'attendances_overtime_approval_user'
