@@ -291,6 +291,16 @@ class AttendancesController < ApplicationController
     
     tomorrow = params[:attendance][:tomorrow].to_i
     
+    if d1 < @user.designated_work_end_time && tomorrow != 1
+      flash[:danger] = "翌日チェックボックスをつけてください。"
+      redirect_to user_url(@user.id, date: @first_day)  and return
+    end
+    
+    if d1 >= @user.designated_work_end_time && tomorrow == 1
+      flash[:danger] = "翌日チェックボックスをつけてないでください。"
+      redirect_to user_url(@user.id, date: @first_day)  and return
+    end
+    
     if tomorrow == 1
       d1 = d1.since(1.days)
     end
