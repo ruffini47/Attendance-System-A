@@ -11,9 +11,9 @@ csv_data= CSV.generate(bom) do |csv|
         day.worked_on,
         day.started_at.strftime("%H:%M"),
         day.finished_at.strftime("%H:%M"),
-        working_times(day.started_at, day.finished_at, day.tomorrow),
+        working_times(day.started_at, day.finished_at),
         day.scheduled_end_time.strftime("%H:%M"),
-        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
+        working_times(@user.designated_work_end_time, day.scheduled_end_time)
       ]
     elsif !day.started_at.nil? && !day.scheduled_end_time.nil?
       csv_column_values = [
@@ -22,7 +22,7 @@ csv_data= CSV.generate(bom) do |csv|
         day.finished_at,
         "",
         day.scheduled_end_time.strftime("%H:%M"),
-        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
+        working_times(@user.designated_work_end_time, day.scheduled_end_time)
       ]
     elsif !day.scheduled_end_time.nil? 
       csv_column_values = [
@@ -31,7 +31,7 @@ csv_data= CSV.generate(bom) do |csv|
         day.finished_at,
         "",
         day.scheduled_end_time.strftime("%H:%M"),
-        working_times(@user.designated_work_end_time, day.scheduled_end_time, 0)
+        working_times(@user.designated_work_end_time, day.scheduled_end_time)
         
       ]
     elsif !day.started_at.nil? && !day.finished_at.nil? 
@@ -39,7 +39,7 @@ csv_data= CSV.generate(bom) do |csv|
         day.worked_on,
         day.started_at.strftime("%H:%M"),
         day.finished_at.strftime("%H:%M"),
-        working_times(day.started_at, day.finished_at, day.tomorrow),
+        working_times(day.started_at, day.finished_at),
         day.scheduled_end_time
       ]
     elsif !day.started_at.nil? 
