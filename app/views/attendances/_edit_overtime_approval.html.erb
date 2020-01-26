@@ -65,7 +65,7 @@
                     </td>
                     <td>
                       <div class = "form-group">
-                        <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations), {include_blank: true, :include_hidden => false , :selected => 1 }, { class: "form-control", :multiple => true} %>
+                        <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false }, { class: "form-control", :multiple => true} %>
                       </div>
                     </td>
                     <td>
