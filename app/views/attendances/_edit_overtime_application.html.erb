@@ -36,8 +36,8 @@
                 </td>    
                 <td>
                   <div class = "form-group" style="display: inline-flex">
-                    <%= f.select :hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
-                    <%= f.select :min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
+                    <%= f.select :hour, options_for_select((0..23).to_a.map { |v| "%02d" % v }), { include_blank: true}, { class: "form-control"} %>：
+                    <%= f.select :min, options_for_select((0..59).to_a.map { |v| "%02d" % v }), { include_blank: true}, { class: "form-control"} %>
                   </div>
                 </td>
                 <td>

@@ -30,14 +30,14 @@
               <% end %>
               <td>
                 <div class = "form-group" style="display: inline-flex">
-                  <%= attendance.select :attendance_hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
-                  <%= attendance.select :attendance_min, options_for_select((0..59)), { include_blank: true}, {class: "form-control"} %>
+                  <%= attendance.select :attendance_hour, options_for_select((0..23).to_a.map { |v| "%02d" % v }), { include_blank: true}, { class: "form-control"} %>：
+                  <%= attendance.select :attendance_min, options_for_select((0..59).to_a.map { |v| "%02d" % v }), { include_blank: true}, {class: "form-control"} %>
                 </div>
               </td>
               <td>
                 <div class = "form-group" style="display: inline-flex">
-                  <%= attendance.select :departure_hour, options_for_select((0..23)), { include_blank: true}, { class: "form-control"} %>：
-                  <%= attendance.select :departure_min, options_for_select((0..59)), { include_blank: true}, { class: "form-control"} %>
+                  <%= attendance.select :departure_hour, options_for_select((0..23).to_a.map { |v| "%02d" % v }), { include_blank: true}, { class: "form-control"} %>：
+                  <%= attendance.select :departure_min, options_for_select((0..59).to_a.map { |v| "%02d" % v }), { include_blank: true}, { class: "form-control"} %>
                 </div>
               </td>  
               <td>
