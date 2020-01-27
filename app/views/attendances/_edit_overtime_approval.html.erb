@@ -40,9 +40,9 @@
                 </tr>
               </thead>
               <tbody>
-                <%= f.hidden_field :user_id, multiple: true, :value => @user_b[i].id %>
+                <%= f.hidden_field :user_id, :value => @user_b[i].id %>
                 <% @attendancesb[i].each do |attendance| %>
-                  <%= f.hidden_field :id, multiple: true, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
+                  <%= f.hidden_field :id, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
                   <%= f.hidden_field :date, :value => @first_day %>
                   <tr>
                     <td>
@@ -65,12 +65,12 @@
                     </td>
                     <td>
                       <div class = "form-group">
-                        <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false }, { class: "form-control", :multiple => true} %>
+                        <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false }, { class: "form-control" } %>
                       </div>
                     </td>
                     <td>
                       <div class = "form-check ">
-                        <%= f.check_box :change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                        <%= f.check_box :change_approval, { class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
                       </div>
                     </td>
                     <td>

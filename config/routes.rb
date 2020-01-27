@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   # 残業承認
   get '/users/:id/attendance/overtime_approval/', to: 'attendances#edit_overtime_approval', as: 'attendances_overtime_approval_user'
   patch '/users/:id/attendance/overtime_approval/', to: 'attendances#update_overtime_approval'
+  post '/users/:id/attendance/overtime_approval/', to: 'attendances#update_overtime_approval'
 
   # 勤怠変更承認
   get '/users/:id/attendance/attendance_change_approval/', to: 'attendances#edit_attendance_change_approval', as: 'attendances_attendance_change_approval_user'

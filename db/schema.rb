@@ -87,9 +87,9 @@ ActiveRecord::Schema.define(version: 20200123120923) do
     t.integer "employee_number"
     t.string "uid"
     t.string "affiliation"
-    t.datetime "basic_work_time", default: "2020-01-25 23:00:00"
-    t.datetime "designated_work_start_time", default: "2020-01-26 00:00:00"
-    t.datetime "designated_work_end_time", default: "2020-01-26 09:00:00"
+    t.datetime "basic_work_time", default: "2020-01-26 23:00:00"
+    t.datetime "designated_work_start_time", default: "2020-01-27 00:00:00"
+    t.datetime "designated_work_end_time", default: "2020-01-27 09:00:00"
     t.integer "number_of_overtime_applied", default: 0
     t.integer "number_of_attendance_change_applied", default: 0
     t.integer "number_of_manager_approval_applied", default: 0
