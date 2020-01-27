@@ -9,7 +9,7 @@ class AttendancesController < ApplicationController
   before_action :set_one_month_2, only: [:update_overtime_approval, :post_manager_approval_application]
   before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
                                         :edit_overtime_approval, :update_overtime_approval]
-  
+  before_action :admin_user, only: [:at_work]
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
   def update
