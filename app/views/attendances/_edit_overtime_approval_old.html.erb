@@ -1,0 +1,91 @@
+<% provide(:title, "Overtime approval") %>
+<% provide(:class_text, 'overtime-approval') %>
+<% provide(:button_text, '更新') %>
+
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <%= form_with(model: @attendancesb, url: attendances_overtime_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
+      <% for i in 0..(@user_number_b-1) do %>
+        <div class="modal-header">
+          <h3 class="modal-title title-center"><%= @user_b[i].name %>からの【残業申請】</h3>
+        </div>
+        <div class="modal-body">
+          <div>
+            <table class="table table-bordered table-condensed table-striped table-hover at-work-table">
+              <thead>
+                <colgroup>
+                  <col style='width:20px;'>
+                  <col style='width:20px;'>
+                  <col style='width:60px;'>
+                  <col style='width:80px;'>
+                  <col style='width:60px;'>
+                  <col style='width:120px;'>
+                  <col style='width:60px;'>
+                  <col style='width:20px;'>
+                  <col style='width:80px;'>
+                </colgroup>
+                <tr>
+                  <td>日付</td>
+                  <td>曜日</td>
+                  <td>終了予定時間</td>
+                  <td>指定勤務終了時間</td>
+                  <td>時間外時間</td>
+                  <td>業務処理内容</td>
+                  <td>指示者確認㊞</td>
+                  <td>変更</td>
+                  <td>勤怠を確認する</td>
+                </tr>
+              </thead>
+              <tbody>
+                <%= f.hidden_field :user_id, multiple: true, :value => @user_b[i].id %>
+                <% @attendancesb[i].each do |attendance| %>
+                  <%= f.hidden_field :id, multiple: true, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
+                  <%= f.hidden_field :date, :value => @first_day %>
+                  <tr>
+                    <td>
+                      <%= l(attendance.worked_on, format: :short) %>
+                    </td>  
+                    <td>
+                      <%= $days_of_the_week[attendance.worked_on.wday] %>
+                    </td>    
+                    <td>
+                      <%= short_times(attendance.temp_scheduled_end_time) %>
+                    </td>
+                    <td>
+                      <%= short_times(@user_b[i].designated_work_end_time) %>
+                    </td>
+                    <td>
+                      <%= format("%.2f", (attendance.temp_scheduled_end_time.to_f - @user_b[i].designated_work_end_time.to_f) / 60.0 / 60.0) %>
+                    </td>
+                    <td>
+                      <%= attendance.temp_business_processing %>
+                    </td>
+                    <td>
+                      <div class = "form-group">
+                        <%= f.select :instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false }, { class: "form-control", :multiple => true} %>
+                      </div>
+                    </td>
+                    <td>
+                      <div class = "form-check ">
+                        <%= f.check_box :change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                      </div>
+                    </td>
+                    <td>
+                      <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
+      <div class="center">
+        <%= f.submit "変更を送信する", class: "btn btn-primary btn-lg btn-overtime_approval" %>
+      </div>
+    <% end %>
+  </div>
+</div>

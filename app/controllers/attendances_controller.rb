@@ -524,12 +524,12 @@ class AttendancesController < ApplicationController
   
   def edit_overtime_approval
     
-    users = User.all
+    @users = User.all
     @attendancesb = []
     @user_b = []
     @attendancesb_number_b = []
     i = 0
-    users.each do |user|
+    @users.each do |user|
       if user.attendances.where(overtime_applying: true).where(to_superior_user_id: params[:id].to_i).count > 0
         # @attendances[i]は所属長承認申請している申請先上長ユーザが:id番であるi番目のユーザuser[i]の(worked_onで並べ替えた)attendances
         @attendancesb[i] = user.attendances.where(overtime_applying: true).where(to_superior_user_id: params[:id].to_i).order(:worked_on)
@@ -548,6 +548,10 @@ class AttendancesController < ApplicationController
       j += 1
     end
     
+    @users_b = []
+    @user_b.each do |user|
+      @users_b.push(user)
+    end
     
     
   end

@@ -9,7 +9,6 @@ class UsersController < ApplicationController
 
   def index
     @users = User.all
-    @users = @users.where.not(admin_user?)
   end
   
   def import
