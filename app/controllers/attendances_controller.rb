@@ -562,168 +562,165 @@ class AttendancesController < ApplicationController
     ##########################################################
     # 共通の処理
     
-    debugger
-    
     # 申請先上長ユーザが@user
-    # @user = User.find(params[:id])
+    @user = User.find(params[:id])
     
-    # # nは申請元の件数
-    # #n = params[:attendance][:id].length
+    # ActionController::Parametersをハッシュ化する
+    hash = params[:user][:attendances].permit!.to_hash
     
-    # # mは申請元ユーザの数
-    # #m = params[:attendance][:user_id].length
+    # nは申請元の件数
+    n = hash.size
     
-    # user = []
-    # id = []
-    # attendance = []
-    # first_day = []
+    # mは申請元ユーザの数
+    #m = params[:attendance][:user_id].length
+    
+    attendance_ids = hash.keys
     
     #attendance[i]i番目の申請元のattendance
+    #user[i]はi番目の申請元ユーザuser
     #id[i]はi番目の申請元のattendance.id
-    # # for i in 0..n-1 do
-    # #   attendance[i] = Attendance.find(params[:attendance][:id][i])
-    #   user[i] = User.find(attendance[i].user_id)
-    #   id[i]= attendance[i].id
-    #   first_day[i] = attendance[i].worked_on.beginning_of_month
-    # end
+    #first_day[i]はi番目の申請元attendanceのfirst_day
+    attendance = []
+    user = []
+    id = []
+    first_day = []
     
-    # #user[j]はi番目の申請元ユーザ
-    # #for j in 0..m-1 do
-    # #  user[j] = User.find(params[:attendance][:user_id][j])
-    # #end
+    i = 0
     
-    # # 共通の処理終わり
-    # ##########################################################
+    attendance_ids.each do |idd|
+      attendance[i] = Attendance.find(idd.to_i)
+      user[i] = User.find(attendance[i].user_id)
+      id[i] = idd.to_i
+      first_day[i] = attendance[i].worked_on.beginning_of_month
+      i += 1
+    end
+    
+    # 共通の処理終わり
+    ##########################################################
     
     
     
     
-    # ##########################################################
-    # # 勤怠を確認ボタン押下後の処理
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
     
-    # for i in 0..n-1 do
-    #   if params[:"#{id[i]}"] == "確認"
+    for i in 0..n-1 do
+      if params[:"#{id[i]}"] == "確認"
         
-    #     cr_business_processing = attendance[i].temp_business_processing
-    #     attendance[i].cr_business_processing = cr_business_processing
-    #     attendance[i].save
+        cr_business_processing = attendance[i].temp_business_processing
+        attendance[i].cr_business_processing = cr_business_processing
+        attendance[i].save
         
-    #     j = i
+        j = i
           
-    #     redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
+        redirect_to attendance_confirm_one_month_approval_user_url(user[j].id, id[j], date: first_day[j]) and return  
       
-    #   end
-    # end
+      end
+    end
     
     
-    # # 勤怠を確認するボタン押下後の処理終わり
-    # ##########################################################
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
     
     
     
-    # ##########################################################
-    # # 変更を送信するボタン押下後の処理
-    
-    # instructor_confirmation = []
-    # change_approval = []
-    # for i in 0..n-1 do
-    #   instructor_confirmation1 = params[:attendance][:instructor_confirmation]
-    #   if instructor_confirmation1 == nil
-    #     flash[:danger] = "指示者確認欄が空です。"
-    #     redirect_to user_url(@user.id, date: first_day[i])  and return
-    #   elsif instructor_confirmation1.length != n
-    #     flash[:danger] = "指示者確認欄が空です。"
-    #     redirect_to user_url(@user.id, date: first_day[i])  and return
-    #   end
-    #   instructor_confirmation[i] = params[:attendance][:instructor_confirmation][i].to_i
-    # end
+    ##########################################################
+    # 変更を送信するボタン押下後の処理
 
-    # change_approval = params[:attendance][:change_approval]
+    instructor_confirmation = []
+    change_approval = []
     
-    # i = 0
-    # change_approval.length.times do
-    #   if change_approval[i] == "true"
-    #     change_approval.delete_at(i-1)
-    #     i -= 1
-    #   end
-    #   i += 1
-    # end
+    for i in 0..n-1 do
+      instructor_confirmation1 = hash[id[i].to_s]["instructor_confirmation"]
+      
+      if instructor_confirmation1 == ""
+        flash[:danger] = "指示者確認欄が空です。"
+        redirect_to user_url(@user.id, date: first_day[i])  and return
+      end
+      instructor_confirmation[i] = hash[id[i].to_s]["instructor_confirmation"].to_i
+    end
     
-    # inst_hash = Attendance.instructor_confirmations
-    # result = []
-    # #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
+    for i in 0..n-1 do
+      change_approval[i] = hash[id[i].to_s]["change_approval"]
+    end
+    
+    #inst_hash = Attendance.instructor_confirmations
+    result = []
+    #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
+
     # for i in 0..n-1 do
     #   result[i] = inst_hash.invert[instructor_confirmation[i]]
     # end
-    # for i in 0..n-1 do
-    #   if instructor_confirmation[i] == 2
-    #     result[i] = ",残業承認済"
-    #   elsif instructor_confirmation[i] == 3
-    #     result[i] = ",残業否認"
-    #   else
-    #     result[i] = ""
-    #   end
-    # end
-
+    for i in 0..n-1 do
+      if instructor_confirmation[i] == 2
+        result[i] = ",残業承認済"
+      elsif instructor_confirmation[i] == 3
+        result[i] = ",残業否認"
+      else
+        result[i] = ""
+      end
+    end
       
-    # for i in 0..n-1 do
+    for i in 0..n-1 do
           
-    #   if instructor_confirmation[i] == 2 && change_approval[i] == "true" 
+      if instructor_confirmation[i] == 2 && change_approval[i] == "true" 
         
-    #     attendance[i].business_processing = attendance[i].temp_business_processing
-    #     attendance[i].temp_business_processing = nil
-    #     attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
-    #     attendance[i].temp_scheduled_end_time = nil
+        attendance[i].business_processing = attendance[i].temp_business_processing
+        attendance[i].temp_business_processing = nil
+        attendance[i].scheduled_end_time = attendance[i].temp_scheduled_end_time
+        attendance[i].temp_scheduled_end_time = nil
         
-    #   end
+      end
       
-    #   if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3 ) && change_approval[i] == "true"                
+      if (instructor_confirmation[i] == 2 || instructor_confirmation[i] == 3 ) && change_approval[i] == "true"                
         
-    #     @user.number_of_overtime_applied -= 1
-    #     attendance[i].overtime_applying = false
+        @user.number_of_overtime_applied -= 1
+        attendance[i].overtime_applying = false
         
-    #     if attendance[i].result.nil?
-    #       attendance[i].result = result[i]  
-    #     elsif attendance[i].result.include?("へ残業申請中")
-    #       # @attendance.resultの残業申請中の文字列を消す
-    #       result_array = attendance[i].result.split(",")
-    #       j = 0
-    #       result_array.each do |result0|
-    #         if result0.include?("へ残業申請中")
-    #           result_array[j] = nil
+        if attendance[i].result.nil?
+          attendance[i].result = result[i]  
+        elsif attendance[i].result.include?("へ残業申請中")
+          # @attendance.resultの残業申請中の文字列を消す
+          result_array = attendance[i].result.split(",")
+          j = 0
+          result_array.each do |result0|
+            if result0.include?("へ残業申請中")
+              result_array[j] = nil
               
-    #         end
-    #         j += 1
-    #       end
-    #       str = result_array.join(",")
-    #       attendance[i].result = str
-    #       #attendance[i].result.concat(",")
-    #       attendance[i].result.concat(result[i])
-    #     end
+            end
+            j += 1
+          end
+          str = result_array.join(",")
+          attendance[i].result = str
+          #attendance[i].result.concat(",")
+          attendance[i].result.concat(result[i])
+        end
       
         
-    #     attendance[i].result.gsub!(",,",",")
-    #     if attendance[i].result[0] == ","
-    #       attendance[i].result.slice!(0)
-    #     end      
-    #     if attendance[i].result.end_with?(",")
-    #       attendance[i].result.chop!
-    #     end
+        attendance[i].result.gsub!(",,",",")
+        if attendance[i].result[0] == ","
+          attendance[i].result.slice!(0)
+        end      
+        if attendance[i].result.end_with?(",")
+          attendance[i].result.chop!
+        end
       
-    #     if attendance[i].update_attributes(update_overtime_approval_params)
-    #     else
-    #       render :show      
-    #     end
+        #if attendance[i].update_attributes(update_overtime_approval_params)
+        #else
+        #  render :show      
+        #end
       
-    #     @user.save
+        attendance[i].save
+        
+        @user.save
       
-    #   end
+      end
       
       
       
-    # end
+    end
     
-    # redirect_to user_url(@user.id, date: @first_day)
+    redirect_to user_url(@user.id, date: @first_day)
     # # 変更を送信するボタン押下後の処理終わり
     # ##########################################################
     
@@ -1468,7 +1465,7 @@ class AttendancesController < ApplicationController
     
     # 残業承認の勤怠情報を扱います。
     def update_overtime_approval_params
-      params.require(:attendance).permit(attendance: [:instructor_confirmation, :change_approval])
+      params.require(:user).permit(attendances: [:instructor_confirmation, :change_approval])[:attendances]
     end
     
     # 所属長承認承認の勤怠情報を扱います。
