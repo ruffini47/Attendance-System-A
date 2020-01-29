@@ -766,6 +766,12 @@ class AttendancesController < ApplicationController
       j += 1
     end
     
+    @users_c = []
+    @user_c.each do |user|
+      @users_c.push(user)
+    end
+    
+    
   end
 
 
