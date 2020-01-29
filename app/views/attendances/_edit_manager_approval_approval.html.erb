@@ -7,7 +7,7 @@
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
-    <%= form_with(model: @attendancesd, url: attendances_manager_approval_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
+    <%= form_with(model: @users_d, url: attendances_manager_approval_approval_user_path(current_user.id), local: true, method: :patch)  do |f| %>
       <% for i in 0..(@user_number_d-1) do %>
         <div class="modal-header">
           <h3 class="modal-title title-center">【<%=  @user_d[i].name %>からの1ヵ月分勤怠申請】</h3>
@@ -30,28 +30,27 @@
                 </tr>
               </thead>
               <tbody>
-                <%= f.hidden_field :user_id, multiple: true, :value => @user_d[i].id %>
-                <% @attendancesd[i].each do |attendance| %>
-                  <%= f.hidden_field :id, multiple: true, :value => attendance.id %> <!-- attendancesbテーブルのidを渡す -->
-                  <%= f.hidden_field :date, :value => @first_day %>
-                  <tr>
-                    <td>
-                      <%= attendance.worked_on.to_date.month%>月
-                    </td>
-                    <td>
-                      <div class = "form-group">
-                        <%= f.select :manager_approval_instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false}, { class: "form-control", :multiple => true} %>
-                      </div>
-                    </td>
-                    <td>
-                      <div class = "form-check ">
-                        <%= f.check_box :manager_approval_change_approval, {:multiple => true, class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
-                      </div>
-                    </td>
-                    <td>
-                      <%= f.submit "確認", :name => "#{attendance.id}", class: "btn btn-primary btn-one-month-confirmation" %>
-                    </td>
-                  </tr>
+                <% @attendancesd[i].each do |day| %>
+                  <%= f.fields_for "attendances[]", day do |attendance| %>
+                    <tr>
+                      <td>
+                        <%= day.worked_on.to_date.month%>月
+                      </td>
+                      <td>
+                        <div class = "form-group">
+                          <%= attendance.select :manager_approval_instructor_confirmation, options_for_select(Attendance.instructor_confirmations, 1), {include_blank: true, :include_hidden => false}, { class: "form-control" } %>
+                        </div>
+                      </td>
+                      <td>
+                        <div class = "form-check ">
+                          <%= attendance.check_box :manager_approval_change_approval, { class: "form-check-input"}, checked_value = "true", unchecked_value = "false" %>
+                        </div>
+                      </td>
+                      <td>
+                        <%= f.submit "確認", :name => "#{day.id}", class: "btn btn-primary btn-one-month-confirmation" %>
+                      </td>
+                    </tr>
+                  <% end %>
                 <% end %>
               </tbody>
             </table>

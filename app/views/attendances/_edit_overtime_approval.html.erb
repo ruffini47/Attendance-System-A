@@ -42,7 +42,6 @@
               <tbody>
                 <% @attendancesb[i].each do |day| %>
                   <%= f.fields_for "attendances[]", day do |attendance| %>
-                    <%= f.hidden_field :date, :value => @first_day %>
                     <tr>
                       <td>
                         <%= l(day.worked_on, format: :short) %>

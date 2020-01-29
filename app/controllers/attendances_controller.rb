@@ -1143,6 +1143,12 @@ class AttendancesController < ApplicationController
       j += 1
     end
     
+    @users_d = []
+    @user_d.each do |user|
+      @users_d.push(user)
+    end
+    
+    
   end
   
   def update_manager_approval_approval
