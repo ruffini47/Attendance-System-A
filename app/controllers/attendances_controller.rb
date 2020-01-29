@@ -1152,37 +1152,49 @@ class AttendancesController < ApplicationController
   end
   
   def update_manager_approval_approval
-    
+  
   ##########################################################
     # 共通の処理
     
     # 申請先上長ユーザが@user
     @user = User.find(params[:id])
     
+    # ActionController::Parametersをハッシュ化する
+    hash = params[:user][:attendances].permit!.to_hash
+    
     # nは申請元の件数
-    n = params[:attendance][:id].length
+    n = hash.size
     
-    #@first_day = params[:date]
+    # mは申請元ユーザの数
+    #m = params[:attendance][:user_id].length
     
+    attendance_ids = hash.keys
+    
+    #attendance[i]i番目の申請元のattendance
+    #user[i]はi番目の申請元ユーザuser
+    #id[i]はi番目の申請元のattendance.id
+    #first_day[i]はi番目の申請元attendanceのfirst_day
     attendance = []
     user = []
     id = []
     first_day = []
     last_day = []
-    #attendance[i]i番目の申請元のattendance
-    #user[i]はi番目の申請元ユーザ
-    #id[i]はi番目の申請元のattendance.id
-    for i in 0..n-1
-      attendance[i] = Attendance.find(params[:attendance][:id][i])
+    
+    i = 0
+    
+    attendance_ids.each do |idd|
+      attendance[i] = Attendance.find(idd.to_i)
       user[i] = User.find(attendance[i].user_id)
-      id[i]= attendance[i].id
+      id[i] = idd.to_i
       first_day[i] = attendance[i].worked_on.beginning_of_month
       last_day[i] = first_day[i].end_of_month
+      i += 1
     end
     
     # 共通の処理終わり
     ##########################################################
     
+  
     ##########################################################
     # 勤怠を確認ボタン押下後の処理
     
@@ -1203,52 +1215,24 @@ class AttendancesController < ApplicationController
   
     ##########################################################
     # 変更を送信するボタン押下後の処理
-    
-    
+
     manager_approval_instructor_confirmation = []
     manager_approval_change_approval = []
     
-    manager_approval_instructor_confirmation = []
-    manager_approval_change_approval = []
     for i in 0..n-1 do
-      manager_approval_instructor_confirmation1 = params[:attendance][:manager_approval_instructor_confirmation]
-      if manager_approval_instructor_confirmation1 == nil
-        flash[:danger] = "指示者確認欄が空です。"
-        redirect_to user_url(@user.id, date: first_day[i])  and return
-      elsif manager_approval_instructor_confirmation1.length != n
+      manager_approval_instructor_confirmation1 = hash[id[i].to_s]["manager_approval_instructor_confirmation"]
+      
+      if manager_approval_instructor_confirmation1 == ""
         flash[:danger] = "指示者確認欄が空です。"
         redirect_to user_url(@user.id, date: first_day[i])  and return
       end
-      manager_approval_instructor_confirmation[i] = params[:attendance][:manager_approval_instructor_confirmation][i].to_i
-    end
-  
-    manager_approval_change_approval = params[:attendance][:manager_approval_change_approval]
-    
-    i = 0
-    manager_approval_change_approval.length.times do
-      if manager_approval_change_approval[i] == "true"
-        manager_approval_change_approval.delete_at(i-1)
-        i -= 1
-      end
-      i += 1
+      manager_approval_instructor_confirmation[i] = hash[id[i].to_s]["manager_approval_instructor_confirmation"].to_i
     end
     
-    # ここはenumの定義により敢えてinstructor_confirmations
-    #inst_hash = Attendance.instructor_confirmations
-    #result = []
-    #result[i]はi番目の"なし","申請中","承認","否認"などの結果文字列
-    #for i in 0..n-1 do
-    #  result[i] = inst_hash.invert[manager_approval_instructor_confirmation[i]]
-    #end
-    #for i in 0..n-1 do
-    #  if manager_approval_instructor_confirmation[i] == 2
-    #    result[i] = ",勤怠編集承認済"
-    #  elsif manager_approval_instructor_confirmation[i] == 3
-    #    result[i] = ",勤怠編集否認"
-    #  else
-    #    result[i] = ""
-    #  end
-    #end
+    for i in 0..n-1 do
+      manager_approval_change_approval[i] = hash[id[i].to_s]["manager_approval_change_approval"]
+    end
+    
      
     @last_attendance = []
     
@@ -1289,10 +1273,12 @@ class AttendancesController < ApplicationController
         @user.save
         
         
-        if attendance[i].update_attributes(update_manager_approval_approval_params)
-        else
-          render :show      
-        end
+        # if attendance[i].update_attributes(update_manager_approval_approval_params)
+        # else
+        #   render :show      
+        # end
+         
+        attendance[i].save
          
         #attendance[i].save!
         
@@ -1476,10 +1462,10 @@ class AttendancesController < ApplicationController
     #   params.require(:user).permit(attendances: [:instructor_confirmation, :change_approval])[:attendances]
     # end
     
-    # 所属長承認承認の勤怠情報を扱います。
-    def update_manager_approval_approval_params
-      params.require(:attendance).permit(attendance: [:manager_approval_instructor_confirmation, :manager_approval_change_approval])
-    end
+    # # 所属長承認承認の勤怠情報を扱います。
+    # def update_manager_approval_approval_params
+    #   params.require(:attendance).permit(attendance: [:manager_approval_instructor_confirmation, :manager_approval_change_approval])
+    # end
     
     # beforeフィルター
     
