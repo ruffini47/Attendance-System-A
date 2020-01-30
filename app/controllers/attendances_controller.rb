@@ -1,14 +1,16 @@
 class AttendancesController < ApplicationController
   protect_from_forgery
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month, :edit_overtime_application, :update_overtime_application,
-                                        :edit_overtime_approval, :update_overtime_approval]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :logged_in_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
+                                        :edit_overtime_approval, :update_overtime_approval, :edit_attendance_change_approval, :update_attendance_change_approval,
+                                        :post_manager_approval_application, :edit_manager_approval_approval, :update_manager_approval_approval]
+  #before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: [:edit_one_month, :confirm_one_month_application, :confirm_one_month_approval,
                                        :confirm_one_month_attendance_change_approval, :confirm_one_month_manager_approval_approval]
   before_action :set_one_month_2, only: [:update_overtime_approval, :post_manager_approval_application]
-  before_action :not_admin_user, only: [:edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
-                                        :edit_overtime_approval, :update_overtime_approval]
+  before_action :not_admin_user, only: [:update, :edit_one_month, :update_one_month, :edit_overtime_application, :update_overtime_application,
+                                        :edit_overtime_approval, :update_overtime_approval, :edit_attendance_change_approval, :update_attendance_change_approval,
+                                        :post_manager_approval_application, :edit_manager_approval_approval, :update_manager_approval_approval]
   before_action :admin_user, only: [:at_work]
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
 
