@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: :show
 
   def index
-    @users = User.all
+    @users = User.where.not(id: current_user.id)
   end
   
   def import
