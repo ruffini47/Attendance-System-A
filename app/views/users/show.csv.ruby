@@ -3,7 +3,7 @@ require 'csv'
 
 bom = "\uFEFF"
 csv_data= CSV.generate(bom) do |csv|
-  csv_column_names = %w(日付 出社 退社 在社時間 終了予定時間 時間外時間)
+  csv_column_names = %w(date attendance departure working_times designated_work_end_time overtime)
   csv << csv_column_names
   @attendances.each do |day|
     if !day.started_at.nil? && !day.finished_at.nil? && !day.scheduled_end_time.nil? 
