@@ -123,7 +123,11 @@
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
-          <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day, date: @first_day), remote: true, class: "btn btn-primary btn-sm" %></td>
+          <% if !current_user.admin? && (Date.current < day.worked_on) %>
+            <td><%= link_to "残業申請", '#', remote: true, class: "btn btn-primary btn-sm" %></td>
+          <% else %>
+            <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day, date: @first_day), remote: true, class: "btn btn-primary btn-sm" %></td>
+          <% end %>
           <td><%= l(day.worked_on, format: :short) %></td>
           <% if day.worked_on.wday == 0 %>
             <td class="sun"><%= $days_of_the_week[day.worked_on.wday] %></td>
