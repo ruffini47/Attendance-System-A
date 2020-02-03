@@ -49,8 +49,11 @@ Rails.application.routes.draw do
   # 勤怠変更_1カ月勤怠確認
   get '/users/:user_id/attendance/:id/confirm_one_month_attendance_change_approval/', to: 'attendances#confirm_one_month_attendance_change_approval', as: 'attendance_confirm_one_month_attendance_change_approval_user'
 
-  # 残業申請承認確認画面のキャンセル処理
-  get '/users/:id/cancel/', to: 'attendances#cancel_confirm_one_month', as:'attendances_cancel_confirm_one_month'
+  # 残業申請確認画面のキャンセル処理
+  get '/users/:user_id/attendance/:id/cancel_application/', to: 'attendances#cancel_confirm_one_month_application', as:'attendances_cancel_confirm_one_month_application'
+  # 残業承認確認画面のキャンセル処理
+  get '/users/:user_id/attendance/:id/cancel_approval/', to: 'attendances#cancel_confirm_one_month_approval', as:'attendances_cancel_confirm_one_month_approval'
+  
   # 勤怠変更確認画面のキャンセル処理
   get '/users/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
   # 所属長承認確認画面のキャンセル処理

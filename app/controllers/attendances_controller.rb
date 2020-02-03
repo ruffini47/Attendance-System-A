@@ -319,24 +319,7 @@ class AttendancesController < ApplicationController
     
     
     
-    ##########################################################
-    # 勤怠を確認ボタン押下後の処理
-    if params[:confirmation] == "確認"
-      
-      business_processing = params[:attendance][:business_processing]
-      @attendance.cl_business_processing = business_processing
-      
-      if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
-        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, date: @first_day) and return
-      else
-        render :show      
-      end
-      
     
-    end
-    # 勤怠を確認するボタン押下後の処理終わり
-    ##########################################################
-  
   
   
     ##########################################################
@@ -399,9 +382,34 @@ class AttendancesController < ApplicationController
         # 申請元@attendanceに申請先user.idの値を持たせるカラムto_superior_user_id
         @attendance.to_superior_user_id = user.id
       end
+  
+      @attendance.save
       
       # 過去に指定していないattendanceに登録する場合終わり
       ###################################################################
+    
+    
+    
+    
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
+    if params[:confirmation] == "確認"
+      
+      business_processing = params[:attendance][:business_processing]
+      @attendance.cl_business_processing = business_processing
+      
+      if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
+        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, date: @first_day) and return
+      else
+        render :show      
+      end
+      
+    
+    end
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
+  
+    
     
     
       
@@ -504,17 +512,24 @@ class AttendancesController < ApplicationController
       
   end
   
-  def cancel_confirm_one_month
+  def cancel_confirm_one_month_application
   
     @first_day = params[:date].to_date
-    @user = User.find(params[:id])
+    # @userは申請元ユーザ
+    @user = User.find(params[:user_id])
     @attendances = Attendance.all
+    
+    # @attendanceは上長ユーザのattendance
+    #@attendance = Attendance.find(params[:id])
+    
+    # userは上長ユーザ
+    #user = User.find(@attendance.to_superior_user_id)
     
     @attendances.each do |attendance|
       attendance.cl_scheduled_end_time = nil
       attendance.cl_business_processing = nil
-      attendance.cr_scheduled_end_time = nil
-      attendance.cr_business_processing = nil
+      #attendance.cr_scheduled_end_time = nil
+      #attendance.cr_business_processing = nil
       attendance.save
     end
     
@@ -522,7 +537,30 @@ class AttendancesController < ApplicationController
     
   end
   
+  def cancel_confirm_one_month_approval
   
+    @first_day = params[:date].to_date
+    # @userは申請元ユーザ
+    @user = User.find(params[:user_id])
+    @attendances = Attendance.all
+    
+    # @attendanceは上長ユーザのattendance
+    @attendance = Attendance.find(params[:id])
+    
+    # userは上長ユーザ
+    user = User.find(@attendance.to_superior_user_id)
+    
+    @attendances.each do |attendance|
+      #attendance.cl_scheduled_end_time = nil
+      #attendance.cl_business_processing = nil
+      attendance.cr_scheduled_end_time = nil
+      attendance.cr_business_processing = nil
+      attendance.save
+    end
+    
+    redirect_to user_url(user.id, date: @first_day)
+    
+  end
   
   def edit_overtime_approval
     
@@ -983,8 +1021,11 @@ class AttendancesController < ApplicationController
   def cancel_attendance_change_confirm_one_month
   
     @first_day = params[:date].to_date
+    # @userは申請元ユーザ
     @user = User.find(params[:id])
     @attendances = Attendance.all
+    
+    
     
     @attendances.each do |attendance|
       attendance.cr_after_change_start_time = nil
