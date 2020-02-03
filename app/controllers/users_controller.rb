@@ -27,6 +27,7 @@ class UsersController < ApplicationController
         send_data render_to_string, filename: "#{@user.name}の#{@attendances.first.worked_on.month}月の勤怠.csv", type: :csv
       end
     end
+    
   end
 
   def new

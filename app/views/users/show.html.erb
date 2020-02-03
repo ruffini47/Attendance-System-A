@@ -124,7 +124,7 @@
       <% @attendances.each do |day| %>
         <tr>
           <% if !current_user.admin? && (Date.current < day.worked_on) %>
-            <td><%= link_to "残業申請", '#', remote: true, class: "btn btn-primary btn-sm" %></td>
+            <td><%= link_to "残業申請", '#', disabled: true, remote: true, class: "btn btn-primary btn-sm" %></td>
           <% else %>
             <td><%= link_to "残業申請", attendances_overtime_application_user_path(@user.id, day, date: @first_day), remote: true, class: "btn btn-primary btn-sm" %></td>
           <% end %>
@@ -178,7 +178,11 @@
             <div class = "form-group">
               <%= f.collection_select :manager_approval_to_superior, User.where(superior:true).where.not(id: @user.id), :id, :name, {:include_blank => true},  {class:"form-control"} %>
             </div>
-            <%= f.submit '申請', class: "btn btn-primary btn-block request"%>
+            <% if Date.current < @last_attendance.worked_on %>
+              <%= f.submit '申請できません', disabled: true, class: "btn btn-primary btn-block request"%>
+            <% else %>
+              <%= f.submit '申請', class: "btn btn-primary btn-block request"%>
+            <% end %>
           <% end %>
         </td>
       </tr>
