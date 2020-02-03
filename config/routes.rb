@@ -47,7 +47,7 @@ Rails.application.routes.draw do
   patch '/users/:id/attendance/attendance_change_approval/', to: 'attendances#update_attendance_change_approval'
 
   # 勤怠変更_1カ月勤怠確認
-  get '/users/:user_id/attendance/:id/confirm_one_month_attendance_change_approval/', to: 'attendances#confirm_one_month_attendance_change_approval', as: 'attendance_confirm_one_month_attendance_change_approval_user'
+  get '/users/:user_id/attendance/:id/superior_id/:superior_id/confirm_one_month_attendance_change_approval/', to: 'attendances#confirm_one_month_attendance_change_approval', as: 'attendance_confirm_one_month_attendance_change_approval_user'
 
   # 残業申請確認画面のキャンセル処理
   get '/users/:user_id/attendance/:id/cancel_application/', to: 'attendances#cancel_confirm_one_month_application', as:'attendances_cancel_confirm_one_month_application'
@@ -55,9 +55,9 @@ Rails.application.routes.draw do
   get '/users/:user_id/attendance/:id/cancel_approval/', to: 'attendances#cancel_confirm_one_month_approval', as:'attendances_cancel_confirm_one_month_approval'
   
   # 勤怠変更確認画面のキャンセル処理
-  get '/users/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
+  get '/users/:user_id/attendance/:id/cancel_attendance_change/', to: 'attendances#cancel_attendance_change_confirm_one_month', as:'attendances_cancel_attendance_change_confirm_one_month'
   # 所属長承認確認画面のキャンセル処理
-  get '/users/:id/cancel_manager_approval/', to: 'attendances#cancel_manager_approval_confirm_one_month', as:'attendances_cancel_manager_approval_confirm_one_month'
+  get '/users/:user_id/attendance/:id/cancel_manager_approval/', to: 'attendances#cancel_manager_approval_confirm_one_month', as:'attendances_cancel_manager_approval_confirm_one_month'
 
   # 所属長承認申請
   post '/users/:id/attendance/attendance_manager_approval_appication/', to: 'attendances#post_manager_approval_application', as: 'attendances_manager_approval_application_user'

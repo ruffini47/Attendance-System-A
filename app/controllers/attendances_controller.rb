@@ -863,7 +863,7 @@ class AttendancesController < ApplicationController
         
         j = i
         
-        redirect_to attendance_confirm_one_month_attendance_change_approval_user_path(user[j].id, id[j], date: first_day[j]) and return  
+        redirect_to attendance_confirm_one_month_attendance_change_approval_user_path(user[j].id, id[j], @user.id, date: first_day[j]) and return  
       
       end
     end
@@ -1005,8 +1005,12 @@ class AttendancesController < ApplicationController
   
   def confirm_one_month_attendance_change_approval
     
+    # @userは申請元ユーザ
     @user = User.find(params[:user_id])
     @attendance = Attendance.find(params[:id])
+    # userは上長ユーザ
+    user = User.find(params[:superior_id])
+    @attendance.saved_attendance_change_to_superior_user_id = user.id
     @worked_sum = @attendances.where.not(finished_at: nil).count
     
     @attendance.cr_after_change_start_time = @attendance.saved_after_change_start_time
@@ -1022,11 +1026,16 @@ class AttendancesController < ApplicationController
   
     @first_day = params[:date].to_date
     # @userは申請元ユーザ
-    @user = User.find(params[:id])
+    @user = User.find(params[:user_id])
     @attendances = Attendance.all
     
     
-    
+    @attendance = Attendance.find(params[:id])
+    # userは上長ユーザ
+    user = User.find(@attendance.saved_attendance_change_to_superior_user_id)
+
+
+
     @attendances.each do |attendance|
       attendance.cr_after_change_start_time = nil
       attendance.cr_after_change_end_time = nil
@@ -1034,7 +1043,7 @@ class AttendancesController < ApplicationController
       attendance.save
     end
     
-    redirect_to user_url(@user.id, date: @first_day)
+    redirect_to user_url(user.id, date: @first_day)
     
   end
   
