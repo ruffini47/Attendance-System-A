@@ -1409,8 +1409,14 @@ class AttendancesController < ApplicationController
   def cancel_manager_approval_confirm_one_month
   
     @first_day = params[:date].to_date
-    @user = User.find(params[:id])
+    # @userは申請元ユーザ
+    @user = User.find(params[:user_id])
     @attendances = Attendance.all
+    
+    @attendance  =  Attendance.find(params[:id])
+    # userは上長ユーザ
+    user = User.find(@attendance.manager_approval_to_superior_user_id)
+    
     
     
     #@attendances.each do |attendance|
@@ -1420,7 +1426,7 @@ class AttendancesController < ApplicationController
     #  attendance.save
     #end
     
-    redirect_to user_url(@user.id, date: @first_day)
+    redirect_to user_url(user.id, date: @first_day)
     
   end
   
