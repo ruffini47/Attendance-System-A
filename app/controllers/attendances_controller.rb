@@ -322,6 +322,26 @@ class AttendancesController < ApplicationController
     
   
   
+       
+    
+    ##########################################################
+    # 勤怠を確認ボタン押下後の処理
+    if params[:confirmation] == "確認"
+      
+      business_processing = params[:attendance][:business_processing]
+      @attendance.cl_business_processing = business_processing
+      
+      if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
+        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, date: @first_day) and return
+      else
+        render :show      
+      end
+      
+    
+    end
+    # 勤怠を確認するボタン押下後の処理終わり
+    ##########################################################
+  
     ##########################################################
     # 変更を送信するボタン押下後の処理
     
@@ -389,27 +409,7 @@ class AttendancesController < ApplicationController
       ###################################################################
     
     
-    
-    
-    ##########################################################
-    # 勤怠を確認ボタン押下後の処理
-    if params[:confirmation] == "確認"
-      
-      business_processing = params[:attendance][:business_processing]
-      @attendance.cl_business_processing = business_processing
-      
-      if @attendance.update_attributes(attendance_confirm_one_month_application_user_params)
-        redirect_to attendance_confirm_one_month_application_user_url(@user.id, @attendance.id, date: @first_day) and return
-      else
-        render :show      
-      end
-      
-    
-    end
-    # 勤怠を確認するボタン押下後の処理終わり
-    ##########################################################
-  
-    
+ 
     
     
       
