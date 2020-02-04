@@ -69,7 +69,11 @@ class UsersController < ApplicationController
   def update_basic_info
     if @user.update_attributes(basic_info_params)
       flash[:success] = "基本情報を更新しました。"
-      redirect_to @user
+      unless  @user.admin?
+        redirect_to @user
+      else
+        redirect_to root_url
+      end
     else
       render :edit_basic_info  
     end
