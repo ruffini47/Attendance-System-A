@@ -1,8 +1,7 @@
 require "date"
 require 'csv'
 
-bom = "\uFEFF"
-csv_data= CSV.generate(bom) do |csv|
+csv_data= CSV.generate do |csv|
   csv_column_names = %w(date attendance departure working_times designated_work_end_time overtime)
   csv << csv_column_names
   @attendances.each do |day|

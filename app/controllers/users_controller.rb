@@ -24,7 +24,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.any
       format.csv do
-        send_data render_to_string, filename: "#{@user.name}の#{@attendances.first.worked_on.month}月の勤怠.csv", type: :csv
+        send_data render_to_string, filename: "user_id_#{@user.id}_#{@attendances.first.worked_on.year}_#{@attendances.first.worked_on.month}.csv", type: :csv
       end
     end
     
